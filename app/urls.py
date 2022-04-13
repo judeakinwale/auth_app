@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('auth/', include('user.urls', namespace='user')),
-    path("password_reset/", include('django_rest_passwordreset.urls', namespace='password_reset')), # For django-rest-passwordreset
+    # path("password_reset/", include('django_rest_passwordreset.urls', namespace='password_reset')), # For django-rest-passwordreset
     
     # For drf-yasg
     path("swagger(<format>\\.json|\\.yaml)", schema_view.without_ui(cache_timeout=0), name='schema-json'),

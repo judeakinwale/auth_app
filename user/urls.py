@@ -7,6 +7,21 @@ app_name = 'user'
 
 router = DefaultRouter()
 router.register('user', views.UserViewSet)
+router.register(
+    'passwordreset', 
+    views.DecoratedResetPasswordRequestTokenViewSet, 
+    basename='reset-password-request',
+)
+router.register(
+    'passwordreset/confirm', 
+    views.DecoratedResetPasswordConfirmViewSet, 
+    basename='reset-password-confirm',
+)
+router.register(
+    'passwordreset/validate', 
+    views.DecoratedResetPasswordValidateTokenViewSet, 
+    basename='reset-password-validate',
+)
 
 urlpatterns = [
     path("", include(router.urls)),

@@ -10,6 +10,11 @@ from rest_framework_simplejwt.views import (
 from user import serializers, models, filters
 
 from django_rest_passwordreset.signals import reset_password_token_created
+from django_rest_passwordreset.views import (
+    ResetPasswordValidateTokenViewSet, 
+    ResetPasswordConfirmViewSet,
+    ResetPasswordRequestTokenViewSet
+)
 from drf_yasg.utils import no_body, swagger_auto_schema
 
 # Create your views here.
@@ -122,7 +127,7 @@ class ManageUserApiView(generics.RetrieveUpdateAPIView):
         """patch method docstring"""
         return super().patch(request, *args, **kwargs)
     
-    
+
 # Modified drf-simplejwt views
 class DecoratedTokenObtainPairView(TokenObtainPairView):
     @swagger_auto_schema(
@@ -133,6 +138,7 @@ class DecoratedTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
+
 class DecoratedTokenRefreshView(TokenRefreshView):
     @swagger_auto_schema(
         operation_description='generata access token using refresh token',
@@ -141,6 +147,7 @@ class DecoratedTokenRefreshView(TokenRefreshView):
             status.HTTP_200_OK: serializers.TokenRefreshResponseSerializer})
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
 
 class DecoratedTokenVerifyView(TokenVerifyView):
     @swagger_auto_schema(
@@ -151,6 +158,35 @@ class DecoratedTokenVerifyView(TokenVerifyView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
+
+# Modified django-passwordreset views
+class DecoratedResetPasswordValidateTokenViewSet(ResetPasswordValidateTokenViewSet):
+    @swagger_auto_schema(
+        operation_description='validate password reset token',
+        operation_summary='validate password reset token',
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+    
+
+class DecoratedResetPasswordConfirmViewSet(ResetPasswordConfirmViewSet):
+    @swagger_auto_schema(
+        operation_description='confirm password reset token',
+        operation_summary='confirm password reset token',
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+    
+
+class DecoratedResetPasswordRequestTokenViewSet(ResetPasswordRequestTokenViewSet):
+    @swagger_auto_schema(
+        operation_description='request password reset token',
+        operation_summary='request password reset token',
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
 # For django-passwordreset
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
@@ -158,6 +194,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from django_rest_passwordreset.signals import reset_password_token_created
+from user import urls
 
 
 @receiver(reset_password_token_created)
@@ -174,12 +211,13 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     """
     # send an e-mail to the user
     title = "App"
+    urls_app_name = urls.app_name
     context = {
         'current_user': reset_password_token.user,
         'username': reset_password_token.user.username,
         'email': reset_password_token.user.email,
         'reset_password_url': "{}?token={}".format(
-            instance.request.build_absolute_uri(reverse('password_reset:reset-password-confirm')),
+            instance.request.build_absolute_uri(reverse(f'{urls_app_name}:reset-password-confirm-list')),
             reset_password_token.key)
     }
 
