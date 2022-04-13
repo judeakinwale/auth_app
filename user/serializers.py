@@ -13,7 +13,7 @@ from rest_framework_simplejwt.views import (
 class UserSerializer(serializers.HyperlinkedModelSerializer):
   """serializer for the User model"""
 
-  full_name = serializers.CharField(source='full_name', read_only=True)
+  # full_name = serializers.CharField(read_only=True)
   
   class Meta:
     model = get_user_model()
@@ -25,8 +25,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
       'last_name',
       'full_name',
       'email',
-      'role',
       'password',
+      'role',
+      'image',
       'is_active',
       'is_staff',
       'is_superuser',

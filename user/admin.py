@@ -9,8 +9,8 @@ class UserAdmin(BaseUserAdmin):
   ordering = ['id']
   list_display = ['email', 'first_name', 'last_name']
   fieldsets = (
-      (None, {'fields': ('email', 'password')}),
-      (_('Personal Info'), {'fields': ('first_name', 'last_name',)}),
+      # (None, {'fields': ('email', 'password')}),
+      (_('Personal Info'), {'fields': ('first_name', 'last_name', 'middle_name', 'email', 'role', 'image')}),
       (_('Permissions'), {
         'fields': ('is_active', 'is_staff', 'is_superuser')
       }),

@@ -11,9 +11,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     """Model definition for User."""
     
     class RoleChoices(models.TextChoices):
-        ADMIN = 'ADMIN', _('ADMIN')
+        Admin = 'Admin', _('Admin')
         HR = 'HR', _('HR')
-        STAFF = 'STAFF', _('STAFF')
+        Staff = 'Staff', _('Staff')
+        Manager = 'Manager', _('Manager')
+        Team_Lead = 'Team Lead', _('Team Lead')
 
     first_name = models.CharField(max_length=250, null=True)
     middle_name = models.CharField(max_length=250, null=True, blank=True)
@@ -23,8 +25,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(
         max_length=250,
         choices=RoleChoices.choices,
-        default=RoleChoices.STAFF,
+        default=RoleChoices.Staff,
     )
+    image = models.ImageField(upload_to='images/%Y/%m/%d/', blank=True, null=True, max_length=254)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
@@ -40,7 +43,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         """String representation of User."""
-        self.full_name()
+        try: 
+            return self.full_name()
+        except Exception:
+            return str(self.id)
           
     def full_name(self):
         if self.first_name and self.last_name and self.middle_name:
