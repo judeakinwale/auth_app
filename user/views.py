@@ -3,6 +3,10 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 
 from rest_framework import generics, viewsets, permissions
+from rest_framework import status
+from rest_framework_simplejwt.views import (
+  TokenObtainPairView, TokenRefreshView, TokenVerifyView
+)
 from user import serializers, models, filters
 
 from django_rest_passwordreset.signals import reset_password_token_created
@@ -117,6 +121,35 @@ class ManageUserApiView(generics.RetrieveUpdateAPIView):
     def patch(self, request, *args, **kwargs):
         """patch method docstring"""
         return super().patch(request, *args, **kwargs)
+    
+    
+# Modified drf-simplejwt views
+class DecoratedTokenObtainPairView(TokenObtainPairView):
+    @swagger_auto_schema(
+        operation_description='login',
+        operation_summary='login',
+        responses={
+            status.HTTP_200_OK: serializers.TokenObtainPairResponseSerializer})
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+class DecoratedTokenRefreshView(TokenRefreshView):
+    @swagger_auto_schema(
+        operation_description='generata access token using refresh token',
+        operation_summary='generata access token using refresh token',
+        responses={
+            status.HTTP_200_OK: serializers.TokenRefreshResponseSerializer})
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+class DecoratedTokenVerifyView(TokenVerifyView):
+    @swagger_auto_schema(
+        operation_description='verify access token is still valid',
+        operation_summary='verify access token is still valid',
+        responses={
+            status.HTTP_200_OK: serializers.TokenVerifyResponseSerializer})
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 # For django-passwordreset
 from django.core.mail import EmailMultiAlternatives

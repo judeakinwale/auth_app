@@ -11,8 +11,8 @@ router.register('user', views.UserViewSet)
 urlpatterns = [
     path("", include(router.urls)),
     path('account/', views.ManageUserApiView.as_view(), name="account"),
-    path("login/", JWTViews.TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("login/", views.DecoratedTokenObtainPairView.as_view(), name="token_obtain_pair"),
     # path('logout/', views.LogoutApiView.as_view(), name="logout"),
-    path("token/verify", JWTViews.TokenVerifyView.as_view(), name="token_verify"),
-    path("token/refresh", JWTViews.TokenRefreshView.as_view(), name="token_refresh"),
+    path("token/verify", views.DecoratedTokenVerifyView.as_view(), name="token_verify"),
+    path("token/refresh", views.DecoratedTokenRefreshView.as_view(), name="token_refresh"),
 ]
