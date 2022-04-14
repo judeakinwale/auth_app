@@ -31,6 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     image = models.ImageField(upload_to='images/%Y/%m/%d/', blank=True, null=True, max_length=254)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     objects = managers.UserManager()
 
