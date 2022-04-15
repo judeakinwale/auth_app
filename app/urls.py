@@ -22,8 +22,8 @@ from app.schema import schema_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path('auth/', include('user.urls', namespace='user')),
-    path('company/', include('company.urls', namespace='company')),
+    path('', include('user.urls', namespace='user')),
+    path('', include('company.urls', namespace='company')),
     # path("password_reset/", include('django_rest_passwordreset.urls', namespace='password_reset')), # For django-rest-passwordreset
     
     # For drf-yasg

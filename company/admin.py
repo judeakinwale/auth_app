@@ -5,3 +5,5 @@ from company import models
 
 admin.site.register(models.Company)
 admin.site.register(models.Phone)
+admin.site.register(models.Branch)
+admin.site.register(models.Department)

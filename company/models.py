@@ -36,6 +36,7 @@ class Company(models.Model):
 class Phone(models.Model):
 
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="phone_numbers", on_delete=models.CASCADE)
+    branch = models.ForeignKey("Branch", verbose_name=_("Branch"), related_name="phone_numbers", on_delete=models.CASCADE, null=True, blank=True)
     phone_number = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)

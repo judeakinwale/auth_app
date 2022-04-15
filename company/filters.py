@@ -11,3 +11,25 @@ class CompanyFilter(filters.FilterSet):
             'email': ['icontains'],
             'is_active': ['exact'],
         }
+
+
+class BranchFilter(filters.FilterSet):
+
+    class Meta:
+        model = models.Branch
+        fields = {
+            'name': ['icontains'],
+            'email': ['icontains'],
+            'is_active': ['exact'],
+        }
+
+
+class DepartmentFilter(filters.FilterSet):
+
+    class Meta:
+        model = models.Department
+        fields = {
+            'name': ['icontains'],
+            'email': ['icontains'],
+            'is_active': ['exact'],
+        }
