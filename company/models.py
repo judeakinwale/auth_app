@@ -1,6 +1,9 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
+from user import managers
+from company.mixins import EmployeePermissionsMixin
 
 # Create your models here.
 
@@ -23,11 +26,14 @@ class Company(models.Model):
     website = models.CharField(max_length=250, null=True)
     logo = models.ImageField(upload_to='images/%Y/%m/%d/company', blank=True, null=True, max_length=254)
     is_active = models.BooleanField(default=True)
-    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")
+        
+    # TODO: Add properties for phone_numbers, employees
 
     def __str__(self):
         return self.name
@@ -35,11 +41,13 @@ class Company(models.Model):
 
 class Phone(models.Model):
 
+    # TODO: Remove company from phone model
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="phone_numbers", on_delete=models.CASCADE)
     branch = models.ForeignKey("Branch", verbose_name=_("Branch"), related_name="phone_numbers", on_delete=models.CASCADE, null=True, blank=True)
     phone_number = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
-    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
         verbose_name = _("Phone")
@@ -56,7 +64,8 @@ class Department(models.Model):
     email = models.CharField(max_length=250)
     description = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
         verbose_name = _("Department")
@@ -83,7 +92,8 @@ class Branch(models.Model):
       null=True, blank=True
     )
     is_active = models.BooleanField(default=True)
-    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
         verbose_name = _("Branch")
@@ -91,4 +101,50 @@ class Branch(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Employee(AbstractBaseUser, EmployeePermissionsMixin):
+    
+    class RoleChoices(models.TextChoices):
+        Admin = 'Admin', _('Admin')
+        HR = 'HR', _('HR')
+        Staff = 'Staff', _('Staff')
+        Manager = 'Manager', _('Manager')
+        Team_Lead = 'Team Lead', _('Team Lead')
+
+    first_name = models.CharField(max_length=250, null=True)
+    middle_name = models.CharField(max_length=250, null=True, blank=True)
+    last_name = models.CharField(max_length=250, null=True)
+    email = models.CharField(max_length=250)
+    phone = models.CharField(max_length=50, null=True)
+    # TODO: Remove company from employee model
+    company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="employees", on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="employees", on_delete=models.CASCADE)
+    department = models.ForeignKey(Department(), verbose_name=_("Department()"), related_name="employees", on_delete=models.CASCADE)
+    role = models.CharField(
+        max_length=250,
+        choices=RoleChoices.choices,
+        default=RoleChoices.Staff,
+    )
+    date_of_birth = models.DateField(null=True, blank=True)
+    address = models.CharField(max_length=250, null=True)
+    local_govt = models.CharField(max_length=250, null=True, blank=True)
+    state = models.CharField(max_length=250, null=True)
+    country = models.CharField(max_length=250, null=True)
+    zip_code = models.CharField(max_length=250, null=True, blank=True)
+    image = models.ImageField(upload_to='images/%Y/%m/%d/', blank=True, null=True, max_length=254)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+    
+    objects = managers.UserManager()
+
+    USERNAME_FIELD = 'email'
+
+    class Meta:
+        verbose_name = _("Employee")
+        verbose_name_plural = _("Employees")
+
+    def __str__(self):
+        return f"{self.last_name} {self.first_name}"
 

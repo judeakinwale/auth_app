@@ -22,13 +22,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=250, null=True)
     username = models.CharField(max_length=250, null=True, blank=True)
     email = models.EmailField(max_length=250, unique=True)
-    is_active = models.BooleanField(default=True)
     role = models.CharField(
         max_length=250,
         choices=RoleChoices.choices,
         default=RoleChoices.Staff,
     )
     image = models.ImageField(upload_to='images/%Y/%m/%d/', blank=True, null=True, max_length=254)
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)

@@ -183,3 +183,61 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """destroy method docstring"""
         return super().destroy(request, *args, **kwargs)
+
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    queryset = models.Employee.objects.all()
+    serializer_class = serializers.EmployeeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filterset_class = filters.EmployeeFilter
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
+    @swagger_auto_schema(
+        operation_description="create an employee",
+        operation_summary='create employee'
+    )
+    def create(self, request, *args, **kwargs):
+        """create method docstring"""
+        return super().create(request, *args, **kwargs)
+    
+    @swagger_auto_schema(
+        operation_description="list all employees",
+        operation_summary='list employees'
+    )
+    def list(self, request, *args, **kwargs):
+        """list method docstring"""
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="retrieve an employee",
+        operation_summary='retrieve employee'
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """retrieve method docstring"""
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="update an employee",
+        operation_summary='update employee'
+    )
+    def update(self, request, *args, **kwargs):
+        """update method docstring"""
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="partial_update an employee",
+        operation_summary='partial_update employee'
+    )
+    def partial_update(self, request, *args, **kwargs):
+        """partial_update method docstring"""
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="delete an employee",
+        operation_summary='delete employee'
+    )
+    def destroy(self, request, *args, **kwargs):
+        """destroy method docstring"""
+        return super().destroy(request, *args, **kwargs)
