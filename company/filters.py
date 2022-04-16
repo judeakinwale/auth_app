@@ -2,6 +2,7 @@ from django_filters import rest_framework as filters
 from company import models
 
 
+# TODO: Update filter fields for all models
 class CompanyFilter(filters.FilterSet):
 
     class Meta:
@@ -43,4 +44,13 @@ class EmployeeFilter(filters.FilterSet):
             'first_name': ['icontains'],
             'email': ['icontains'],
             'is_active': ['exact'],
+        }
+
+
+class LocationFilter(filters.FilterSet):
+
+    class Meta:
+        model = models.Location
+        fields = {
+            'company__name': ['icontains'],
         }

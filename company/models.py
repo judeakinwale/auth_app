@@ -61,7 +61,7 @@ class Department(models.Model):
 
     # TODO: Remove company from Department model
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="departments", on_delete=models.CASCADE, null=True, blank=True)
-    branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="departments", on_delete=models.CASCADE)
+    branch = models.ForeignKey("Branch", verbose_name=_("Branch"), related_name="departments", on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=250)
     email = models.CharField(max_length=250, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -164,6 +164,8 @@ class Location(models.Model):
     accuracy = models.FloatField(default=0.0) # meters, rounded up
     altitude = models.FloatField(null=True, blank=True) # meters, rounded
     max_radius = models.FloatField(default=0.0, null=True)
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
         verbose_name = _("Location")

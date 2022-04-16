@@ -9,11 +9,8 @@ router.register('company', views.CompanyViewSet)
 router.register('branch', views.BranchViewSet)
 router.register('department', views.DepartmentViewSet)
 router.register('employee', views.EmployeeViewSet)
-
-# branch_router = DefaultRouter()
-# router.register('branch', views.BranchViewSet)
+router.register('location', views.LocationViewSet)
 
 urlpatterns = [
   path("", include(router.urls)),
-  # path("", include(branch_router.urls))
 ]

@@ -32,6 +32,73 @@ class PhoneSerializer(serializers.HyperlinkedModelSerializer):
     }
 
 
+class CompanyBaseSerializer(serializers.HyperlinkedModelSerializer):
+  
+  phone_numbers = PhoneSerializer(many=True)
+  
+  class Meta:
+    model = models.Company
+    fields = [
+      'id',
+      'url',
+      'name',
+      'email',
+      'description',
+      'phone_numbers',
+      'address',
+      'province',
+      'state',
+      'country',
+      'postal_code',
+      'contact_person',
+      'website',
+      'logo',
+      'is_active',
+      'created_at',
+      'updated_at',
+    ]
+    optional_fields = [
+      'is_active',
+    ]
+    read_only_fields = [
+      'created_at',
+      'updated_at',
+    ]
+    extra_kwargs = {
+      'url': {'view_name': 'company:company-detail'},
+    }
+
+
+class LocationSerializer(serializers.HyperlinkedModelSerializer):
+  
+  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all())
+  
+  class Meta:
+    model = models.Location
+    fields = [
+      'id',
+      'url',
+      'company',
+      'longitude',
+      'latitude',
+      # 'point',
+      'accuracy',
+      'altitude',
+      'max_radius',
+      'created_at',
+      'updated_at',
+    ]
+    optional_fields = [
+      'is_active',
+    ]
+    read_only_fields = [
+      'created_at',
+      'updated_at',
+    ]
+    extra_kwargs = {
+      'url': {'view_name': 'company:location-detail'},
+    }
+
 
 class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
   
@@ -44,22 +111,25 @@ class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
     fields = [
       'id',
       'url',
-      "first_name",
-      "middle_name",
-      "last_name",
-      "email",
-      "phone",
-      "company",
-      "branch",
-      "department",
-      "role",
-      "date_of_birth",
-      "address",
-      "local_govt",
-      "state",
-      "country",
-      "zip_code",
-      "image",
+      'first_name',
+      'middle_name',
+      'last_name',
+      'email',
+      'phone',
+      'company',
+      'branch',
+      'department',
+      'employee_id',
+      'role',
+      'date_of_birth',
+      'address',
+      'province',
+      'state',
+      'country',
+      'postal_code',
+      'image',
+      'hobbies',
+      'join_date',
       'is_active',
       'created_at',
       'updated_at',
@@ -91,10 +161,10 @@ class BranchSerializer(serializers.HyperlinkedModelSerializer):
       'description',
       'phone_numbers',
       'address',
-      'local_govt',
+      'province',
       'state',
       'country',
-      'zip_code',
+      'postal_code',
       'contact_person',
       'is_active',
       'created_at',
@@ -115,6 +185,7 @@ class BranchSerializer(serializers.HyperlinkedModelSerializer):
 class DepartmentSerializer(serializers.HyperlinkedModelSerializer):
   
   company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all())
+  branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all())
   
   class Meta:
     model = models.Department
@@ -122,6 +193,7 @@ class DepartmentSerializer(serializers.HyperlinkedModelSerializer):
       'id',
       'url',
       'company',
+      'branch',
       'name',
       'email',
       'description',
@@ -141,47 +213,19 @@ class DepartmentSerializer(serializers.HyperlinkedModelSerializer):
     }
 
 
-class CompanySerializer(serializers.HyperlinkedModelSerializer):
+class CompanySerializer(CompanyBaseSerializer):
   
-  phone_numbers = PhoneSerializer(many=True)
   branches = BranchSerializer(many=True, read_only=True)
   departments = DepartmentSerializer(many=True, read_only=True)
   employees = EmployeeSerializer(many=True, read_only=True)
   
-  class Meta:
-    model = models.Company
-    fields = [
-      'id',
-      'url',
-      'name',
-      'email',
-      'description',
-      'phone_numbers',
+  class Meta(CompanyBaseSerializer.Meta):
+    additional_fields = [
       'branches',
       'departments',
       'employees',
-      'address',
-      'local_govt',
-      'state',
-      'country',
-      'zip_code',
-      'contact_person',
-      'website',
-      'logo',
-      'is_active',
-      'created_at',
-      'updated_at',
     ]
-    optional_fields = [
-      'is_active',
-    ]
-    read_only_fields = [
-      'created_at',
-      'updated_at',
-    ]
-    extra_kwargs = {
-      'url': {'view_name': 'company:company-detail'},
-    }
+    fields = CompanyBaseSerializer.Meta.fields + additional_fields
     depth = 0
 
   # def create(self, validated_data):
@@ -189,12 +233,40 @@ class CompanySerializer(serializers.HyperlinkedModelSerializer):
 
   # def update(self, instance, validated_data):
   #   pass
+
+
+# Response Serializers
+class LocationResponseSerializer(LocationSerializer):
   
+  company = CompanyBaseSerializer(read_only=True)
+  
+  class Meta(LocationSerializer.Meta):
+    depth = 0
+
+
+class EmployeeResponseSerializer(EmployeeSerializer):
+  
+  company = CompanyBaseSerializer(read_only=True)
+  branch = BranchSerializer(read_only=True)
+  department = DepartmentSerializer(read_only=True)
+  
+  class Meta(EmployeeSerializer.Meta):
+    depth = 0
+
 
 class BranchResponseSerializer(BranchSerializer):
   
-  company = CompanySerializer(read_only=True)
+  company = CompanyBaseSerializer(read_only=True)
   
   class Meta(BranchSerializer.Meta):
     depth = 0
-    
+
+
+class DepartmentResponseSerializer(DepartmentSerializer):
+  
+  company = CompanyBaseSerializer(read_only=True)
+  branch = BranchSerializer(read_only=True)
+  
+  class Meta(DepartmentSerializer.Meta):
+    depth = 0
+ 
