@@ -14,17 +14,17 @@ class Company(models.Model):
     email = models.CharField(max_length=250)
     description = models.TextField(null=True, blank=True)
     address = models.CharField(max_length=250, null=True)
-    local_govt = models.CharField(max_length=250, null=True, blank=True)
+    province = models.CharField(max_length=250, null=True, blank=True)
     state = models.CharField(max_length=250, null=True)
     country = models.CharField(max_length=250, null=True)
-    zip_code = models.CharField(max_length=250, null=True, blank=True)
+    postal_code = models.CharField(max_length=250, null=True, blank=True)
     contact_person = models.ForeignKey(
-      settings.AUTH_USER_MODEL,
-      on_delete=models.CASCADE,
-      null=True, blank=True
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True, blank=True
     )
     website = models.CharField(max_length=250, null=True)
-    logo = models.ImageField(upload_to='images/%Y/%m/%d/company', blank=True, null=True, max_length=254)
+    logo = models.ImageField(upload_to='images/company/%Y/%m/%d/', blank=True, null=True, max_length=254)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -32,7 +32,7 @@ class Company(models.Model):
     class Meta:
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")
-        
+
     # TODO: Add properties for phone_numbers, employees
 
     def __str__(self):
@@ -55,7 +55,7 @@ class Phone(models.Model):
 
     def __str__(self):
         return f"{self.company.name} - {self.phone_number}"
-      
+
 
 class Department(models.Model):
 
@@ -82,14 +82,14 @@ class Branch(models.Model):
     email = models.CharField(max_length=250)
     description = models.TextField(null=True, blank=True)
     address = models.CharField(max_length=250, null=True)
-    local_govt = models.CharField(max_length=250, null=True, blank=True)
+    province = models.CharField(max_length=250, null=True, blank=True)
     state = models.CharField(max_length=250, null=True)
     country = models.CharField(max_length=250, null=True)
-    zip_code = models.CharField(max_length=250, null=True, blank=True)
+    postal_code = models.CharField(max_length=250, null=True, blank=True)
     contact_person = models.ForeignKey(
-      settings.AUTH_USER_MODEL,
-      on_delete=models.CASCADE,
-      null=True, blank=True
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True, blank=True
     )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -104,7 +104,7 @@ class Branch(models.Model):
 
 
 class Employee(AbstractBaseUser, EmployeePermissionsMixin):
-    
+
     class RoleChoices(models.TextChoices):
         Admin = 'Admin', _('Admin')
         HR = 'HR', _('HR')
@@ -120,7 +120,8 @@ class Employee(AbstractBaseUser, EmployeePermissionsMixin):
     # TODO: Remove company from employee model
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="employees", on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="employees", on_delete=models.CASCADE)
-    department = models.ForeignKey(Department(), verbose_name=_("Department()"), related_name="employees", on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, verbose_name=_("Department"), related_name="employees", on_delete=models.CASCADE)
+    employee_id = models.CharField(max_length=250, null=True)
     role = models.CharField(
         max_length=250,
         choices=RoleChoices.choices,
@@ -128,15 +129,17 @@ class Employee(AbstractBaseUser, EmployeePermissionsMixin):
     )
     date_of_birth = models.DateField(null=True, blank=True)
     address = models.CharField(max_length=250, null=True)
-    local_govt = models.CharField(max_length=250, null=True, blank=True)
+    province = models.CharField(max_length=250, null=True, blank=True)
     state = models.CharField(max_length=250, null=True)
     country = models.CharField(max_length=250, null=True)
-    zip_code = models.CharField(max_length=250, null=True, blank=True)
-    image = models.ImageField(upload_to='images/%Y/%m/%d/', blank=True, null=True, max_length=254)
+    postal_code = models.CharField(max_length=250, null=True, blank=True)
+    image = models.ImageField(upload_to='images/profile/%Y/%m/%d/', blank=True, null=True, max_length=254)
+    hobbies = models.TextField(null=True, blank=True)
+    join_date = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
-    
+
     objects = managers.UserManager()
 
     USERNAME_FIELD = 'email'
@@ -147,4 +150,3 @@ class Employee(AbstractBaseUser, EmployeePermissionsMixin):
 
     def __str__(self):
         return f"{self.last_name} {self.first_name}"
-
