@@ -42,7 +42,7 @@ class Company(models.Model):
 class Phone(models.Model):
 
     # TODO: Remove company from phone model
-    company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="phone_numbers", on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="phone_numbers", on_delete=models.CASCADE, null=True, blank=True)
     branch = models.ForeignKey("Branch", verbose_name=_("Branch"), related_name="phone_numbers", on_delete=models.CASCADE, null=True, blank=True)
     phone_number = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
@@ -59,9 +59,11 @@ class Phone(models.Model):
 
 class Department(models.Model):
 
-    company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="departments", on_delete=models.CASCADE)
+    # TODO: Remove company from Department model
+    company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="departments", on_delete=models.CASCADE, null=True, blank=True)
+    branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="departments", on_delete=models.CASCADE)
     name = models.CharField(max_length=250)
-    email = models.CharField(max_length=250)
+    email = models.CharField(max_length=250, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -79,11 +81,11 @@ class Branch(models.Model):
 
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="branches", on_delete=models.CASCADE)
     name = models.CharField(max_length=250)
-    email = models.CharField(max_length=250)
+    email = models.CharField(max_length=250, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     address = models.CharField(max_length=250, null=True)
     province = models.CharField(max_length=250, null=True, blank=True)
-    state = models.CharField(max_length=250, null=True)
+    state = models.CharField(max_length=250, null=True, blank=True)
     country = models.CharField(max_length=250, null=True)
     postal_code = models.CharField(max_length=250, null=True, blank=True)
     contact_person = models.ForeignKey(
@@ -116,10 +118,10 @@ class Employee(AbstractBaseUser, EmployeePermissionsMixin):
     middle_name = models.CharField(max_length=250, null=True, blank=True)
     last_name = models.CharField(max_length=250, null=True)
     email = models.CharField(max_length=250)
-    phone = models.CharField(max_length=50, null=True)
+    phone = models.CharField(max_length=50, null=True, blank=True)
     # TODO: Remove company from employee model
-    company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="employees", on_delete=models.CASCADE)
-    branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="employees", on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="employees", on_delete=models.CASCADE, null=True, blank=True)
+    branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="employees", on_delete=models.CASCADE, null=True, blank=True)
     department = models.ForeignKey(Department, verbose_name=_("Department"), related_name="employees", on_delete=models.CASCADE)
     employee_id = models.CharField(max_length=250, null=True)
     role = models.CharField(
@@ -150,3 +152,25 @@ class Employee(AbstractBaseUser, EmployeePermissionsMixin):
 
     def __str__(self):
         return f"{self.last_name} {self.first_name}"
+
+
+class Location(models.Model):
+
+    company = models.OneToOneField(Company, verbose_name=_("Company"), related_name="location", on_delete=models.CASCADE)
+    longitude = models.FloatField(null=True)
+    latitude = models.FloatField(null=True)
+    # Replacement for longitude and latitude
+    # point = models.PointField(srid=4326,dim=3) # for postgres db
+    accuracy = models.FloatField(default=0.0) # meters, rounded up
+    altitude = models.FloatField(null=True, blank=True) # meters, rounded
+    max_radius = models.FloatField(default=0.0, null=True)
+
+    class Meta:
+        verbose_name = _("Location")
+        verbose_name_plural = _("Locations")
+
+    def __str__(self):
+        try:
+            return f"{self.company.name} - y: {self.longitude}, x: {self.latitude}"
+        except Exception:
+            return f"{self.company.name}"
