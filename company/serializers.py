@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from company import models
+from user.serializers import UserSerializer
 
 
 class PhoneSerializer(serializers.HyperlinkedModelSerializer):
@@ -102,6 +103,7 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
 
 class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
   
+  user = UserSerializer()
   company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all())
   branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all())
   department = serializers.PrimaryKeyRelatedField(queryset=models.Department.objects.all())
@@ -111,10 +113,7 @@ class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
     fields = [
       'id',
       'url',
-      'first_name',
-      'middle_name',
-      'last_name',
-      'email',
+      'user',
       'phone',
       'company',
       'branch',
@@ -144,6 +143,30 @@ class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
     extra_kwargs = {
       'url': {'view_name': 'company:employee-detail'},
     }
+    
+  def create(self, validated_data):
+    try:
+      user_data = validated_data.pop('user')
+      user = get_user_model().objects.create(**user_data)
+      validated_data.update(user=user.id)
+      employee =  super().create(validated_data)
+    except Exception:
+      employee =  super().create(validated_data)
+
+    return employee
+
+  def update(self, instance, validated_data):
+    try:
+      user_data = validated_data.pop('user')
+      user_instance = get_user_model().objects.get(employee__id=instance.id)
+      nested_serializer = self.fields['user']
+      user = nested_serializer.update(self, user_instance, user_data)
+      employee = super().update(instance, validated_data)
+    except  Exception as e:
+        print(f"There was an exception: {e}")
+        employee = super().update(instance, validated_data)
+
+    return employee
 
 
 class BranchSerializer(serializers.HyperlinkedModelSerializer):

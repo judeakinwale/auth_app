@@ -105,7 +105,7 @@ class Branch(models.Model):
         return self.name
 
 
-class Employee(AbstractBaseUser, EmployeePermissionsMixin):
+class Employee(models.Model):
 
     class RoleChoices(models.TextChoices):
         Admin = 'Admin', _('Admin')
@@ -114,10 +114,7 @@ class Employee(AbstractBaseUser, EmployeePermissionsMixin):
         Manager = 'Manager', _('Manager')
         Team_Lead = 'Team Lead', _('Team Lead')
 
-    first_name = models.CharField(max_length=250, null=True)
-    middle_name = models.CharField(max_length=250, null=True, blank=True)
-    last_name = models.CharField(max_length=250, null=True)
-    email = models.CharField(max_length=250)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_("User"), related_name="employee", on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
     # TODO: Remove company from employee model
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="employees", on_delete=models.CASCADE, null=True, blank=True)
@@ -142,16 +139,16 @@ class Employee(AbstractBaseUser, EmployeePermissionsMixin):
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
-    objects = managers.UserManager()
+    # objects = managers.UserManager()
 
-    USERNAME_FIELD = 'email'
+    # USERNAME_FIELD = 'email'
 
     class Meta:
         verbose_name = _("Employee")
         verbose_name_plural = _("Employees")
 
     def __str__(self):
-        return f"{self.last_name} {self.first_name}"
+        return f"{self.user.last_name} {self.user.first_name} - {self.employee_id}"
 
 
 class Location(models.Model):

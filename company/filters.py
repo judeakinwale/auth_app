@@ -41,8 +41,8 @@ class EmployeeFilter(filters.FilterSet):
     class Meta:
         model = models.Employee
         fields = {
-            'first_name': ['icontains'],
-            'email': ['icontains'],
+            'user__first_name': ['icontains'],
+            'user__email': ['icontains'],
             'is_active': ['exact'],
         }
 
