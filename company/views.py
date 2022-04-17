@@ -306,7 +306,6 @@ class LocationViewSet(viewsets.ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         """list method docstring"""
-        print(get_user_model().USERNAME_FIELD)
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(
