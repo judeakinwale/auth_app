@@ -22,6 +22,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=250, null=True)
     username = models.CharField(max_length=250, unique=True, null=True, blank=True)
     email = models.EmailField(max_length=250, unique=True)
+    employee_id = models.CharField(max_length=250, unique=True, null=True, blank=True)
     # role = models.CharField(
     #     max_length=250,
     #     choices=RoleChoices.choices,
@@ -36,8 +37,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = managers.UserManager()
 
-    USERNAME_FIELD = 'email'
-    # USERNAME_FIELD = 'username'
+    USERNAME_FIELD = 'username'
+    EMAIL_FIELD = 'email'
+    EMPLOYEE_ID_FIELD = 'employee_id'
 
     class Meta:
         """Meta definition for User."""
