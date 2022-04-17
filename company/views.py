@@ -344,10 +344,10 @@ class LocationViewSet(viewsets.ModelViewSet):
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = models.Client.objects.all()
     serializer_class = serializers.ClientSerializer
-    # serializer_action_classes = {
-    #     'list': serializers.ClientResponseSerializer,
-    #     'retrieve': serializers.ClientResponseSerializer,
-    # }
+    serializer_action_classes = {
+        'list': serializers.ClientResponseSerializer,
+        'retrieve': serializers.ClientResponseSerializer,
+    }
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filterset_class = filters.ClientFilter
 
