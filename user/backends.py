@@ -13,8 +13,11 @@ class CustomUserModelBackend(ModelBackend):
     if username is None or password is None:
       return
     try:
+      # user = UserModel._default_manager.get(
+      #   Q(username__exact=username) | (Q(email__iexact=username) & Q(email_verified=True))
+      # )
       user = UserModel._default_manager.get(
-        Q(username__exact=username) | (Q(email__iexact=username) & Q(email_verified=True))
+        Q(username__exact=username) | (Q(email__iexact=username))
       )
     except UserModel.DoesNotExist:
       # Run the default password hasher once to reduce the timing
