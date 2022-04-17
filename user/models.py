@@ -36,8 +36,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = managers.UserManager()
 
-    # USERNAME_FIELD = 'email'
-    USERNAME_FIELD = 'username'
+    USERNAME_FIELD = 'email'
+    # USERNAME_FIELD = 'username'
 
     class Meta:
         """Meta definition for User."""
