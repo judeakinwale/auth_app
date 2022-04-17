@@ -54,3 +54,12 @@ class LocationFilter(filters.FilterSet):
         fields = {
             'company__name': ['icontains'],
         }
+        
+        
+class ClientFilter(filters.FilterSet):
+
+    class Meta:
+        model = models.Client
+        fields = {
+            'name': ['icontains'],
+        }

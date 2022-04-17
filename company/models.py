@@ -94,6 +94,7 @@ class Branch(models.Model):
         null=True, blank=True
     )
     is_active = models.BooleanField(default=True)
+    is_main_branch = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
@@ -119,7 +120,7 @@ class Employee(models.Model):
     # TODO: Remove company from employee model
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="employees", on_delete=models.CASCADE, null=True, blank=True)
     branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="employees", on_delete=models.CASCADE, null=True, blank=True)
-    department = models.ForeignKey(Department, verbose_name=_("Department"), related_name="employees", on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, verbose_name=_("Department"), related_name="employees", on_delete=models.CASCADE, null=True)
     employee_id = models.CharField(max_length=250, unique=True, null=True)
     role = models.CharField(
         max_length=250,
@@ -173,3 +174,30 @@ class Location(models.Model):
             return f"{self.company.name} - y: {self.longitude}, x: {self.latitude}"
         except Exception:
             return f"{self.company.name}"
+
+
+class Client(models.Model):
+
+    company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="clients", on_delete=models.CASCADE, null=True)
+    branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="clients", on_delete=models.CASCADE, null=True, blank=True)
+    employees = models.ManyToManyField(Employee, verbose_name=_("Employees"), related_name="clients")
+    name = models.CharField(max_length=250)
+    email = models.CharField(max_length=250, null=True, blank=True)
+    phone = models.CharField(max_length=50, null=True, blank=True)
+    address = models.CharField(max_length=250, null=True)
+    province = models.CharField(max_length=250, null=True, blank=True)
+    state = models.CharField(max_length=250, null=True, blank=True)
+    country = models.CharField(max_length=250, null=True)
+    postal_code = models.CharField(max_length=250, null=True, blank=True)
+    image = models.ImageField(upload_to='images/client/%Y/%m/%d/', blank=True, null=True, max_length=254)
+    join_date = models.DateField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    class Meta:
+        verbose_name = _("Client")
+        verbose_name_plural = _("Clients")
+
+    def __str__(self):
+        return self.name

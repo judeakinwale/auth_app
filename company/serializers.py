@@ -6,8 +6,8 @@ from user.serializers import UserSerializer
 
 class PhoneSerializer(serializers.HyperlinkedModelSerializer):
   
-  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all())
-  branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all())
+  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all(), allow_null=True, required=False)
+  branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all(), allow_null=True, required=False)
   
   class Meta:
     model = models.Phone
@@ -33,9 +33,14 @@ class PhoneSerializer(serializers.HyperlinkedModelSerializer):
     }
 
 
+class EmployeeHelperSerializer(serializers.Serializer):
+  
+  id = serializers.CharField()
+
+
 class CompanyBaseSerializer(serializers.HyperlinkedModelSerializer):
   
-  phone_numbers = PhoneSerializer(many=True)
+  phone_numbers = PhoneSerializer(many=True, allow_null=True, required=False)
   
   class Meta:
     model = models.Company
@@ -101,12 +106,101 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
     }
 
 
+class ClientSerializer(serializers.HyperlinkedModelSerializer):
+  
+  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all(), allow_null=True, required=False)
+  # branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all(), allow_null=True, required=False)
+  employees = EmployeeHelperSerializer(many=True, allow_null=True, required=False)
+  # employee = serializers.PrimaryKeyRelatedField(queryset=models.Employee.objects.all())
+  
+  class Meta:
+    model = models.Client
+    fields = [
+      'id',
+      'url',
+      'company',
+      # 'branch',
+      'employees',
+      'name',
+      'email',
+      'phone',
+      'address',
+      'province',
+      'state',
+      'country',
+      'postal_code',
+      'image',
+      'join_date',
+      'is_active',
+      'created_at',
+      'updated_at',
+    ]
+    optional_fields = [
+      'is_active',
+    ]
+    read_only_fields = [
+      'created_at',
+      'updated_at',
+    ]
+    extra_kwargs = {
+      'url': {'view_name': 'company:client-detail'},
+    }
+    depth = 1
+    
+  def create(self, validated_data):
+    try:
+      employees = validated_data.pop('employees')
+      client =  super().create(validated_data)
+      for data in employees:
+        # TODO: Get and Update data in employees
+        employee = models.Employee.objects.get(id=data['id'])
+        client.employees.add(employee)
+          
+    except Exception:
+      client =  super().create(validated_data)
+
+    return client
+
+  def update(self, instance, validated_data):
+    try:
+      employees = validated_data.pop('employees')
+      client = super().update(instance, validated_data)
+      client_employees = instance.employees.all()
+      client_employee_list = []
+      combined_employee_list = []
+      
+      for client_employee in client_employees:
+        combined_employee_list += int(client_employee.id)
+        client_employee_list += int(client_employee.id)
+        
+      for employee in employees:
+        combined_employee_list += int(employee['id'])
+        
+      # TODO: Retain only unique items in 'combined_employee_list'
+      # combined_employee_list = 
+      
+      for data in employees:
+        
+        # TODO: Get and Update data in employeest
+        if int(data['id']) in client_employee_list:
+          pass
+        if int(data['id']) not in client_employee_list:
+          employee = models.Employee.objects.get(id=data['id'])
+          client.employees.add(employee)
+        
+        
+    except  Exception as e:
+        client = super().update(instance, validated_data)
+
+    return client
+
+
 class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
   
   user = UserSerializer()
-  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all())
-  branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all())
-  department = serializers.PrimaryKeyRelatedField(queryset=models.Department.objects.all())
+  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all(), allow_null=True, required=False)
+  branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all(), allow_null=True, required=False)
+  department = serializers.PrimaryKeyRelatedField(queryset=models.Department.objects.all(), allow_null=True, required=False)
   
   class Meta:
     model = models.Employee
@@ -147,6 +241,7 @@ class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
   def create(self, validated_data):
     try:
       user_data = validated_data.pop('user')
+      user_data.update(employee_id=validated_data['employee_id'])
       user = get_user_model().objects.create(**user_data)
       validated_data.update(user=user.id)
       employee =  super().create(validated_data)
@@ -158,6 +253,8 @@ class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
   def update(self, instance, validated_data):
     try:
       user_data = validated_data.pop('user')
+      if 'employee_id' in validated_data:
+        user_data.update(employee_id=validated_data['employee_id'])
       user_instance = get_user_model().objects.get(employee__id=instance.id)
       nested_serializer = self.fields['user']
       user = nested_serializer.update(self, user_instance, user_data)
@@ -172,7 +269,7 @@ class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
 class BranchSerializer(serializers.HyperlinkedModelSerializer):
   
   company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all())
-  phone_numbers = PhoneSerializer(many=True)
+  phone_numbers = PhoneSerializer(many=True, allow_null=True, required=False)
   
   class Meta:
     model = models.Branch
@@ -251,8 +348,8 @@ class BranchSerializer(serializers.HyperlinkedModelSerializer):
 
 class DepartmentSerializer(serializers.HyperlinkedModelSerializer):
   
-  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all())
-  branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all())
+  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all(), allow_null=True, required=False)
+  branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all(), allow_null=True, required=False)
   
   class Meta:
     model = models.Department
@@ -340,6 +437,14 @@ class LocationResponseSerializer(LocationSerializer):
   company = CompanyBaseSerializer(read_only=True)
   
   class Meta(LocationSerializer.Meta):
+    depth = 0
+
+
+class ClientResponseSerializer(ClientSerializer):
+  
+  employees = EmployeeSerializer(many=True, read_only=True)
+  
+  class Meta(ClientSerializer.Meta):
     depth = 0
 
 

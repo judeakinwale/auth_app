@@ -10,6 +10,7 @@ router.register('branch', views.BranchViewSet)
 router.register('department', views.DepartmentViewSet)
 router.register('employee', views.EmployeeViewSet)
 router.register('location', views.LocationViewSet)
+router.register('client', views.ClientViewSet)
 
 urlpatterns = [
   path("", include(router.urls)),

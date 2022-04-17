@@ -339,3 +339,71 @@ class LocationViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """destroy method docstring"""
         return super().destroy(request, *args, **kwargs)
+
+
+class ClientViewSet(viewsets.ModelViewSet):
+    queryset = models.Client.objects.all()
+    serializer_class = serializers.ClientSerializer
+    # serializer_action_classes = {
+    #     'list': serializers.ClientResponseSerializer,
+    #     'retrieve': serializers.ClientResponseSerializer,
+    # }
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filterset_class = filters.ClientFilter
+
+    def perform_create(self, serializer):
+        return serializer.save()
+    
+    def get_serializer_class(self):
+        try:
+            return self.serializer_action_classes[self.action]
+        except (KeyError, AttributeError):
+            return super().get_serializer_class()
+
+    @swagger_auto_schema(
+        operation_description="create a client",
+        operation_summary='create client'
+    )
+    def create(self, request, *args, **kwargs):
+        """create method docstring"""
+        return super().create(request, *args, **kwargs)
+    
+    @swagger_auto_schema(
+        operation_description="list all clients",
+        operation_summary='list clients'
+    )
+    def list(self, request, *args, **kwargs):
+        """list method docstring"""
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="retrieve a client",
+        operation_summary='retrieve client'
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """retrieve method docstring"""
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="update a client",
+        operation_summary='update client'
+    )
+    def update(self, request, *args, **kwargs):
+        """update method docstring"""
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="partial_update a client",
+        operation_summary='partial_update client'
+    )
+    def partial_update(self, request, *args, **kwargs):
+        """partial_update method docstring"""
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="delete a client",
+        operation_summary='delete client'
+    )
+    def destroy(self, request, *args, **kwargs):
+        """destroy method docstring"""
+        return super().destroy(request, *args, **kwargs)
