@@ -37,8 +37,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = managers.UserManager()
 
-    USERNAME_FIELD = 'username'
-    EMAIL_FIELD = 'email'
+    # This is necessary as the fields are switched
+    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'username'
     EMPLOYEE_ID_FIELD = 'employee_id'
 
     class Meta:
