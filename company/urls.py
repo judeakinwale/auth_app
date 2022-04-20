@@ -11,7 +11,10 @@ router.register('department', views.DepartmentViewSet)
 router.register('employee', views.EmployeeViewSet)
 router.register('location', views.LocationViewSet)
 router.register('client', views.ClientViewSet)
+router.register('event', views.EventViewSet)
+# router.register('employee/email', views.EmployeeSetupEmailView, basename='employee_email')
 
 urlpatterns = [
   path("", include(router.urls)),
+  path("employee/email", views.EmployeeSetupEmailView.as_view(), name='employee_email')
 ]

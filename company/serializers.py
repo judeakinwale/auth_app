@@ -38,6 +38,23 @@ class EmployeeHelperSerializer(serializers.Serializer):
   id = serializers.CharField()
 
 
+class EmployeeSetupEmailSerializer(serializers.Serializer):
+
+  email = serializers.CharField()
+  link = serializers.CharField(read_only=True)
+  
+  # class Meta:
+  #   model = models.EmailLink
+  #   # fields = ['email']
+  #   fields = "__all__"
+  
+  def create(self, validated_data):
+    raise NotImplementedError()
+  
+  def update(self, instance, validated_data):
+    raise NotImplementedError()
+
+
 class CompanyBaseSerializer(serializers.HyperlinkedModelSerializer):
   
   phone_numbers = PhoneSerializer(many=True, allow_null=True, required=False)
@@ -72,6 +89,46 @@ class CompanyBaseSerializer(serializers.HyperlinkedModelSerializer):
     ]
     extra_kwargs = {
       'url': {'view_name': 'company:company-detail'},
+    }
+
+
+class EventSerializer(serializers.HyperlinkedModelSerializer):
+  
+  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all())
+  employee = serializers.PrimaryKeyRelatedField(queryset=models.Employee.objects.all(), allow_null=True, required=False)
+  client = serializers.PrimaryKeyRelatedField(queryset=models.Client.objects.all(), allow_null=True, required=False)
+  
+  class Meta:
+    model = models.Event
+    fields = "__all__"
+    # fields = [
+    #   'id',
+    #   'url',
+    #   'name',
+    #   'email',
+    #   'description',
+    #   'phone_numbers',
+    #   'address',
+    #   'province',
+    #   'state',
+    #   'country',
+    #   'postal_code',
+    #   'contact_person',
+    #   'website',
+    #   'logo',
+    #   'is_active',
+    #   'created_at',
+    #   'updated_at',
+    # ]
+    optional_fields = [
+      'is_active',
+    ]
+    read_only_fields = [
+      'created_at',
+      'updated_at',
+    ]
+    extra_kwargs = {
+      'url': {'view_name': 'company:event-detail'},
     }
 
 
@@ -455,6 +512,16 @@ class EmployeeResponseSerializer(EmployeeSerializer):
   department = DepartmentSerializer(read_only=True)
   
   class Meta(EmployeeSerializer.Meta):
+    depth = 0
+    
+    
+class EventResponseSerializer(EventSerializer):
+  
+  company = CompanyBaseSerializer(read_only=True)
+  employee = EmployeeSerializer(read_only=True)
+  client = ClientSerializer(read_only=True)
+  
+  class Meta(EventSerializer.Meta):
     depth = 0
 
 

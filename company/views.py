@@ -1,9 +1,9 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 from django.contrib.auth import get_user_model
 
 from rest_framework import generics, viewsets, permissions
-from rest_framework import status
+from rest_framework import status, views, response
 from company import serializers, models, filters
 
 from drf_yasg.utils import no_body, swagger_auto_schema
@@ -407,3 +407,110 @@ class ClientViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """destroy method docstring"""
         return super().destroy(request, *args, **kwargs)
+
+
+
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = models.Event.objects.all()
+    serializer_class = serializers.EventSerializer
+    serializer_action_classes = {
+        'list': serializers.EventResponseSerializer,
+        'retrieve': serializers.EventResponseSerializer,
+    }
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filterset_class = filters.EventFilter
+
+    def perform_create(self, serializer):
+        return serializer.save()
+    
+    def get_serializer_class(self):
+        try:
+            return self.serializer_action_classes[self.action]
+        except (KeyError, AttributeError):
+            return super().get_serializer_class()
+
+    @swagger_auto_schema(
+        operation_description="create an event",
+        operation_summary='create event'
+    )
+    def create(self, request, *args, **kwargs):
+        """create method docstring"""
+        return super().create(request, *args, **kwargs)
+    
+    @swagger_auto_schema(
+        operation_description="list all events",
+        operation_summary='list events'
+    )
+    def list(self, request, *args, **kwargs):
+        """list method docstring"""
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="retrieve an event",
+        operation_summary='retrieve event'
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """retrieve method docstring"""
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="update an event",
+        operation_summary='update event'
+    )
+    def update(self, request, *args, **kwargs):
+        """update method docstring"""
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="partial_update an event",
+        operation_summary='partial_update event'
+    )
+    def partial_update(self, request, *args, **kwargs):
+        """partial_update method docstring"""
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="delete an event",
+        operation_summary='delete event'
+    )
+    def destroy(self, request, *args, **kwargs):
+        """destroy method docstring"""
+        return super().destroy(request, *args, **kwargs)
+
+
+
+class EmployeeSetupEmailView(generics.GenericAPIView):
+    
+    # queryset = models.EmailLink.objects.all()
+    serializer_class = serializers.EmployeeSetupEmailSerializer
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    # serializer = serializers.EmployeeSetupEmailSerializer
+    
+    @swagger_auto_schema(
+        operation_description="Create and Send Company Link to an email",
+        operation_summary='Create and Send Company Link to email'
+    )
+    # def post(self, request, format=None):
+    #     serializer = SnippetSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # def create(self, request, *args, **kwargs):
+    #     """create method docstring"""
+    #     return super().create(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer.validated_data['link'] = f"link for {serializer.validated_data['email']}"
+        print(serializer.validated_data)
+
+        return response.Response(serializer.validated_data, status=status.HTTP_200_OK)

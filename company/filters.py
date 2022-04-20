@@ -63,3 +63,12 @@ class ClientFilter(filters.FilterSet):
         fields = {
             'name': ['icontains'],
         }
+
+
+class EventFilter(filters.FilterSet):
+
+    class Meta:
+        model = models.Event
+        fields = {
+            'name': ['icontains'],
+        }
