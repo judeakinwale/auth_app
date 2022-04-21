@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import generics, viewsets, permissions
 from rest_framework import status, views, response
-from company import serializers, models, filters
+from company import serializers, models, filters, utils
 
 from drf_yasg.utils import no_body, swagger_auto_schema
 
@@ -510,7 +510,10 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
         except Exception as e:
             return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        serializer.validated_data['link'] = f"link for {serializer.validated_data['email']}"
+        email = serializer.validated_data['email']
+        link = utils.send_company_link(request, email)
+        
+        serializer.validated_data['link'] = link
         print(serializer.validated_data)
 
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)

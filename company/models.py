@@ -30,6 +30,7 @@ class Company(models.Model):
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
+        ordering = ['id']
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")
 
@@ -219,6 +220,11 @@ Returns:
     _type_: _description_
 """
 class Event(models.Model):
+    
+    class StatusChoices(models.TextChoices):
+        Pending = 'Pending', _('Pending')
+        Started = 'Started', _('Started')
+        Completed = 'Completed', _('Completed')
 
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="events", on_delete=models.CASCADE, null=True)
     employee = models.ForeignKey(Employee, verbose_name=_("Employee"), related_name="events", on_delete=models.CASCADE, null=True)
@@ -226,8 +232,9 @@ class Event(models.Model):
     name = models.CharField(max_length=250)
     start_time = models.DateField(null=True, blank=True)
     end_time = models.DateField(null=True, blank=True)
-    note = models.TextField()
-    status = models.CharField(max_length=250)
+    note = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=250, choices=StatusChoices.choices, default=StatusChoices.Pending)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 

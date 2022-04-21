@@ -100,26 +100,22 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
   
   class Meta:
     model = models.Event
-    fields = "__all__"
-    # fields = [
-    #   'id',
-    #   'url',
-    #   'name',
-    #   'email',
-    #   'description',
-    #   'phone_numbers',
-    #   'address',
-    #   'province',
-    #   'state',
-    #   'country',
-    #   'postal_code',
-    #   'contact_person',
-    #   'website',
-    #   'logo',
-    #   'is_active',
-    #   'created_at',
-    #   'updated_at',
-    # ]
+    # fields = "__all__"
+    fields = [
+      'id',
+      'url',
+      'company',
+      'employee',
+      'client',
+      'name',
+      'start_time',
+      'end_time',
+      'note',
+      'status',
+      'is_active',
+      'created_at',
+      'updated_at',
+    ]
     optional_fields = [
       'is_active',
     ]
