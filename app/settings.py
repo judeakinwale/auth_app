@@ -198,7 +198,10 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # django-cors-headers configuration
 # https://github.com/adamchainz/django-cors-headers#configuration
-CORS_ORIGIN_ALLOW_ALL = True # For development
+# CORS_ORIGIN_ALLOW_ALL = True # For development (depreciated)
+# For development
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 # CORS_ALLOWED_ORIGINS = []
 
 # Enable Heroku
