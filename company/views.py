@@ -212,7 +212,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         'list': serializers.EmployeeResponseSerializer,
         'retrieve': serializers.EmployeeResponseSerializer,
     }
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filterset_class = filters.EmployeeFilter
 
     def perform_create(self, serializer):

@@ -23,7 +23,7 @@ from drf_yasg.utils import no_body, swagger_auto_schema
 class UserViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = serializers.UserSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filterset_class = filters.UserFilter
 
     def perform_create(self, serializer):
@@ -185,6 +185,36 @@ class DecoratedResetPasswordRequestTokenViewSet(ResetPasswordRequestTokenViewSet
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+
+# Add different users to relevant groups
+from django.dispatch import receiver
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_save 
+from user.models import User
+
+
+# try:
+#     staff_group = Group.objects.get(name='staff')
+# except Exception as e:
+#     Group.objects.create()
+
+staff_group, is_created = Group.objects.get_or_create(name ='staff')
+# print(staff_group)
+
+employee_group, is_created = Group.objects.get_or_create(name ='employee')
+# print(employee_group)
+
+@receiver(post_save, sender=User)
+def assign_group(sender, instance, created=False, **kwargs):
+    if created and instance.is_staff:
+        # add instance to the group (if is_staff is true and it is a new entry)
+        staff_group.user_set.add(instance)
+        
+    if created and instance.is_employee:
+        # add instance to the group (if is_employee is true and it is a new entry)
+        employee_group.user_set.add(instance)
 
 
 # For django-passwordreset

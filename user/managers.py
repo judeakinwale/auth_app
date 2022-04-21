@@ -14,11 +14,19 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
+    
+    def create_staff(self, email, password, **kwargs):
+        """create and save a new staff"""
+        user = self.create_user(email, password, **kwargs)
+        # user.role = "Admin"
+        user.is_staff = True
+        user.save(using=self._db)
+        return user
 
     def create_superuser(self, email, password, **kwargs):
         """create and save a new superuser"""
         user = self.create_user(email, password, **kwargs)
-        user.role = "Admin"
+        # user.role = "Admin"
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
