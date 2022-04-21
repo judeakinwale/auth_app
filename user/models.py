@@ -17,9 +17,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     #     Manager = 'Manager', _('Manager')
     #     Team_Lead = 'Team Lead', _('Team Lead')
 
-    first_name = models.CharField(max_length=250, null=True)
+    first_name = models.CharField(max_length=250, null=True, blank=True)
     middle_name = models.CharField(max_length=250, null=True, blank=True)
-    last_name = models.CharField(max_length=250, null=True)
+    last_name = models.CharField(max_length=250, null=True, blank=True)
     username = models.CharField(max_length=250, unique=True, null=True)
     email = models.EmailField(max_length=250, unique=True)
     employee_id = models.CharField(max_length=250, unique=True, null=True, blank=True)

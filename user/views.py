@@ -195,11 +195,6 @@ from django.db.models.signals import post_save
 from user.models import User
 
 
-# try:
-#     staff_group = Group.objects.get(name='staff')
-# except Exception as e:
-#     Group.objects.create()
-
 staff_group, is_created = Group.objects.get_or_create(name ='staff')
 # print(staff_group)
 
