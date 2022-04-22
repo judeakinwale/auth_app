@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 from django.contrib.auth import get_user_model
 
 from rest_framework import generics, viewsets, permissions
@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework_simplejwt.views import (
   TokenObtainPairView, TokenRefreshView, TokenVerifyView
 )
-from user import serializers, models, filters
+from user import serializers, models, filters, utils
 
 from django_rest_passwordreset.signals import reset_password_token_created
 from django_rest_passwordreset.views import (
@@ -16,6 +16,23 @@ from django_rest_passwordreset.views import (
     ResetPasswordRequestTokenViewSet
 )
 from drf_yasg.utils import no_body, swagger_auto_schema
+# from util.utils import generate_swagger_overrides
+
+# Using signals, group and permissions
+from django.dispatch import receiver
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_save 
+from user.models import User
+
+# Sending emails
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.urls import reverse
+
+from django_rest_passwordreset.signals import reset_password_token_created
+from user import urls
+
 
 # Create your views here.
 
@@ -30,12 +47,12 @@ class UserViewSet(viewsets.ModelViewSet):
         user = serializer.save()
         try:
             reciepients = [user.email]
-            app_url =  self.request.get_full_path()
-            app_name = "App" # Application Name
+            url =  self.request.build_absolute_uri(reverse(f'user:token_obtain_pair')) 
+            company = user.employee.company
             context = {
                 "user": user,
-                "app_name": app_name,
-                "login_url": f"{app_url}/api-auth/login/"
+                "company": company,
+                "url": url
             }
             utils.send_account_creation_email(self.request, reciepients, context)
         except Exception as e:
@@ -43,6 +60,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return user
 
+    # generate_swagger_overrides("a", "user") # Attempt at simplifying swagger overriding
     @swagger_auto_schema(
         operation_description="create a user",
         operation_summary='create user'
@@ -187,19 +205,11 @@ class DecoratedResetPasswordRequestTokenViewSet(ResetPasswordRequestTokenViewSet
         return super().create(request, *args, **kwargs)
 
 
+
+
 # Add different users to relevant groups
-from django.dispatch import receiver
-from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
-from django.db.models.signals import post_save 
-from user.models import User
-
-
 staff_group, is_created = Group.objects.get_or_create(name ='staff')
-# print(staff_group)
-
 employee_group, is_created = Group.objects.get_or_create(name ='employee')
-# print(employee_group)
 
 @receiver(post_save, sender=User)
 def assign_group(sender, instance, created=False, **kwargs):
@@ -213,15 +223,6 @@ def assign_group(sender, instance, created=False, **kwargs):
 
 
 # For django-passwordreset
-from django.core.mail import EmailMultiAlternatives
-from django.dispatch import receiver
-from django.template.loader import render_to_string
-from django.urls import reverse
-
-from django_rest_passwordreset.signals import reset_password_token_created
-from user import urls
-
-
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
     """
