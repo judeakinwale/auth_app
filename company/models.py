@@ -19,9 +19,15 @@ class Company(models.Model):
     country = models.CharField(max_length=250, null=True)
     postal_code = models.CharField(max_length=250, null=True, blank=True)
     contact_person = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        "Employee",
+        related_name='contact',
         on_delete=models.CASCADE,
-        null=True, blank=True
+        null=True, blank=True,
+    )
+    admin = models.OneToOneField(
+        settings.AUTH_USER_MODEL, limit_choices_to={'is_staff': True},
+        verbose_name=_("admin"), related_name='company',
+        on_delete=models.CASCADE, null=True, blank=True,
     )
     website = models.CharField(max_length=250, null=True)
     logo = models.ImageField(upload_to='images/company/%Y/%m/%d/', blank=True, null=True, max_length=254)

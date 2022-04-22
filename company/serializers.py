@@ -58,6 +58,8 @@ class EmployeeSetupEmailSerializer(serializers.Serializer):
 class CompanyBaseSerializer(serializers.HyperlinkedModelSerializer):
   
   phone_numbers = PhoneSerializer(many=True, allow_null=True, required=False)
+  contact_person = serializers.PrimaryKeyRelatedField(queryset=models.Employee.objects.all(), allow_null=True, required=False)
+  admin = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.filter(is_staff=True), allow_null=True, required=False)
   
   class Meta:
     model = models.Company
@@ -74,6 +76,7 @@ class CompanyBaseSerializer(serializers.HyperlinkedModelSerializer):
       'country',
       'postal_code',
       'contact_person',
+      'admin',
       'website',
       'logo',
       'is_active',

@@ -18,7 +18,21 @@ class CompanyViewSet(viewsets.ModelViewSet):
     filterset_class = filters.CompanyFilter
 
     def perform_create(self, serializer):
-        return serializer.save()
+        if self.request.user.is_superuser:
+            return serializer.save()
+        else:
+            return serializer.save(admin=self.request.user)
+    
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+        
+        try:
+            if self.request.user.is_staff:
+                return models.Company.objects.filter(name=self.request.user.company.name)    
+            return models.Company.objects.filter(name=self.request.user.employee.company.name)
+        except Exception:
+            return models.Company.objects.none()
 
     @swagger_auto_schema(
         operation_description="create a company",
@@ -34,6 +48,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         """list method docstring"""
+        # print(self.request.user.employee.company.name)
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(
