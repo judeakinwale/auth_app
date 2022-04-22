@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.shortcuts import render, reverse
 from django.contrib.auth import get_user_model
+from django.http import HttpRequest
 
 from rest_framework import generics, viewsets, permissions
 from rest_framework import status, views, response
@@ -8,7 +9,16 @@ from company import serializers, models, filters, utils
 
 from drf_yasg.utils import no_body, swagger_auto_schema
 
+# Using signals, group and permissions
+from django.dispatch import receiver
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_save 
+from company.models import Company
+
 # Create your views here.
+
+request_user = ""
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
@@ -18,6 +28,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
     filterset_class = filters.CompanyFilter
 
     def perform_create(self, serializer):
+        request_user = self.request.user
         if self.request.user.is_superuser:
             return serializer.save()
         else:
@@ -48,7 +59,6 @@ class CompanyViewSet(viewsets.ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         """list method docstring"""
-        # print(self.request.user.employee.company.name)
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -102,6 +112,17 @@ class BranchViewSet(viewsets.ModelViewSet):
             return self.serializer_action_classes[self.action]
         except (KeyError, AttributeError):
             return super().get_serializer_class()
+        
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+        
+        try:
+            if self.request.user.is_staff:
+                return models.Branch.objects.filter(company=self.request.user.company)
+            return models.Branch.objects.filter(company=self.request.user.employee.company)
+        except Exception:
+            return models.Branch.objects.none()
 
     @swagger_auto_schema(
         operation_description="create a company branch",
@@ -170,6 +191,17 @@ class DepartmentViewSet(viewsets.ModelViewSet):
             return self.serializer_action_classes[self.action]
         except (KeyError, AttributeError):
             return super().get_serializer_class()
+        
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+        
+        try:
+            if self.request.user.is_staff:
+                return models.Department.objects.filter(company=self.request.user.company)    
+            return models.Department.objects.filter(company=self.request.user.employee.company)
+        except Exception:
+            return models.Department.objects.none()
 
     @swagger_auto_schema(
         operation_description="create a company department",
@@ -238,6 +270,17 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             return self.serializer_action_classes[self.action]
         except (KeyError, AttributeError):
             return super().get_serializer_class()
+        
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+        
+        try:
+            if self.request.user.is_staff:
+                return models.Employee.objects.filter(company=self.request.user.company)    
+            return models.Employee.objects.filter(company=self.request.user.employee.company)
+        except Exception:
+            return models.Employee.objects.none()
 
     @swagger_auto_schema(
         operation_description="create an employee",
@@ -306,6 +349,17 @@ class LocationViewSet(viewsets.ModelViewSet):
             return self.serializer_action_classes[self.action]
         except (KeyError, AttributeError):
             return super().get_serializer_class()
+        
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+        
+        try:
+            if self.request.user.is_staff:
+                return models.Location.objects.filter(company=self.request.user.company)    
+            return models.Location.objects.filter(company=self.request.user.employee.company)
+        except Exception:
+            return models.Location.objects.none()
 
     @swagger_auto_schema(
         operation_description="create a company location",
@@ -374,6 +428,17 @@ class ClientViewSet(viewsets.ModelViewSet):
             return self.serializer_action_classes[self.action]
         except (KeyError, AttributeError):
             return super().get_serializer_class()
+        
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+        
+        try:
+            if self.request.user.is_staff:
+                return models.Client.objects.filter(company=self.request.user.company)    
+            return models.Client.objects.filter(company=self.request.user.employee.company)
+        except Exception:
+            return models.Client.objects.none()
 
     @swagger_auto_schema(
         operation_description="create a client",
@@ -424,7 +489,6 @@ class ClientViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-
 class EventViewSet(viewsets.ModelViewSet):
     queryset = models.Event.objects.all()
     serializer_class = serializers.EventSerializer
@@ -443,6 +507,17 @@ class EventViewSet(viewsets.ModelViewSet):
             return self.serializer_action_classes[self.action]
         except (KeyError, AttributeError):
             return super().get_serializer_class()
+        
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+        
+        try:
+            if self.request.user.is_staff:
+                return models.Event.objects.filter(company=self.request.user.company)    
+            return models.Event.objects.filter(company=self.request.user.employee.company)
+        except Exception:
+            return models.Event.objects.none()
 
     @swagger_auto_schema(
         operation_description="create an event",
@@ -493,7 +568,6 @@ class EventViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-
 class EmployeeSetupEmailView(generics.GenericAPIView):
     
     # queryset = models.EmailLink.objects.all()
@@ -532,3 +606,16 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
         print(serializer.validated_data)
 
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+# def test(request):
+#     request_user = request.user
+#     return "request_user set"
+
+# # @receiver(post_save, sender=Company)
+# # def set_admin(request, sender, instance, created=False, **kwargs):
+# #     if not instance.admin and not request.user.is_superuser:
+# #         instance.admin = request.user
+# #         instance.save()
+        
+# # post_save.connect(set_admin, sender=Company)

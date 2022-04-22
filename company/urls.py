@@ -16,5 +16,6 @@ router.register('event', views.EventViewSet)
 
 urlpatterns = [
   path("", include(router.urls)),
-  path("employee/email", views.EmployeeSetupEmailView.as_view(), name='employee_email')
+  path("employee/email", views.EmployeeSetupEmailView.as_view(), name='employee_email'),
+  # path("test/", views.test, name="testing"),
 ]
