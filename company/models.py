@@ -226,9 +226,10 @@ class Event(models.Model):
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="events", on_delete=models.CASCADE, null=True)
     employee = models.ForeignKey(Employee, verbose_name=_("Employee"), related_name="events", on_delete=models.CASCADE, null=True)
     client = models.ForeignKey(Client, verbose_name=_("Client"), related_name="events", on_delete=models.CASCADE, null=True, blank=True)
+    reassigned_employee = models.ForeignKey(Employee, verbose_name=_("Reassigned Employee"), related_name="reassigned_events", on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=250)
-    start_time = models.DateField(null=True, blank=True)
-    end_time = models.DateField(null=True, blank=True)
+    start_time = models.DateTimeField(null=True, blank=True)
+    end_time = models.DateTimeField(null=True, blank=True)
     note = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=250, choices=StatusChoices.choices, default=StatusChoices.Pending)
     is_active = models.BooleanField(default=True)
@@ -242,3 +243,20 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Month(models.Model):
+
+    client = models.ForeignKey(Client, verbose_name=_("Client"), related_name="months", on_delete=models.CASCADE)
+    start_month = models.DateField()
+    end_month = models.DateField(null=True, blank=True)
+
+    class Meta: 
+        verbose_name = _("Month")
+        verbose_name_plural = _("Months")
+
+    def __str__(self):
+        return self.name
+
+
+

@@ -34,7 +34,10 @@ def send_simple_email(request, template_path: str, reciepients: list, subject: s
 def send_company_link(request, email: str) -> str:
   user = request.user
   print(user)
-  company = user.employee.company
+  try:
+    company = user.employee.company
+  except:
+    company = user.company
   # url = request.get_absolute_url()
   url = request.build_absolute_uri(reverse(f'company:employee-list')) 
   url += f"create?company={company.id}"

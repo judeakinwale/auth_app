@@ -600,7 +600,15 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
             return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         email = serializer.validated_data['email']
-        link = utils.send_company_link(request, email)
+        try:
+            link = utils.send_company_link(request, email)
+        except:
+            print(serializer)
+            error_response = {
+                'errors': serializer.errors,
+                'details': "Link could not be created"
+            }
+            return response.Response(error_response, status=status.HTTP_400_BAD_REQUEST)
         
         serializer.validated_data['link'] = link
         print(serializer.validated_data)

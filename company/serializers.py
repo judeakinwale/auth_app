@@ -133,7 +133,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
 
 class LocationSerializer(serializers.HyperlinkedModelSerializer):
   
-  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all())
+  branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all())
   
   class Meta:
     model = models.Location
@@ -491,7 +491,7 @@ class CompanySerializer(CompanyBaseSerializer):
 # Response Serializers
 class LocationResponseSerializer(LocationSerializer):
   
-  company = CompanyBaseSerializer(read_only=True)
+  branch = BranchSerializer(read_only=True)
   
   class Meta(LocationSerializer.Meta):
     depth = 0
