@@ -99,11 +99,11 @@ class ManageUserApiView(generics.RetrieveUpdateAPIView):
     """manage the authenticated user"""
     queryset = get_user_model().objects.all()
     serializer_class = serializers.UserSerializer
-    serializer_action_classes = {
-        'get': EmployeeResponseSerializer,
-        'put': EmployeeResponseSerializer,
-        'patch': EmployeeResponseSerializer,
-    }
+    # serializer_action_classes = {
+    #     'get': EmployeeResponseSerializer,
+    #     'put': EmployeeResponseSerializer,
+    #     'patch': EmployeeResponseSerializer,
+    # }
     permission_classes = [permissions.IsAuthenticated]
     # filterset_class = filters.UserFilter
 
@@ -116,14 +116,15 @@ class ManageUserApiView(generics.RetrieveUpdateAPIView):
         return self.request.user
     
     def get_serializer_class(self):
-        try:
-            print(request.method)
-            if request.method == "GET":
-                print("----GET----")
-            # return EmployeeResponseSerializer
-            return self.serializer_action_classes[self.action]
-        except:
-            return super().get_serializer_class()
+        # try:
+        #     print(request.method)
+        #     if request.method == "GET":
+        #         print("----GET----")
+        #     # return EmployeeResponseSerializer
+        #     return self.serializer_action_classes[self.action]
+        # except:
+        #     return super().get_serializer_class()
+        return super().get_serializer_class()
     
     @swagger_auto_schema(
         operation_description="retrieve authenticated user details",
