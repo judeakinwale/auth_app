@@ -250,13 +250,16 @@ class Month(models.Model):
     client = models.ForeignKey(Client, verbose_name=_("Client"), related_name="months", on_delete=models.CASCADE)
     start_month = models.DateField()
     end_month = models.DateField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta: 
         verbose_name = _("Month")
         verbose_name_plural = _("Months")
 
     def __str__(self):
-        return self.name
+        return f"{self.client.name} - {self.start_month}"
 
 
 

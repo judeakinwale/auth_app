@@ -566,6 +566,87 @@ class EventViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """destroy method docstring"""
         return super().destroy(request, *args, **kwargs)
+    
+    
+class MonthViewSet(viewsets.ModelViewSet):
+    queryset = models.Month.objects.all()
+    serializer_class = serializers.MonthSerializer
+    # serializer_action_classes = {
+    #     'list': serializers.MonthResponseSerializer,
+    #     'retrieve': serializers.MonthResponseSerializer,
+    # }
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # filterset_class = filters.MonthFilter
+
+    def perform_create(self, serializer):
+        return serializer.save()
+    
+    def get_serializer_class(self):
+        try:
+            return self.serializer_action_classes[self.action]
+        except (KeyError, AttributeError):
+            return super().get_serializer_class()
+        
+    def get_queryset(self):
+        # if self.request.user.is_superuser:
+        #     return super().get_queryset()
+        
+        # try:
+        #     if self.request.user.is_staff:
+        #         return models.Month.objects.filter(company=self.request.user.company)    
+        #     return models.Month.objects.filter(company=self.request.user.employee.company)
+        # except Exception:
+        #     return models.Month.objects.none()
+        
+        return super().get_queryset()
+
+    @swagger_auto_schema(
+        operation_description="create a month",
+        operation_summary='create month'
+    )
+    def create(self, request, *args, **kwargs):
+        """create method docstring"""
+        return super().create(request, *args, **kwargs)
+    
+    @swagger_auto_schema(
+        operation_description="list all months",
+        operation_summary='list months'
+    )
+    def list(self, request, *args, **kwargs):
+        """list method docstring"""
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="retrieve a month",
+        operation_summary='retrieve month'
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """retrieve method docstring"""
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="update a month",
+        operation_summary='update month'
+    )
+    def update(self, request, *args, **kwargs):
+        """update method docstring"""
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="partial_update a month",
+        operation_summary='partial_update month'
+    )
+    def partial_update(self, request, *args, **kwargs):
+        """partial_update method docstring"""
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="delete a month",
+        operation_summary='delete month'
+    )
+    def destroy(self, request, *args, **kwargs):
+        """destroy method docstring"""
+        return super().destroy(request, *args, **kwargs)
 
 
 class EmployeeSetupEmailView(generics.GenericAPIView):
@@ -606,7 +687,7 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
             print(serializer)
             error_response = {
                 'errors': serializer.errors,
-                'details': "Link could not be created"
+                'detail': "Link could not be created"
             }
             return response.Response(error_response, status=status.HTTP_400_BAD_REQUEST)
         
@@ -616,6 +697,38 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
+
+class DeleteClientEmployeeView(generics.GenericAPIView):
+    
+    serializer_class = serializers.EmployeeHelperSerializer
+    
+    @swagger_auto_schema(
+        operation_description="Remove an Employee from a client",
+        operation_summary='Remove Employee from client'
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            emp_id = int(serializer.validated_data['id'])
+            client = models.Client.objects.get(id=int(kwargs['id']))
+            employee = models.Employee.objects.get(id=emp_id)
+            client.employees.remove(employee)
+            
+            resp_data = {'data': serializer.validated_data, 'detail': 'Employee removed sucessfully'}
+            return response.Response(resp_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            error_resp = {'errors': serializer.errors, 'detail': e}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+        
+        return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
+    
+    
 # def test(request):
 #     request_user = request.user
 #     return "request_user set"

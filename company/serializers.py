@@ -33,6 +33,34 @@ class PhoneSerializer(serializers.HyperlinkedModelSerializer):
     }
 
 
+class MonthSerializer(serializers.HyperlinkedModelSerializer):
+  
+  client = serializers.PrimaryKeyRelatedField(queryset=models.Client.objects.all(), allow_null=True, required=False)
+  
+  class Meta:
+    model = models.Month
+    fields = [
+      'id',
+      'url',
+      'client',
+      'start_month',
+      'end_month',
+      'is_active',
+      'created_at',
+      'updated_at',
+    ]
+    optional_fields = [
+      'is_active',
+    ]
+    read_only_fields = [
+      'created_at',
+      'updated_at',
+    ]
+    extra_kwargs = {
+      'url': {'view_name': 'company:month-detail'},
+    }
+
+
 class EmployeeHelperSerializer(serializers.Serializer):
   
   id = serializers.CharField()
@@ -166,7 +194,7 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
   
   company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all(), allow_null=True, required=False)
   # branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all(), allow_null=True, required=False)
-  employees = EmployeeHelperSerializer(many=True, allow_null=True, required=False)
+  employees = EmployeeHelperSerializer(allow_null=True, required=False)
   # employee = serializers.PrimaryKeyRelatedField(queryset=models.Employee.objects.all())
   
   class Meta:
@@ -205,12 +233,14 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
     
   def create(self, validated_data):
     try:
-      employees = validated_data.pop('employees')
+      employee_data = validated_data.pop('employees')
       client =  super().create(validated_data)
-      for data in employees:
-        # TODO: Get and Update data in employees
-        employee = models.Employee.objects.get(id=data['id'])
-        client.employees.add(employee)
+      employee = models.Employee.objects.get(employee_data)
+      client.employees.add(employee)
+      # for data in employees:
+      #   # TODO: Get and Update data in employees
+      #   employee = models.Employee.objects.get(id=data['id'])
+      #   client.employees.add(employee)
           
     except Exception:
       client =  super().create(validated_data)
