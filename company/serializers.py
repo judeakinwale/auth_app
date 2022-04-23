@@ -194,7 +194,8 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
   
   company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all(), allow_null=True, required=False)
   # branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all(), allow_null=True, required=False)
-  employees = EmployeeHelperSerializer(allow_null=True, required=False)
+  employees = EmployeeSerializer(many=True, read_only=True)
+  # employee = EmployeeHelperSerializer(allow_null=True, required=False)
   # employee = serializers.PrimaryKeyRelatedField(queryset=models.Employee.objects.all())
   
   class Meta:
@@ -205,6 +206,7 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
       'company',
       # 'branch',
       'employees',
+      # 'employee',
       'name',
       'email',
       'phone',
@@ -232,52 +234,59 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
     depth = 1
     
   def create(self, validated_data):
-    try:
-      employee_data = validated_data.pop('employees')
-      client =  super().create(validated_data)
-      employee = models.Employee.objects.get(employee_data['id'])
-      client.employees.add(employee)
-      # for data in employees:
-      #   # TODO: Get and Update data in employees
-      #   employee = models.Employee.objects.get(id=data['id'])
-      #   client.employees.add(employee)
+    # try:
+    #   print("started")
+    #   employee_data = validated_data.pop('employees')
+    #   print(employee_data)
+    #   client =  super().create(validated_data)
+    #   employee = models.Employee.objects.get(employee_data['id'])
+    #   client.employees.add(employee)
+    #   # for data in employees:
+    #   #   # TODO: Get and Update data in employees
+    #   #   employee = models.Employee.objects.get(id=data['id'])
+    #   #   client.employees.add(employee)
           
-    except Exception:
-      client =  super().create(validated_data)
+    # except Exception as e:
+    #   print('\n\n\nerror start')
+    #   print(e)
+    #   print('\n\n\nerror end')
+    #   client =  super().create(validated_data)
 
+    client =  super().create(validated_data)
     return client
 
   def update(self, instance, validated_data):
-    try:
-      employees = validated_data.pop('employees')
-      client = super().update(instance, validated_data)
-      client_employees = instance.employees.all()
-      client_employee_list = []
-      combined_employee_list = []
+    # try:
+    #   employees = validated_data.pop('employees')
+    #   client = super().update(instance, validated_data)
+    #   client_employees = instance.employees.all()
+    #   client_employee_list = []
+    #   combined_employee_list = []
       
-      for client_employee in client_employees:
-        combined_employee_list += int(client_employee.id)
-        client_employee_list += int(client_employee.id)
+    #   for client_employee in client_employees:
+    #     combined_employee_list += int(client_employee.id)
+    #     client_employee_list += int(client_employee.id)
         
-      for employee in employees:
-        combined_employee_list += int(employee['id'])
+    #   for employee in employees:
+    #     combined_employee_list += int(employee['id'])
         
-      # TODO: Retain only unique items in 'combined_employee_list'
-      # combined_employee_list = 
+    #   # TODO: Retain only unique items in 'combined_employee_list'
+    #   # combined_employee_list = 
       
-      for data in employees:
+    #   for data in employees:
         
-        # TODO: Get and Update data in employeest
-        if int(data['id']) in client_employee_list:
-          pass
-        if int(data['id']) not in client_employee_list:
-          employee = models.Employee.objects.get(id=data['id'])
-          client.employees.add(employee)
+    #     # TODO: Get and Update data in employeest
+    #     if int(data['id']) in client_employee_list:
+    #       pass
+    #     if int(data['id']) not in client_employee_list:
+    #       employee = models.Employee.objects.get(id=data['id'])
+    #       client.employees.add(employee)
         
         
-    except  Exception as e:
-        client = super().update(instance, validated_data)
+    # except  Exception as e:
+    #     client = super().update(instance, validated_data)
 
+    client = super().update(instance, validated_data)
     return client
 
 
@@ -522,6 +531,14 @@ class CompanySerializer(CompanyBaseSerializer):
 class LocationResponseSerializer(LocationSerializer):
   
   branch = BranchSerializer(read_only=True)
+  
+  class Meta(LocationSerializer.Meta):
+    depth = 0
+
+
+class MonthResponseSerializer(MonthSerializer):
+  
+  client = ClientSerializer(read_only=True)
   
   class Meta(LocationSerializer.Meta):
     depth = 0

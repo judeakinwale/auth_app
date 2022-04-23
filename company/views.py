@@ -571,10 +571,10 @@ class EventViewSet(viewsets.ModelViewSet):
 class MonthViewSet(viewsets.ModelViewSet):
     queryset = models.Month.objects.all()
     serializer_class = serializers.MonthSerializer
-    # serializer_action_classes = {
-    #     'list': serializers.MonthResponseSerializer,
-    #     'retrieve': serializers.MonthResponseSerializer,
-    # }
+    serializer_action_classes = {
+        'list': serializers.MonthResponseSerializer,
+        'retrieve': serializers.MonthResponseSerializer,
+    }
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     # filterset_class = filters.MonthFilter
 
