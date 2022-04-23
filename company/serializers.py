@@ -195,7 +195,7 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
   company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all(), allow_null=True, required=False)
   # branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all(), allow_null=True, required=False)
   # employees = EmployeeSerializer(many=True, read_only=True)
-  employee = EmployeeHelperSerializer(allow_null=True, required=False)
+  employee = EmployeeHelperSerializer(write_only=True, allow_null=True, required=False)
   # employee = serializers.PrimaryKeyRelatedField(queryset=models.Employee.objects.all())
   
   class Meta:
@@ -230,29 +230,30 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
     ]
     extra_kwargs = {
       'url': {'view_name': 'company:client-detail'},
+      'employee': {'write_only': True, 'required': False, 'allow_null': True},
     }
     depth = 1
     
   def create(self, validated_data):
-    # try:
-    #   print("started")
-    #   employee_data = validated_data.pop('employees')
-    #   print(employee_data)
-    #   client =  super().create(validated_data)
-    #   employee = models.Employee.objects.get(employee_data['id'])
-    #   client.employees.add(employee)
-    #   # for data in employees:
-    #   #   # TODO: Get and Update data in employees
-    #   #   employee = models.Employee.objects.get(id=data['id'])
-    #   #   client.employees.add(employee)
+    try:
+      print("started")
+      employee_data = validated_data.pop('employee')
+      print(employee_data[id])
+      client =  super().create(validated_data)
+      employee = models.Employee.objects.get(employee_data['id'])
+      client.employees.add(employee)
+      # for data in employees:
+      #   # TODO: Get and Update data in employees
+      #   employee = models.Employee.objects.get(id=data['id'])
+      #   client.employees.add(employee)
           
-    # except Exception as e:
-    #   print('\n\n\nerror start')
-    #   print(e)
-    #   print('\n\n\nerror end')
-    #   client =  super().create(validated_data)
+    except Exception as e:
+      print('\n\n\nerror start')
+      print(e)
+      print('\n\n\nerror end')
+      client =  super().create(validated_data)
 
-    client =  super().create(validated_data)
+    # client =  super().create(validated_data)
     return client
 
   def update(self, instance, validated_data):
@@ -540,7 +541,7 @@ class MonthResponseSerializer(MonthSerializer):
   
   client = ClientSerializer(read_only=True)
   
-  class Meta(LocationSerializer.Meta):
+  class Meta(MonthSerializer.Meta):
     depth = 0
 
 
