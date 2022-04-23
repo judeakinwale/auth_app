@@ -300,7 +300,7 @@ class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
       user_data.update(employee_id=validated_data['employee_id'])
       user_data.update(is_employee=True)
       user = get_user_model().objects.create(**user_data)
-      validated_data.update(user=user.id)
+      validated_data.update(user=user)
       employee =  super().create(validated_data)
     except Exception:
       employee =  super().create(validated_data)

@@ -12,8 +12,6 @@ from rest_framework_simplejwt.views import (
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
   """serializer for the User model"""
-
-  # full_name = serializers.CharField(read_only=True)
   
   class Meta:
     model = get_user_model()
@@ -27,10 +25,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
       'email',
       'username',
       'password',
-      # 'role',
-      # 'image',
       'is_active',
       'is_staff',
+      'is_employee',
       'is_superuser',
     ]
     optional_fields = [
@@ -61,7 +58,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             
     return user
 
-# Simple JWT integration with drf-yasg
+
+# Simple JWT integration with drf-yasg (serializers)
 class TokenObtainPairResponseSerializer(serializers.Serializer):
     access = serializers.CharField()
     refresh = serializers.CharField()
@@ -71,16 +69,6 @@ class TokenObtainPairResponseSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         raise NotImplementedError()
-
-
-# class DecoratedTokenObtainPairView(TokenObtainPairView):
-#     @swagger_auto_schema(
-#         operation_description='login',
-#         operation_summary='login',
-#         responses={
-#             status.HTTP_200_OK: TokenObtainPairResponseSerializer})
-#     def post(self, request, *args, **kwargs):
-#         return super().post(request, *args, **kwargs)
 
 
 class TokenRefreshResponseSerializer(serializers.Serializer):
@@ -93,29 +81,9 @@ class TokenRefreshResponseSerializer(serializers.Serializer):
         raise NotImplementedError()
 
 
-# class DecoratedTokenRefreshView(TokenRefreshView):
-#     @swagger_auto_schema(
-#         operation_description='generata access token using refresh token',
-#         operation_summary='generata access token using refresh token',
-#         responses={
-#             status.HTTP_200_OK: TokenRefreshResponseSerializer})
-#     def post(self, request, *args, **kwargs):
-#         return super().post(request, *args, **kwargs)
-
-
 class TokenVerifyResponseSerializer(serializers.Serializer):
     def create(self, validated_data):
         raise NotImplementedError()
 
     def update(self, instance, validated_data):
         raise NotImplementedError()
-
-
-# class DecoratedTokenVerifyView(TokenVerifyView):
-#     @swagger_auto_schema(
-#         operation_description='verify access token is still valid',
-#         operation_summary='verify access token is still valid',
-#         responses={
-#             status.HTTP_200_OK: TokenVerifyResponseSerializer})
-#     def post(self, request, *args, **kwargs):
-#         return super().post(request, *args, **kwargs)
