@@ -11,6 +11,9 @@ class UserFilter(filters.FilterSet):
             'middle_name': ['icontains'],
             'last_name': ['icontains'],
             'email': ['icontains'],
+            'employee_id': ['iexact'],
             'is_active': ['exact'],
+            'is_staff': ['exact'],
+            'is_employee': ['exact'],
             'is_superuser': ['exact'],
         }

@@ -9,13 +9,6 @@ from user import managers
 
 class User(AbstractBaseUser, PermissionsMixin):
     """Model definition for User."""
-    
-    # class RoleChoices(models.TextChoices):
-    #     Admin = 'Admin', _('Admin')
-    #     HR = 'HR', _('HR')
-    #     Staff = 'Staff', _('Staff')
-    #     Manager = 'Manager', _('Manager')
-    #     Team_Lead = 'Team Lead', _('Team Lead')
 
     first_name = models.CharField(max_length=250, null=True, blank=True)
     middle_name = models.CharField(max_length=250, null=True, blank=True)
@@ -23,12 +16,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=250, unique=True, null=True)
     email = models.EmailField(max_length=250, unique=True)
     employee_id = models.CharField(max_length=250, unique=True, null=True, blank=True)
-    # role = models.CharField(
-    #     max_length=250,
-    #     choices=RoleChoices.choices,
-    #     default=RoleChoices.Staff,
-    # )
-    # image = models.ImageField(upload_to='images/%Y/%m/%d/', blank=True, null=True, max_length=254)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_employee = models.BooleanField(default=False)

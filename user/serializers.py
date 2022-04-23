@@ -24,6 +24,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
       'full_name',
       'email',
       'username',
+      'employee_id',
       'password',
       'is_active',
       'is_staff',
@@ -35,6 +36,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     ]
     read_only_fields = [
       'is_superuser',
+      'employee_id',
     ]
     extra_kwargs = {
       'url': {'view_name': 'user:user-detail'},

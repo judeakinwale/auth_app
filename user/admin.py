@@ -28,8 +28,8 @@ class UserAdmin(BaseUserAdmin):
       'fields': ('email', 'username', 'password1', 'password2')
     }),
     (_('Permissions'), {
-        'fields': ('is_active', 'is_staff', 'is_employee', 'is_superuser')
-      }),
+      'fields': ('is_active', 'is_staff', 'is_employee', 'is_superuser')
+    }),
   )
   inlines = [CompanyInline]
 

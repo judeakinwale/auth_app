@@ -235,7 +235,7 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
     try:
       employee_data = validated_data.pop('employees')
       client =  super().create(validated_data)
-      employee = models.Employee.objects.get(employee_data)
+      employee = models.Employee.objects.get(employee_data['id'])
       client.employees.add(employee)
       # for data in employees:
       #   # TODO: Get and Update data in employees
