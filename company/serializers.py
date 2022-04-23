@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from company import models
-from user.serializers import UserSerializer
+from user.utils import UserSerializer
 
 
 class PhoneSerializer(serializers.HyperlinkedModelSerializer):

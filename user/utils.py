@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import get_template
+from user.serializers import UserSerializer
+from company.serializers import EmployeeResponseSerializer
 
 
 def send_account_creation_email(request, reciepients: list, context: dict = {}) -> bool:
