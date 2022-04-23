@@ -52,7 +52,7 @@ class LocationFilter(filters.FilterSet):
     class Meta:
         model = models.Location
         fields = {
-            'company__name': ['icontains'],
+            'branch__name': ['icontains'],
         }
         
         

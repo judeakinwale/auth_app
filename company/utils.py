@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import get_template
+from django.urls import reverse
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -32,6 +33,7 @@ def send_simple_email(request, template_path: str, reciepients: list, subject: s
 
 def send_company_link(request, email: str) -> str:
   user = request.user
+  print(user)
   company = user.employee.company
   # url = request.get_absolute_url()
   url = request.build_absolute_uri(reverse(f'company:employee-list')) 

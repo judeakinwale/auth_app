@@ -57,6 +57,7 @@ class Phone(models.Model):
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
+        ordering = ['id']
         verbose_name = _("Phone")
         verbose_name_plural = _("Phones")
 
@@ -77,6 +78,7 @@ class Department(models.Model):
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
+        ordering = ['id']
         verbose_name = _("Department")
         verbose_name_plural = _("Departments")
 
@@ -106,6 +108,7 @@ class Branch(models.Model):
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
+        ordering = ['id']
         verbose_name = _("Branch")
         verbose_name_plural = _("Branches")
 
@@ -152,6 +155,7 @@ class Employee(models.Model):
     # USERNAME_FIELD = 'email'
 
     class Meta:
+        ordering = ['id']
         verbose_name = _("Employee")
         verbose_name_plural = _("Employees")
 
@@ -161,7 +165,7 @@ class Employee(models.Model):
 
 class Location(models.Model):
 
-    company = models.OneToOneField(Company, verbose_name=_("Company"), related_name="location", on_delete=models.CASCADE)
+    branch = models.OneToOneField(Branch, verbose_name=_("Branch"), related_name="location", on_delete=models.CASCADE)
     longitude = models.FloatField(null=True)
     latitude = models.FloatField(null=True)
     # Replacement for longitude and latitude
@@ -173,6 +177,7 @@ class Location(models.Model):
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
+        ordering = ['id']
         verbose_name = _("Location")
         verbose_name_plural = _("Locations")
 
@@ -203,6 +208,7 @@ class Client(models.Model):
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
+        ordering = ['id']
         verbose_name = _("Client")
         verbose_name_plural = _("Clients")
 
@@ -210,21 +216,6 @@ class Client(models.Model):
         return self.name
 
 
-"""
-{
-    "id": 0,
-    "employee": 0,
-    "name": "string",
-    "start_time": "2022-04-20",
-    "end_time": "2022-04-20",
-    "note": "string",
-    "status": "string",
-    "created_at": "2022-04-20T20:02:18.130Z"
-}
-
-Returns:
-    _type_: _description_
-"""
 class Event(models.Model):
     
     class StatusChoices(models.TextChoices):
@@ -245,21 +236,9 @@ class Event(models.Model):
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     class Meta:
+        ordering = ['id']
         verbose_name = _("Event")
         verbose_name_plural = _("Events")
 
     def __str__(self):
         return self.name
-
-
-# class EmailLink(models.Model):
-
-#     email = models.CharField(max_length=250)
-#     link = models.CharField(max_length=250, null=True, blank=True)
-
-#     class Meta:
-#         verbose_name = _("EmailLink")
-#         verbose_name_plural = _("EmailLinks")
-
-#     def __str__(self):
-#         return self.email

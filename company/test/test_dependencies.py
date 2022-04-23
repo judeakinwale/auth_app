@@ -17,6 +17,15 @@ def sample_company(name: str = "Company 1", email: str = "company1@app.com", **k
   defaults.update(kwargs)
   return models.Company.objects.create(**defaults)
 
+def sample_employee(user, employee_id: str = "EMP001", **kwargs):
+  """create and return sample employee"""
+  defaults = {
+    'user': user,
+    'employee_id': employee_id,
+  }
+  defaults.update(kwargs)
+  return models.Employee.objects.create(**defaults)
+
 
 def test_all_model_attributes(insance, payload, model, serializer):
   """test model attributes against a payload, with instance being self in a testcase class """
