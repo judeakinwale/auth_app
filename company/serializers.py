@@ -236,58 +236,29 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
     
   def create(self, validated_data):
     try:
-      print("started")
       employee_data = validated_data.pop('employee')
-      print(employee_data[id])
       client =  super().create(validated_data)
-      employee = models.Employee.objects.get(employee_data['id'])
+      
+      employee = models.Employee.objects.get(id=employee_data['id'])
       client.employees.add(employee)
-      # for data in employees:
-      #   # TODO: Get and Update data in employees
-      #   employee = models.Employee.objects.get(id=data['id'])
-      #   client.employees.add(employee)
-          
+
     except Exception as e:
-      print('\n\n\nerror start')
-      print(e)
-      print('\n\n\nerror end')
       client =  super().create(validated_data)
 
-    # client =  super().create(validated_data)
     return client
 
   def update(self, instance, validated_data):
-    # try:
-    #   employees = validated_data.pop('employees')
-    #   client = super().update(instance, validated_data)
-    #   client_employees = instance.employees.all()
-    #   client_employee_list = []
-    #   combined_employee_list = []
+    try:
+      employee_data = validated_data.pop('employee')
+      client =  super().update(instance, validated_data)
       
-    #   for client_employee in client_employees:
-    #     combined_employee_list += int(client_employee.id)
-    #     client_employee_list += int(client_employee.id)
+      employee = models.Employee.objects.get(id=employee_data['id'])
+      if employee not in client.employees.all():
+        client.employees.add(employee)
         
-    #   for employee in employees:
-    #     combined_employee_list += int(employee['id'])
-        
-    #   # TODO: Retain only unique items in 'combined_employee_list'
-    #   # combined_employee_list = 
-      
-    #   for data in employees:
-        
-    #     # TODO: Get and Update data in employeest
-    #     if int(data['id']) in client_employee_list:
-    #       pass
-    #     if int(data['id']) not in client_employee_list:
-    #       employee = models.Employee.objects.get(id=data['id'])
-    #       client.employees.add(employee)
-        
-        
-    # except  Exception as e:
-    #     client = super().update(instance, validated_data)
+    except  Exception as e:
+        client = super().update(instance, validated_data)
 
-    client = super().update(instance, validated_data)
     return client
 
 
