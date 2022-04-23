@@ -194,8 +194,8 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
   
   company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all(), allow_null=True, required=False)
   # branch = serializers.PrimaryKeyRelatedField(queryset=models.Branch.objects.all(), allow_null=True, required=False)
-  employees = EmployeeSerializer(many=True, read_only=True)
-  # employee = EmployeeHelperSerializer(allow_null=True, required=False)
+  # employees = EmployeeSerializer(many=True, read_only=True)
+  employee = EmployeeHelperSerializer(allow_null=True, required=False)
   # employee = serializers.PrimaryKeyRelatedField(queryset=models.Employee.objects.all())
   
   class Meta:
@@ -205,8 +205,8 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
       'url',
       'company',
       # 'branch',
-      'employees',
-      # 'employee',
+      # 'employees',
+      'employee',
       'name',
       'email',
       'phone',
@@ -549,6 +549,8 @@ class ClientResponseSerializer(ClientSerializer):
   employees = EmployeeSerializer(many=True, read_only=True)
   
   class Meta(ClientSerializer.Meta):
+    additional_fields = ['employees']
+    fields = ClientSerializer.Meta.fields + additional_fields
     depth = 0
 
 
