@@ -132,7 +132,7 @@ class ManageUserApiView(generics.RetrieveUpdateAPIView):
     )
     def get(self, request, *args, **kwargs):
         """get method docstring"""
-        self.serializer_class = EmployeeResponseSerializer
+        # self.serializer_class = EmployeeResponseSerializer
         return super().get(request, *args, **kwargs)
 
     @swagger_auto_schema(
