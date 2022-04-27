@@ -61,6 +61,35 @@ class MonthSerializer(serializers.HyperlinkedModelSerializer):
     }
 
 
+class WeekSerializer(serializers.HyperlinkedModelSerializer):
+  
+  client = serializers.PrimaryKeyRelatedField(queryset=models.Client.objects.all(), allow_null=True, required=False)
+  
+  class Meta:
+    model = models.Week
+    fields = [
+      'id',
+      'url',
+      'client',
+      'name',
+      'start_date',
+      'end_date',
+      'is_active',
+      'created_at',
+      'updated_at',
+    ]
+    optional_fields = [
+      'is_active',
+    ]
+    read_only_fields = [
+      'created_at',
+      'updated_at',
+    ]
+    extra_kwargs = {
+      'url': {'view_name': 'company:week-detail'},
+    }
+
+
 class EmployeeHelperSerializer(serializers.Serializer):
   
   id = serializers.CharField()
@@ -513,6 +542,14 @@ class MonthResponseSerializer(MonthSerializer):
   client = ClientSerializer(read_only=True)
   
   class Meta(MonthSerializer.Meta):
+    depth = 0
+
+
+class WeekResponseSerializer(WeekSerializer):
+  
+  client = ClientSerializer(read_only=True)
+  
+  class Meta(WeekSerializer.Meta):
     depth = 0
 
 

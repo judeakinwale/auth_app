@@ -224,7 +224,7 @@ class Event(models.Model):
         Completed = 'Completed', _('Completed')
 
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="events", on_delete=models.CASCADE, null=True)
-    employee = models.ForeignKey(Employee, verbose_name=_("Employee"), related_name="events", on_delete=models.CASCADE, null=True)
+    employee = models.ForeignKey(Employee, verbose_name=_("Employee"), related_name="events", on_delete=models.CASCADE, null=True, blank=True)
     client = models.ForeignKey(Client, verbose_name=_("Client"), related_name="events", on_delete=models.CASCADE, null=True, blank=True)
     reassigned_employee = models.ForeignKey(Employee, verbose_name=_("Reassigned Employee"), related_name="reassigned_events", on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=250)
@@ -247,7 +247,7 @@ class Event(models.Model):
 
 class Month(models.Model):
 
-    client = models.ForeignKey(Client, verbose_name=_("Client"), related_name="months", on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, verbose_name=_("Client"), related_name="months", on_delete=models.CASCADE, null=True, blank=True)
     start_month = models.DateField()
     end_month = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
@@ -259,7 +259,23 @@ class Month(models.Model):
         verbose_name_plural = _("Months")
 
     def __str__(self):
-        return f"{self.client.name} - {self.start_month}"
+        return f"{self.client.name} - {self.start_month.date}"
 
 
+class Week(models.Model):
+
+    client = models.ForeignKey(Client, verbose_name=_("Client"), related_name="weeks", on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=250)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    class Meta: 
+        verbose_name = _("Week")
+        verbose_name_plural = _("Weeks")
+
+    def __str__(self):
+        return f"{self.client.name} - {self.name}"
 

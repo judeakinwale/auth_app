@@ -13,6 +13,8 @@ router.register('location', views.LocationViewSet)
 router.register('client', views.ClientViewSet)
 router.register('event', views.EventViewSet)
 router.register('month', views.MonthViewSet)
+router.register('week', views.WeekViewSet)
+
 urlpatterns = [
   path("", include(router.urls)),
   path("employee/email", views.EmployeeSetupEmailView.as_view(), name='employee_email'),

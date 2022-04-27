@@ -517,6 +517,7 @@ class EventViewSet(viewsets.ModelViewSet):
                 return models.Event.objects.filter(company=self.request.user.company)    
             return models.Event.objects.filter(company=self.request.user.employee.company)
         except Exception:
+            
             return models.Event.objects.none()
 
     @swagger_auto_schema(
@@ -643,6 +644,87 @@ class MonthViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_description="delete a month",
         operation_summary='delete month'
+    )
+    def destroy(self, request, *args, **kwargs):
+        """destroy method docstring"""
+        return super().destroy(request, *args, **kwargs)
+    
+    
+class WeekViewSet(viewsets.ModelViewSet):
+    queryset = models.Week.objects.all()
+    serializer_class = serializers.WeekSerializer
+    serializer_action_classes = {
+        'list': serializers.WeekResponseSerializer,
+        'retrieve': serializers.WeekResponseSerializer,
+    }
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # filterset_class = filters.WeekFilter
+
+    def perform_create(self, serializer):
+        return serializer.save()
+    
+    def get_serializer_class(self):
+        try:
+            return self.serializer_action_classes[self.action]
+        except (KeyError, AttributeError):
+            return super().get_serializer_class()
+        
+    def get_queryset(self):
+        # if self.request.user.is_superuser:
+        #     return super().get_queryset()
+        
+        # try:
+        #     if self.request.user.is_staff:
+        #         return models.Week.objects.filter(company=self.request.user.company)    
+        #     return models.Week.objects.filter(company=self.request.user.employee.company)
+        # except Exception:
+        #     return models.Week.objects.none()
+        
+        return super().get_queryset()
+
+    @swagger_auto_schema(
+        operation_description="create a week",
+        operation_summary='create week'
+    )
+    def create(self, request, *args, **kwargs):
+        """create method docstring"""
+        return super().create(request, *args, **kwargs)
+    
+    @swagger_auto_schema(
+        operation_description="list all weeks",
+        operation_summary='list weeks'
+    )
+    def list(self, request, *args, **kwargs):
+        """list method docstring"""
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="retrieve a week",
+        operation_summary='retrieve week'
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """retrieve method docstring"""
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="update a week",
+        operation_summary='update week'
+    )
+    def update(self, request, *args, **kwargs):
+        """update method docstring"""
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="partial_update a week",
+        operation_summary='partial_update week'
+    )
+    def partial_update(self, request, *args, **kwargs):
+        """partial_update method docstring"""
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="delete a week",
+        operation_summary='delete week'
     )
     def destroy(self, request, *args, **kwargs):
         """destroy method docstring"""
