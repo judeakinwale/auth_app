@@ -72,7 +72,7 @@ class PrivateEmployeeApiTest(TestCase):
         deps.sample_employee(user=user2, employee_id="EMP002", company=company3)
 
         employee = models.Employee.objects.all()
-        company_employees = models.Employee.filter(company=company3)
+        company_employees = models.Employee.objects.filter(company=company3)
         print(company_employees)
         serializer = serializers.EmployeeSerializer(employee, many=True, context=serializer_context)
 

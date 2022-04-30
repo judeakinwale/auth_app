@@ -779,6 +779,38 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
+class AddClientEmployeeView(generics.GenericAPIView):
+    
+    serializer_class = serializers.EmployeeHelperSerializer
+    
+    @swagger_auto_schema(
+        operation_description="Remove an Employee from a client",
+        operation_summary='Remove Employee from client'
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            emp_id = int(serializer.validated_data['id'])
+            client = models.Client.objects.get(id=int(kwargs['id']))
+            employee = models.Employee.objects.get(id=emp_id)
+            client.employees.add(employee)
+            client.refresh_from_db()
+            serialized_client = serializes.ClientResponseSerializer(client)
+            
+            resp_data = {'data': serialized_client, 'detail': 'Employee added sucessfully'}
+            return response.Response(resp_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            error_resp = {'errors': serializer.errors, 'detail': e}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+        
+        return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
+
 
 class DeleteClientEmployeeView(generics.GenericAPIView):
     
