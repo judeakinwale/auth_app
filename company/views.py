@@ -801,7 +801,7 @@ class AddClientEmployeeView(generics.GenericAPIView):
             employee = models.Employee.objects.get(id=emp_id)
             client.employees.add(employee)
             client.refresh_from_db()
-            serialized_client = serializes.ClientResponseSerializer(client)
+            serialized_client = serializers.ClientResponseSerializer(client)
             
             resp_data = {'data': serialized_client, 'detail': 'Employee added sucessfully'}
             return response.Response(resp_data, status=status.HTTP_200_OK)
