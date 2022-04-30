@@ -35,16 +35,16 @@ class PhoneSerializer(serializers.HyperlinkedModelSerializer):
 
 class MonthSerializer(serializers.HyperlinkedModelSerializer):
   
-  client = serializers.PrimaryKeyRelatedField(queryset=models.Client.objects.all(), allow_null=True, required=False)
+  # client = serializers.PrimaryKeyRelatedField(queryset=models.Client.objects.all(), allow_null=True, required=False)
   
   class Meta:
     model = models.Month
     fields = [
       'id',
       'url',
-      'client',
-      'start_month',
-      'end_month',
+      # 'client',
+      'month',
+      'year',
       'is_active',
       'created_at',
       'updated_at',
@@ -58,6 +58,35 @@ class MonthSerializer(serializers.HyperlinkedModelSerializer):
     ]
     extra_kwargs = {
       'url': {'view_name': 'company:month-detail'},
+    }
+
+
+class ScheduleSerializer(serializers.HyperlinkedModelSerializer):
+  
+  client = serializers.PrimaryKeyRelatedField(queryset=models.Client.objects.all(), allow_null=True, required=False)
+  month = serializers.PrimaryKeyRelatedField(queryset=models.Month.objects.all(), allow_null=True, required=False)
+  
+  class Meta:
+    model = models.Schedule
+    fields = [
+      'id',
+      'url',
+      'client',
+      'month',
+      # 'year',
+      'is_active',
+      'created_at',
+      'updated_at',
+    ]
+    optional_fields = [
+      'is_active',
+    ]
+    read_only_fields = [
+      'created_at',
+      'updated_at',
+    ]
+    extra_kwargs = {
+      'url': {'view_name': 'company:schedule-detail'},
     }
 
 
@@ -539,9 +568,18 @@ class LocationResponseSerializer(LocationSerializer):
 
 class MonthResponseSerializer(MonthSerializer):
   
-  client = ClientSerializer(read_only=True)
+  # client = ClientSerializer(read_only=True)
   
   class Meta(MonthSerializer.Meta):
+    depth = 0
+
+
+class ScheduleResponseSerializer(ScheduleSerializer):
+  
+  client = ClientSerializer(read_only=True)
+  month = MonthSerializer(read_only=True)
+  
+  class Meta(ScheduleSerializer.Meta):
     depth = 0
 
 

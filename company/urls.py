@@ -13,6 +13,7 @@ router.register('location', views.LocationViewSet)
 router.register('client', views.ClientViewSet)
 router.register('event', views.EventViewSet)
 router.register('month', views.MonthViewSet)
+router.register('schedule', views.ScheduleViewSet)
 router.register('week', views.WeekViewSet)
 
 urlpatterns = [

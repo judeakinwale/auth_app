@@ -648,8 +648,89 @@ class MonthViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """destroy method docstring"""
         return super().destroy(request, *args, **kwargs)
+
+
+class ScheduleViewSet(viewsets.ModelViewSet):
+    queryset = models.Schedule.objects.all()
+    serializer_class = serializers.ScheduleSerializer
+    serializer_action_classes = {
+        'list': serializers.ScheduleResponseSerializer,
+        'retrieve': serializers.ScheduleResponseSerializer,
+    }
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # filterset_class = filters.ScheduleFilter
+
+    def perform_create(self, serializer):
+        return serializer.save()
     
+    def get_serializer_class(self):
+        try:
+            return self.serializer_action_classes[self.action]
+        except (KeyError, AttributeError):
+            return super().get_serializer_class()
+        
+    def get_queryset(self):
+        # if self.request.user.is_superuser:
+        #     return super().get_queryset()
+        
+        # try:
+        #     if self.request.user.is_staff:
+        #         return models.Schedule.objects.filter(company=self.request.user.company)    
+        #     return models.Schedule.objects.filter(company=self.request.user.employee.company)
+        # except Exception:
+        #     return models.Schedule.objects.none()
+        
+        return super().get_queryset()
+
+    @swagger_auto_schema(
+        operation_description="create a client schedule",
+        operation_summary='create client schedule'
+    )
+    def create(self, request, *args, **kwargs):
+        """create method docstring"""
+        return super().create(request, *args, **kwargs)
     
+    @swagger_auto_schema(
+        operation_description="list all client schedules",
+        operation_summary='list client schedules'
+    )
+    def list(self, request, *args, **kwargs):
+        """list method docstring"""
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="retrieve a client schedule",
+        operation_summary='retrieve client schedule'
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """retrieve method docstring"""
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="update a client schedule",
+        operation_summary='update client schedule'
+    )
+    def update(self, request, *args, **kwargs):
+        """update method docstring"""
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="partial_update a client schedule",
+        operation_summary='partial_update client schedule'
+    )
+    def partial_update(self, request, *args, **kwargs):
+        """partial_update method docstring"""
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="delete a client schedule",
+        operation_summary='delete client schedule'
+    )
+    def destroy(self, request, *args, **kwargs):
+        """destroy method docstring"""
+        return super().destroy(request, *args, **kwargs)
+
+
 class WeekViewSet(viewsets.ModelViewSet):
     queryset = models.Week.objects.all()
     serializer_class = serializers.WeekSerializer
@@ -802,8 +883,9 @@ class AddClientEmployeeView(generics.GenericAPIView):
             client.employees.add(employee)
             client.refresh_from_db()
             serialized_client = serializers.ClientResponseSerializer(client)
+            print(serialized_client.data)
             
-            resp_data = {'data': serialized_client, 'detail': 'Employee added sucessfully'}
+            resp_data = {'data': serialized_client.data, 'detail': 'Employee added sucessfully'}
             return response.Response(resp_data, status=status.HTTP_200_OK)
         except Exception as e:
             error_resp = {'errors': serializer.errors, 'detail': e}
