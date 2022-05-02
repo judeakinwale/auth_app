@@ -252,6 +252,7 @@ class Month(models.Model):
     # client = models.ForeignKey(Client, verbose_name=_("Client"), related_name="months", on_delete=models.CASCADE, null=True, blank=True)
     month = models.CharField(max_length=250, null=True, blank=True)
     year = models.CharField(max_length=250, null=True, blank=True)
+    index = models.IntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
