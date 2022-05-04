@@ -670,15 +670,15 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             return super().get_serializer_class()
         
     def get_queryset(self):
-        # if self.request.user.is_superuser:
-        #     return super().get_queryset()
+        if self.request.user.is_superuser:
+            return super().get_queryset()
         
-        # try:
-        #     if self.request.user.is_staff:
-        #         return models.Schedule.objects.filter(company=self.request.user.company)    
-        #     return models.Schedule.objects.filter(company=self.request.user.employee.company)
-        # except Exception:
-        #     return models.Schedule.objects.none()
+        try:
+            if self.request.user.is_staff:
+                return models.Schedule.objects.filter(client__company=self.request.user.company)    
+            return models.Schedule.objects.filter(client__company=self.request.user.employee.company)
+        except Exception:
+            return models.Schedule.objects.none()
         
         return super().get_queryset()
 
