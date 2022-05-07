@@ -217,6 +217,18 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     extra_kwargs = {
       'url': {'view_name': 'company:event-detail'},
     }
+    
+
+# class MultipleEventSerializer(serializers.Serializer):
+
+#   events = EventSerializer(many=True)
+
+  
+#   def create(self, validated_data):
+#     raise NotImplementedError()
+  
+#   def update(self, instance, validated_data):
+#     raise NotImplementedError()
 
 
 class LocationSerializer(serializers.HyperlinkedModelSerializer):

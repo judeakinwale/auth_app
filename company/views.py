@@ -507,6 +507,12 @@ class EventViewSet(viewsets.ModelViewSet):
             return self.serializer_action_classes[self.action]
         except (KeyError, AttributeError):
             return super().get_serializer_class()
+       
+    def get_serializer(self, *args, **kwargs):
+        """ if an array is passed, set serializer to many """
+        if isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+        return super(EventViewSet, self).get_serializer(*args, **kwargs)
         
     def get_queryset(self):
         if self.request.user.is_superuser:
@@ -858,6 +864,47 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
         print(serializer.validated_data)
 
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+    # class MultipleEventView(generics.GenericAPIView):
+        
+    #     serializer_class = serializers.MultipleEventSerializer
+    #     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+            
+    #     @swagger_auto_schema(
+    #         operation_description="Create and Send Company Link to an email",
+    #         operation_summary='Create and Send Company Link to email'
+    #     )
+    #     # def create(self, request, *args, **kwargs):
+    #     #     """create method docstring"""
+    #     #     return super().create(request, *args, **kwargs)
+
+    #     def post(self, request, *args, **kwargs):
+    #         serializer = self.get_serializer(data=request.data)
+
+    #         try:
+    #             serializer.is_valid(raise_exception=True)
+    #         except Exception as e:
+    #             return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+    #         # email = serializer.validated_data['email']
+    #         try:
+    #             events = serializer.validated_data['events']
+    #             for event_data in events:
+    #                 models.Event.objects.create(**event_data)
+    #                 # serializers.EventSerializer.create(event_data) # Not sure this works
+    #         except:
+    #             print(serializer)
+    #             error_response = {
+    #                 'errors': serializer.errors,
+    #                 'detail': "There was an error creating"
+    #             }
+    #             return response.Response(error_response, status=status.HTTP_400_BAD_REQUEST)
+            
+    #         # serializer.validated_data['link'] = link
+    #         print(serializer.validated_data)
+
+    #         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class AddClientEmployeeView(generics.GenericAPIView):
