@@ -2,6 +2,8 @@ from django.conf import settings
 from django.shortcuts import render, reverse
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
+from django.db.models import Q
+from datetime import datetime, date, time
 
 from rest_framework import generics, viewsets, permissions
 from rest_framework import status, views, response
@@ -866,6 +868,72 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
+class WeeklyReportView(generics.GenericAPIView):
+    
+    serializer_class = serializers.WeeklyReportSerializer
+    
+    @swagger_auto_schema(
+        operation_description="Generate Weekly Report",
+        operation_summary='Generate Weekly Report'
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        print("\n\nSerializer valid\n\n")
+        try:
+            # emp_id = int(serializer.validated_data['id'])
+            # client = models.Client.objects.get(id=int(kwargs['id']))
+            # employee = models.Employee.objects.get(id=emp_id)
+            # client.employees.add(employee)
+            # client.refresh_from_db()
+            # serialized_client = serializers.ClientResponseSerializer(client)
+            # print(serialized_client.data)
+            
+            weeks_data = serializer.validated_data['weeks']
+            weeks = models.Week.objects.none()
+            
+            try:
+                if request.user.is_superuser:
+                    weeks = models.Week.objects.filter(id__in=weeks_data)
+                elif request.user.is_staff:
+                    weeks = models.Week.objects.filter(id__in=weeks_data, client__company=request.user.company)
+                else:    
+                    weeks = models.Week.objects.filter(id__in=weeks_data, client__company=request.user.employee.company)
+            except Exception:
+                weeks = models.Week.objects.none()
+            
+            # print(f"weeks: {weeks}")
+            
+            serialized_weeks = serializers.WeekResponseSerializer(weeks, many=True, context={'request': request})
+            
+            events = models.Event.objects.none()
+            random_date = "2022-04-25"
+            data = []
+            for week in weeks:
+                print(f"{week.start_date}, {week.end_date} - {week.end_date >= week.start_date} - {random_date >=  week.end_date}")
+                events = models.Event.objects.none()
+                events |= models.Event.objects.filter(date__gte=week.start_date, date__lte=week.end_date)
+                serialized_events = serializers.EventResponseSerializer(events, many=True, context={'request': request})
+                report_data = {}
+                report_data[f"{week.name}"] = serialized_events.data
+                # print(serialized_events.data)
+                data.append(report_data)
+            
+            resp_data = {'result': data,}
+            return response.Response(resp_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            # print(f"\n\n{e}\n\n")
+            error_resp = {'errors': serializer.errors, 'detail': e}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+        
+        return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+
     # class MultipleEventView(generics.GenericAPIView):
         
     #     serializer_class = serializers.MultipleEventSerializer
@@ -912,8 +980,8 @@ class AddClientEmployeeView(generics.GenericAPIView):
     serializer_class = serializers.EmployeeHelperSerializer
     
     @swagger_auto_schema(
-        operation_description="Remove an Employee from a client",
-        operation_summary='Remove Employee from client'
+        operation_description="Add an Employee to a client",
+        operation_summary='Add Employee to client'
     )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

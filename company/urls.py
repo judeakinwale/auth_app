@@ -19,6 +19,7 @@ router.register('week', views.WeekViewSet)
 urlpatterns = [
   path("", include(router.urls)),
   path("employee/email", views.EmployeeSetupEmailView.as_view(), name='employee_email'),
+  path("week/report", views.WeeklyReportView.as_view(), name='weekly_report'),
   path("client/<id>/employee/add", views.AddClientEmployeeView.as_view(), name='client_employee_add'),
   path("client/<id>/employee/remove", views.DeleteClientEmployeeView.as_view(), name='client_employee_remove'),
   # path("test/", views.test, name="testing"),

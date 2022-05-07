@@ -120,6 +120,13 @@ class WeekSerializer(serializers.HyperlinkedModelSerializer):
     }
 
 
+class WeeklyReportSerializer(serializers.Serializer):
+  
+  weeks = serializers.ListField(
+    child=serializers.IntegerField()
+  )
+
+
 class EmployeeHelperSerializer(serializers.Serializer):
   
   id = serializers.CharField()
@@ -611,6 +618,7 @@ class ClientResponseSerializer(ClientSerializer):
   
   class Meta(ClientSerializer.Meta):
     additional_fields = ['employees']
+    # unused_fields = ClientSerializer.Meta.fields.remove("employee")
     fields = ClientSerializer.Meta.fields + additional_fields
     depth = 0
 

@@ -56,6 +56,47 @@ def send_company_link(request, email: str) -> str:
   return url
 
 
+def send_staff_event_email(request, employee, events) -> str:
+  
+  email = employee.user.email
+  context = {
+    'events': events,
+    'user': employee.user,
+    # 'url': url,
+  }
+  try:
+    email = send_simple_email(request, 'email/employee_event_email.html', [email], "Shift Details", context)
+    print(f'Company link sent {email}')
+  except Exception as e:
+    print(f'An exception occurred while sending the company link: {e}')
+    
+  return url
+
+
+def send_client_event_email(request, client, events) -> str:
+  user = client.name
+  email = client.email
+  print(user)
+  try:
+    company = user.employee.company #TODO: remove this
+  except:
+    company = client.company
+    url = "https:// " # link to frontend schedule page for client
+  
+  context = {
+    'company': company,
+    'user': user,
+    'url': url,
+  }
+  try:
+    email = send_simple_email(request, 'client_event_email.html', [email], "Company Link", context)
+    print(f'Company link sent {email}')
+  except Exception as e:
+    print(f'An exception occurred while sending the company link: {e}')
+    
+  return url
+
+
 def get_tokens_for_employee(employee):
   user = employee.user
   refresh = RefreshToken.for_user(user)
@@ -66,26 +107,26 @@ def get_tokens_for_employee(employee):
   }
 
 
-class EmployeeTokenObtainPairSerializer(TokenObtainPairSerializer):
+# class EmployeeTokenObtainPairSerializer(TokenObtainPairSerializer):
   
-  def validate(self, attrs):
-    self.username_field = 'employee_id'
+#   def validate(self, attrs):
+#     self.username_field = 'employee_id'
     
-    authenticate_kwargs = {
-      self.username_field: attrs[self.username_field],
-      "password": attrs["password"],
-    }
-    super().validate(attrs)
+#     authenticate_kwargs = {
+#       self.username_field: attrs[self.username_field],
+#       "password": attrs["password"],
+#     }
+#     super().validate(attrs)
   
-  @classmethod
-  def get_token(cls, user):
-      # token = super().get_token(user)
+#   @classmethod
+#   def get_token(cls, user):
+#       # token = super().get_token(user)
 
-      # Add custom claims
-      token['name'] = user.name
-      # ...
+#       # Add custom claims
+#       token['name'] = user.name
+#       # ...
 
-      return token
+#       return token
 
 
 # class EmployeeTokenObtainPairView(TokenObtainPairView):
