@@ -504,9 +504,9 @@ class EventViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         event = serializer.save()
-        client = event.client
-        employee = event.employee
         try:
+            client = event.client
+            employee = event.employee
             utils.send_employee_event_email(self.request, employee)
             utils.send_client_event_email(self.request, client)
         except Exception as e:
