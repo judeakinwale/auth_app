@@ -10,9 +10,9 @@ from user import managers
 class User(AbstractBaseUser, PermissionsMixin):
     """Model definition for User."""
 
-    first_name = models.CharField(max_length=250, null=True, blank=True)
+    first_name = models.CharField(max_length=250, null=True)
     middle_name = models.CharField(max_length=250, null=True, blank=True)
-    last_name = models.CharField(max_length=250, null=True, blank=True)
+    last_name = models.CharField(max_length=250, null=True)
     username = models.CharField(max_length=250, unique=True, null=True)
     email = models.EmailField(max_length=250, unique=True)
     employee_id = models.CharField(max_length=250, unique=True, null=True, blank=True)

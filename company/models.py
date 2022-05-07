@@ -19,7 +19,7 @@ class Company(models.Model):
     country = models.CharField(max_length=250, null=True)
     postal_code = models.CharField(max_length=250, null=True, blank=True)
     contact_person = models.ForeignKey(
-        "Employee",
+        settings.AUTH_USER_MODEL,
         related_name='contact',
         on_delete=models.CASCADE,
         null=True, blank=True,
@@ -129,7 +129,7 @@ class Employee(models.Model):
     phone = models.CharField(max_length=50, null=True, blank=True)
     # TODO: Remove company from employee model
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="employees", on_delete=models.CASCADE, null=True, blank=True)
-    branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="employees", on_delete=models.CASCADE, null=True, blank=True)
+    branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="employees", on_delete=models.CASCADE, null=True)
     department = models.ForeignKey(Department, verbose_name=_("Department"), related_name="employees", on_delete=models.CASCADE, null=True)
     employee_id = models.CharField(max_length=250, unique=True, null=True)
     role = models.CharField(
@@ -137,15 +137,15 @@ class Employee(models.Model):
         choices=RoleChoices.choices,
         default=RoleChoices.Staff,
     )
-    date_of_birth = models.DateField(null=True, blank=True)
+    date_of_birth = models.DateField(null=True)
     address = models.CharField(max_length=250, null=True)
-    province = models.CharField(max_length=250, null=True, blank=True)
+    province = models.CharField(max_length=250, null=True)
     state = models.CharField(max_length=250, null=True)
     country = models.CharField(max_length=250, null=True)
-    postal_code = models.CharField(max_length=250, null=True, blank=True)
+    postal_code = models.CharField(max_length=250, null=True)
     image = models.ImageField(upload_to='images/profile/%Y/%m/%d/', blank=True, null=True, max_length=254)
     hobbies = models.TextField(null=True, blank=True)
-    join_date = models.DateField(null=True, blank=True)
+    join_date = models.DateField(null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -195,12 +195,12 @@ class Client(models.Model):
     employees = models.ManyToManyField(Employee, verbose_name=_("Employees"), related_name="clients")
     name = models.CharField(max_length=250)
     email = models.CharField(max_length=250, null=True, blank=True)
-    phone = models.CharField(max_length=50, null=True, blank=True)
+    phone = models.CharField(max_length=50, null=True)
     address = models.CharField(max_length=250, null=True)
-    province = models.CharField(max_length=250, null=True, blank=True)
+    province = models.CharField(max_length=250, null=True)
     state = models.CharField(max_length=250, null=True, blank=True)
     country = models.CharField(max_length=250, null=True)
-    postal_code = models.CharField(max_length=250, null=True, blank=True)
+    postal_code = models.CharField(max_length=250, null=True)
     image = models.ImageField(upload_to='images/client/%Y/%m/%d/', blank=True, null=True, max_length=254)
     join_date = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)

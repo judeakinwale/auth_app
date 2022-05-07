@@ -31,7 +31,7 @@ class UserAdmin(BaseUserAdmin):
       'fields': ('is_active', 'is_staff', 'is_employee', 'is_superuser')
     }),
   )
-  inlines = [CompanyInline]
+  # inlines = [CompanyInline]
 
 
 admin.site.register(models.User, UserAdmin)
