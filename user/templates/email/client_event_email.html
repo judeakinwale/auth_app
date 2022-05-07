@@ -1,6 +1,57 @@
-<body>
-  <p>Hello,</p>
-  <br>
-  <p></p>
-  <p></p>
-</body>
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: arial, sans-serif;
+        padding: 0.5rem;
+      }
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 80%;
+      }
+      td,th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+      .link {
+        font-weight: 800;
+      }
+
+      /**tr:nth-child(even) {
+        background-color: #dddddd;
+      }*/
+    </style>
+  </head>
+  <body>
+    <h4>Hello {{name}},</h4>
+    <br />
+    <p>Kindly find <a class="link" href={{url}}>your schedule<a/> for the month <a class="link" href={{url}}>here<a/></p>
+    {% comment %} <p>You have been assigned to a shift. Kindly find the details below</p>
+    <br />
+    <h3>Shift Details</h3>
+
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Company</th>
+        <th>Client</th>
+        <th>Employee</th>
+        <th>Shift Start</th>
+        <th>Shift End</th>
+      </tr>
+      {% for event in events %}
+      <tr>
+        <td>{{event.date}}</td>
+        <td>{{event.company}}</td>
+        <td>{{event.client}}</td>
+        <td>{{event.employee}}</td>
+        <td>{{event.start_time}}</td>
+        <td>{{event.end_time}}</td>
+      </tr>
+      {% endfor %}
+    </table> {% endcomment %}
+  </body>
+</html>

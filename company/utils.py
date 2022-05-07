@@ -2,9 +2,11 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import get_template
 from django.urls import reverse
+from django.db.models import Q
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from company import models
 
 
 def send_simple_email(request, template_path: str, reciepients: list, subject: str = "Email", context: dict = {}) -> bool:
@@ -56,55 +58,63 @@ def send_company_link(request, email: str) -> str:
   return url
 
 
-def send_staff_event_email(request, employee, events) -> str:
-  
+# def send_employee_event_email(request, employee, events) -> str:
+def send_employee_event_email(request, employee) -> str:
+  company = employee.company
+  name = f"{employee.user.first_name}"
   email = employee.user.email
+  events = models.Event.objects.filter(Q(company=company) & Q(employee=employee) & ~Q(status="Completed") | ~Q(status="Dropped"))
+  
   context = {
+    'company': company,
     'events': events,
-    'user': employee.user,
+    'employee': employee,
+    'name': name,
     # 'url': url,
   }
   try:
     email = send_simple_email(request, 'email/employee_event_email.html', [email], "Shift Details", context)
-    print(f'Company link sent {email}')
+    print(f'Employee event nofitication mail sent {email}')
   except Exception as e:
     print(f'An exception occurred while sending the company link: {e}')
     
-  return url
+  # return url
 
 
-def send_client_event_email(request, client, events) -> str:
+# def send_client_event_email(request, client, events) -> str:
+def send_client_event_email(request, client) -> str:
   user = client.name
   email = client.email
-  print(user)
-  try:
-    company = user.employee.company #TODO: remove this
-  except:
-    company = client.company
-    url = "https:// " # link to frontend schedule page for client
+  company = client.company
+  url = "https:// " # link to frontend schedule page for client
+  events = models.Event.objects.filter(Q(company=company) & Q(client=client) & ~Q(status="Completed") | ~Q(status="Dropped"))
   
   context = {
     'company': company,
-    'user': user,
+    'events': events,
+    'client': client,
+    'name': user,
     'url': url,
   }
   try:
     email = send_simple_email(request, 'client_event_email.html', [email], "Company Link", context)
-    print(f'Company link sent {email}')
+    print(f'Client event schedule email sent {email}')
+    return True
   except Exception as e:
-    print(f'An exception occurred while sending the company link: {e}')
+    print(f'An exception occurred while sending the event schedule: {e}')
+    return False
     
-  return url
+  # return url
 
 
-def get_tokens_for_employee(employee):
-  user = employee.user
-  refresh = RefreshToken.for_user(user)
+# def get_tokens_for_employee(employee):
+#   user = employee.user
+#   refresh = RefreshToken.for_user(user)
 
-  return {
-    'refresh': str(refresh),
-    'access': str(refresh.access_token),
-  }
+#   return {
+#     'refresh': str(refresh),
+#     'access': str(refresh.access_token),
+#   }
 
 
 # class EmployeeTokenObtainPairSerializer(TokenObtainPairSerializer):

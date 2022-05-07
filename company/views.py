@@ -17,6 +17,7 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save 
 from company.models import Company
+from company import utils
 
 # Create your views here.
 
@@ -502,7 +503,16 @@ class EventViewSet(viewsets.ModelViewSet):
     filterset_class = filters.EventFilter
 
     def perform_create(self, serializer):
-        return serializer.save()
+        event = serializer.save()
+        client = event.client
+        employee = event.employee
+        try:
+            utils.send_employee_event_email(self.request, employee)
+            utils.send_client_event_email(self.request, client)
+        except Exception as e:
+            print(e)
+            print('An exception occurred while sending mails to client and employee')
+        return event
     
     def get_serializer_class(self):
         try:
