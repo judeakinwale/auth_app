@@ -16,11 +16,18 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from app.schema import schema_view
+from django.shortcuts import render
+
+
+def render_react(request):
+    return render(request, "index.html")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    re_path(r"^$", render_react),
+    re_path(r"^(?:.*)/?$", render_react),
     path('api-auth/', include('rest_framework.urls')),
     path('', include('user.urls', namespace='user')),
     path('', include('company.urls', namespace='company')),
