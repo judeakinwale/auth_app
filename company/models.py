@@ -15,17 +15,17 @@ class Company(models.Model):
     description = models.TextField(null=True, blank=True)
     address = models.CharField(max_length=250, null=True)
     province = models.CharField(max_length=250, null=True, blank=True)
-    state = models.CharField(max_length=250, null=True)
+    state = models.CharField(max_length=250, null=True, blank=True)
     country = models.CharField(max_length=250, null=True)
     postal_code = models.CharField(max_length=250, null=True, blank=True)
-    contact_person = models.CharField(max_length=250, null=True)
+    contact_person = models.CharField(max_length=250, null=True, blank=True)
     admin = models.OneToOneField(
         settings.AUTH_USER_MODEL, limit_choices_to={'is_staff': True},
         verbose_name=_("admin"), related_name='company',
         on_delete=models.CASCADE, null=True, blank=True,
     )
     website = models.CharField(max_length=250, null=True)
-    logo = models.ImageField(upload_to='images/company/%Y/%m/%d/', blank=True, null=True, max_length=254)
+    logo = models.ImageField(upload_to='images/company/%Y/%m/%d/', max_length=254, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -121,7 +121,7 @@ class Employee(models.Model):
         Team_Lead = 'Team Lead', _('Team Lead')
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_("User"), related_name="employee", on_delete=models.CASCADE)
-    phone = models.CharField(max_length=50, null=True, blank=True)
+    phone = models.CharField(max_length=50, null=True)
     # TODO: Remove company from employee model
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="employees", on_delete=models.CASCADE, null=True, blank=True)
     branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="employees", on_delete=models.CASCADE, null=True)
@@ -132,13 +132,13 @@ class Employee(models.Model):
         choices=RoleChoices.choices,
         default=RoleChoices.Staff,
     )
-    date_of_birth = models.DateField(null=True)
+    date_of_birth = models.CharField(max_length=250, null=True)
     address = models.CharField(max_length=250, null=True)
     province = models.CharField(max_length=250, null=True)
-    state = models.CharField(max_length=250, null=True)
+    state = models.CharField(max_length=250, null=True, blank=True)
     country = models.CharField(max_length=250, null=True)
     postal_code = models.CharField(max_length=250, null=True)
-    image = models.ImageField(upload_to='images/profile/%Y/%m/%d/', blank=True, null=True, max_length=254)
+    image = models.ImageField(upload_to='images/profile/%Y/%m/%d/', max_length=254, null=True, blank=True)
     hobbies = models.TextField(null=True, blank=True)
     join_date = models.DateField(null=True)
     is_active = models.BooleanField(default=True)
@@ -196,7 +196,7 @@ class Client(models.Model):
     state = models.CharField(max_length=250, null=True, blank=True)
     country = models.CharField(max_length=250, null=True)
     postal_code = models.CharField(max_length=250, null=True)
-    image = models.ImageField(upload_to='images/client/%Y/%m/%d/', blank=True, null=True, max_length=254)
+    image = models.ImageField(upload_to='images/client/%Y/%m/%d/', max_length=254, null=True, blank=True)
     join_date = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
