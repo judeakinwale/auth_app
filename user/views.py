@@ -3,7 +3,7 @@ from django.shortcuts import render, reverse
 from django.contrib.auth import get_user_model
 
 from rest_framework import generics, viewsets, permissions
-from rest_framework import status
+from rest_framework import status, views, response
 from rest_framework_simplejwt.views import (
   TokenObtainPairView, TokenRefreshView, TokenVerifyView
 )
@@ -52,7 +52,12 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all users",
@@ -76,7 +81,12 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update a user",
@@ -84,7 +94,12 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete a user",
@@ -192,7 +207,12 @@ class DecoratedResetPasswordValidateTokenViewSet(ResetPasswordValidateTokenViewS
         operation_summary='validate password reset token',
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
 
 class DecoratedResetPasswordConfirmViewSet(ResetPasswordConfirmViewSet):
@@ -201,7 +221,12 @@ class DecoratedResetPasswordConfirmViewSet(ResetPasswordConfirmViewSet):
         operation_summary='confirm password reset token',
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
 
 class DecoratedResetPasswordRequestTokenViewSet(ResetPasswordRequestTokenViewSet):
@@ -210,4 +235,9 @@ class DecoratedResetPasswordRequestTokenViewSet(ResetPasswordRequestTokenViewSet
         operation_summary='request password reset token',
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)

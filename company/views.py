@@ -54,7 +54,12 @@ class CompanyViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all companies",
@@ -78,7 +83,12 @@ class CompanyViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update a company",
@@ -86,7 +96,12 @@ class CompanyViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete a company",
@@ -133,7 +148,12 @@ class BranchViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all company branches",
@@ -157,7 +177,12 @@ class BranchViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update a company branch",
@@ -165,7 +190,12 @@ class BranchViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete a company branch",
@@ -212,7 +242,12 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all company departments",
@@ -236,7 +271,12 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update a company department",
@@ -244,7 +284,12 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete a company department",
@@ -291,7 +336,12 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all employees",
@@ -315,7 +365,12 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update an employee",
@@ -323,7 +378,12 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete an employee",
@@ -370,7 +430,12 @@ class LocationViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all company locations",
@@ -394,7 +459,12 @@ class LocationViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update a company location",
@@ -402,7 +472,12 @@ class LocationViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete a company location",
@@ -449,7 +524,12 @@ class ClientViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all clients",
@@ -473,7 +553,12 @@ class ClientViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update a client",
@@ -481,7 +566,12 @@ class ClientViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete a client",
@@ -544,7 +634,12 @@ class EventViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all events",
@@ -568,7 +663,12 @@ class EventViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update an event",
@@ -576,7 +676,12 @@ class EventViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete an event",
@@ -625,7 +730,12 @@ class MonthViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all months",
@@ -649,7 +759,12 @@ class MonthViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update a month",
@@ -657,7 +772,12 @@ class MonthViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete a month",
@@ -706,7 +826,12 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all client schedules",
@@ -730,7 +855,12 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update a client schedule",
@@ -738,7 +868,12 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete a client schedule",
@@ -787,7 +922,12 @@ class WeekViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """create method docstring"""
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_description="list all weeks",
@@ -811,7 +951,12 @@ class WeekViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         """update method docstring"""
-        return super().update(request, *args, **kwargs)
+        try:
+            return super().update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="partial_update a week",
@@ -819,7 +964,12 @@ class WeekViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """partial_update method docstring"""
-        return super().partial_update(request, *args, **kwargs)
+        try:
+            return super().partial_update(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="delete a week",
@@ -851,7 +1001,12 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
     
     # def create(self, request, *args, **kwargs):
     #     """create method docstring"""
-    #     return super().create(request, *args, **kwargs)
+    #     try:
+    #         return super().create(request, *args, **kwargs)
+    #         print(**kwargs)
+    #     except Exception as e:
+    #         error_resp = {'detail': f"{e}"}
+    #         return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -955,7 +1110,12 @@ class WeeklyReportView(generics.GenericAPIView):
     #     )
     #     # def create(self, request, *args, **kwargs):
     #     #     """create method docstring"""
-    #     #     return super().create(request, *args, **kwargs)
+    #     #     try:
+    #     #         return super().create(request, *args, **kwargs)
+    #     #         print(**kwargs)
+    #     #     except Exception as e:
+    #     #         error_resp = {'detail': f"{e}"}
+    #     #         return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
     #     def post(self, request, *args, **kwargs):
     #         serializer = self.get_serializer(data=request.data)

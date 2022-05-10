@@ -5,6 +5,7 @@ from user import models
 # For JWT and drf-yasg integration
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
+from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.views import (
   TokenObtainPairView, TokenRefreshView, TokenVerifyView
 )
@@ -41,6 +42,21 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     extra_kwargs = {
       'url': {'view_name': 'user:user-detail'},
       'password': {'write_only': True, 'min_length': 5, 'required': False, 'allow_null': True},
+      # "email": {
+      #   "validators": [
+      #     UniqueValidator(queryset=get_user_model().objects.all(),message="This email already exists!")
+      #   ]
+      # },
+      # "username": {
+      #   "validators": [
+      #     UniqueValidator(queryset=get_user_model().objects.all(),message="This username already exists!")
+      #   ]
+      # },
+      # "employee_id": {
+      #   "validators": [
+      #     UniqueValidator(queryset=get_user_model().objects.all(),message="This employee_id already exists!")
+      #   ]
+      # },
     }
 
   def create(self, validated_data):

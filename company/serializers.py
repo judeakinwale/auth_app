@@ -404,7 +404,7 @@ class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
         user_data.update(employee_id=validated_data['employee_id'])
       user_instance = get_user_model().objects.get(employee__id=instance.id)
       nested_serializer = self.fields['user']
-      user = nested_serializer.update(self, user_instance, user_data)
+      user = nested_serializer.update(user_instance, user_data)
       employee = super().update(instance, validated_data)
     except  Exception as e:
         print(f"There was an exception: {e}")
@@ -477,7 +477,7 @@ class BranchSerializer(serializers.HyperlinkedModelSerializer):
       for nested_data in phone_numbers:            
         try:
           nested_instance = instance.phone_numbers.all()[n]
-          phone_number = nested_serializer.update(self, nested_instance, nested_data) # Where nested serializer = PhoneSerializer
+          phone_number = nested_serializer.update(nested_instance, nested_data) # Where nested serializer = PhoneSerializer
         except Exception as e:
           nested_data.update(branch=branch)
           phone_number = models.Phone.objects.create(**nested_data)
@@ -563,7 +563,7 @@ class CompanySerializer(CompanyBaseSerializer):
           # print(f'continued, n is {n}')
           nested_instance = instance.phone_numbers.all()[n]
           # print("nested phone_number exists")
-          phone_number = nested_serializer.update(self, nested_instance, nested_data) # Where nested serializer = PhoneSerializer
+          phone_number = nested_serializer.update(nested_instance, nested_data) # Where nested serializer = PhoneSerializer
           # print("phone_number created")
         except Exception as e:
           # print(f"There was an exception: {e}")
