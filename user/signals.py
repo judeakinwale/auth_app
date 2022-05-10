@@ -1,4 +1,5 @@
 # Using signals, group and permissions
+from django.conf import settings
 from django.dispatch import receiver
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -45,6 +46,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     # send an e-mail to the user
     title = "App"
     urls_app_name = urls.app_name
+    sender_email = f"{settings.DEFAULT_FROM_NAME} <{settings.EMAIL_HOST_USER}>"
     context = {
         'current_user': reset_password_token.user,
         'username': reset_password_token.user.username,
@@ -60,11 +62,11 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     msg = EmailMultiAlternatives(
         # title:
-        f"Password Reset for {title}",
+        f"Password Reset",
         # message:
         email_plaintext_message,
         # from:
-        settings.DEFAULT_FROM_EMAIL,  # "noreply@somehost.local",
+        sender_email,  # "noreply@somehost.local",
         # to:
         [reset_password_token.user.email]
     )

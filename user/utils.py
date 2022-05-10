@@ -15,7 +15,7 @@ def send_account_creation_email(request, reciepients: list, context: dict = {}) 
   """
   try:
     subject = "Account Created"
-    sender_email = settings.EMAIL_HOST_USER
+    sender_email = f"{settings.DEFAULT_FROM_NAME} <{settings.EMAIL_HOST_USER}>"
 
     message = get_template('email/account_creation.html').render(context)
 

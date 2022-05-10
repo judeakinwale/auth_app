@@ -201,6 +201,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD')
 EMAIL_HOST_USER = os.environ.get('SMTP_EMAIL')
 EMAIL_PORT = os.environ.get('SMTP_PORT')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_NAME = os.environ.get('FROM_NAME')
 
 # django-cors-headers configuration
 # https://github.com/adamchainz/django-cors-headers#configuration
