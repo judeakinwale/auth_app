@@ -705,6 +705,8 @@ class MonthViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         try: 
             if "company" not in serializer.validated_data:
+                if self.request.user.is_staff:
+                    return serializer.save(company=self.request.user.company)
                 return serializer.save(company=self.request.user.employee.branch.company)
         except Exception as e:
             return serializer.save()
