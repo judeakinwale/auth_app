@@ -18,12 +18,7 @@ class Company(models.Model):
     state = models.CharField(max_length=250, null=True)
     country = models.CharField(max_length=250, null=True)
     postal_code = models.CharField(max_length=250, null=True, blank=True)
-    contact_person = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='contact',
-        on_delete=models.CASCADE,
-        null=True, blank=True,
-    )
+    contact_person = models.CharField(max_length=250, null=True)
     admin = models.OneToOneField(
         settings.AUTH_USER_MODEL, limit_choices_to={'is_staff': True},
         verbose_name=_("admin"), related_name='company',

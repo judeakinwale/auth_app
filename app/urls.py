@@ -19,8 +19,9 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from app.schema import schema_view
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_protect 
 
-
+@csrf_protect
 def render_react(request):
     return render(request, "index.html")
 
