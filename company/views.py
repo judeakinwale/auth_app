@@ -703,6 +703,8 @@ class MonthViewSet(viewsets.ModelViewSet):
     # filterset_class = filters.MonthFilter
 
     def perform_create(self, serializer):
+        if "company" not in serializer.data:
+            return serializer.save(company=self.request.user.employee.branch.company)
         return serializer.save()
     
     def get_serializer_class(self):
