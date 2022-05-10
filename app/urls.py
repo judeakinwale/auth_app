@@ -19,16 +19,17 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from app.schema import schema_view
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_protect 
+# from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 
-@csrf_protect
-def render_react(request):
-    return render(request, "index.html")
+# @csrf_exempt
+# def render_react(request):
+#     context = {}
+#     return render(request, "index.html", context)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r"^$", render_react),
-    re_path(r"^(?:.*)/?$", render_react),
+    # re_path(r"^$", render_react),
+    # re_path(r"^(?:.*)/?$", render_react),
     path('api-auth/', include('rest_framework.urls')),
     path('', include('user.urls', namespace='user')),
     path('', include('company.urls', namespace='company')),
