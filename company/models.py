@@ -247,6 +247,7 @@ class Event(models.Model):
 
 class Month(models.Model):
 
+    company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="months", on_delete=models.CASCADE, null=True, blank=True)
     # client = models.ForeignKey(Client, verbose_name=_("Client"), related_name="months", on_delete=models.CASCADE, null=True, blank=True)
     month = models.CharField(max_length=250, null=True, blank=True)
     year = models.CharField(max_length=250, null=True, blank=True)

@@ -712,17 +712,17 @@ class MonthViewSet(viewsets.ModelViewSet):
             return super().get_serializer_class()
         
     def get_queryset(self):
-        # if self.request.user.is_superuser:
-        #     return super().get_queryset()
+        if self.request.user.is_superuser:
+            return super().get_queryset()
         
-        # try:
-        #     if self.request.user.is_staff:
-        #         return models.Month.objects.filter(company=self.request.user.company)    
-        #     return models.Month.objects.filter(company=self.request.user.employee.company)
-        # except Exception:
-        #     return models.Month.objects.none()
+        try:
+            if self.request.user.is_staff:
+                return models.Month.objects.filter(company=self.request.user.company)    
+            return models.Month.objects.filter(company=self.request.user.employee.company)
+        except Exception:
+            return models.Month.objects.none()
         
-        return super().get_queryset()
+        # return super().get_queryset()
 
     @swagger_auto_schema(
         operation_description="create a month",

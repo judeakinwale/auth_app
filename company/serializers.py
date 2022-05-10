@@ -35,6 +35,7 @@ class PhoneSerializer(serializers.HyperlinkedModelSerializer):
 
 class MonthSerializer(serializers.HyperlinkedModelSerializer):
   
+  company = serializers.PrimaryKeyRelatedField(queryset=models.Company.objects.all(), allow_null=True, required=False)
   # client = serializers.PrimaryKeyRelatedField(queryset=models.Client.objects.all(), allow_null=True, required=False)
   
   class Meta:
@@ -42,6 +43,7 @@ class MonthSerializer(serializers.HyperlinkedModelSerializer):
     fields = [
       'id',
       'url',
+      'company',
       # 'client',
       'month',
       'year',
@@ -588,7 +590,8 @@ class LocationResponseSerializer(LocationSerializer):
 
 
 class MonthResponseSerializer(MonthSerializer):
-  
+
+  company = CompanySerializer(read_only=True)
   # client = ClientSerializer(read_only=True)
   
   class Meta(MonthSerializer.Meta):
