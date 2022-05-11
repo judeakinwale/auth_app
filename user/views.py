@@ -176,7 +176,12 @@ class DecoratedTokenObtainPairView(TokenObtainPairView):
         responses={
             status.HTTP_200_OK: serializers.TokenObtainPairResponseSerializer})
     def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+        try:
+            return super().post(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DecoratedTokenRefreshView(TokenRefreshView):
@@ -186,7 +191,12 @@ class DecoratedTokenRefreshView(TokenRefreshView):
         responses={
             status.HTTP_200_OK: serializers.TokenRefreshResponseSerializer})
     def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+        try:
+            return super().post(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DecoratedTokenVerifyView(TokenVerifyView):
@@ -196,7 +206,12 @@ class DecoratedTokenVerifyView(TokenVerifyView):
         responses={
             status.HTTP_200_OK: serializers.TokenVerifyResponseSerializer})
     def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+        try:
+            return super().post(request, *args, **kwargs)
+            print(**kwargs)
+        except Exception as e:
+            error_resp = {'detail': f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
 
 # django-passwordreset integration with drf-yasg (views)
