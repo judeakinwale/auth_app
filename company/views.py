@@ -19,6 +19,8 @@ from django.db.models.signals import post_save
 from company.models import Company
 from company import utils
 
+import calendar # For get weekly report weeks
+
 # Create your views here.
 
 request_user = ""
@@ -824,7 +826,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         except Exception:
             return models.Schedule.objects.none()
         
-        return super().get_queryset()
+        # return super().get_queryset()
 
     @swagger_auto_schema(
         operation_description="create a client schedule",
@@ -1039,6 +1041,9 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
+
+
+
 class WeeklyReportView(generics.GenericAPIView):
     
     serializer_class = serializers.WeeklyReportSerializer
@@ -1049,6 +1054,12 @@ class WeeklyReportView(generics.GenericAPIView):
     )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
+        
+        company = ""
+        if request.user.is_staff:
+            company=request.user.company
+        else:    
+            company=request.user.employee.company
 
         try:
             serializer.is_valid(raise_exception=True)
@@ -1094,6 +1105,17 @@ class WeeklyReportView(generics.GenericAPIView):
                 # print(serialized_events.data)
                 data.append(report_data)
             
+            try:
+                employees = models.Employee.objects.filter(Q(company=company) | Q(branch__company=company))
+                for employee in employees:
+                    email = utils.send_employee_event_email(request, employee, events)
+                    
+                clients = models.Client.objects.filter(company=company)
+                for employee in clients:
+                    email = utils.send_client_event_email(request, client, events)
+            except Exception as e:
+                print(f'An exception occurred:{e}')
+            
             resp_data = {'result': data,}
             return response.Response(resp_data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -1103,6 +1125,108 @@ class WeeklyReportView(generics.GenericAPIView):
         
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(
+        operation_description="Get Weeks for Weekly Report",
+        operation_summary='Get Weeks for Weekly Report'
+    )
+    def get(self, request, *args, **kwargs):
+        
+        try:
+            try:
+                month = models.Month.objects.get(is_active=True)
+            except Exception as e:
+                error_resp = {"detail": f"More than one month is active"}
+                return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
+            day = 1
+            year = int(month.year)
+            
+            month_repr = f"{day} {month.month}, {month.year}"
+            print(f"month_repr: {month_repr}")
+            
+            month_start = datetime.strptime(month_repr, '%d %B, %Y')
+            print(f"month_start: {month_start}")
+            
+            month_int = str(datetime.strptime(month.month, '%B'))
+            print(f"month_int: {month_int}")
+            print(f"month_start.month: {month_start.month}")
+            
+            month_range = calendar.monthrange(year, month_start.month)
+            print(f"month_range: {month_range}")
+            
+            last_day = month_range[1]
+            
+            month_end_repr = f"{last_day} {month.month}, {month.year}"
+            print(f"month_end_repr: {month_end_repr}")
+            
+            month_end = datetime.strptime(month_end_repr, '%d %B, %Y')
+            print(f"month_end: {month_end}")
+            
+            print("month start repr")
+            print(month_start.strftime('%Y-%m-%d'))
+            month_start_date = month_start.strftime('%Y-%m-%d')
+            print("month end repr")
+            print(month_end.strftime('%Y-%m-%d'))
+            month_end_date = month_end.strftime('%Y-%m-%d')
+        except Exception as e:
+            error_resp = {"detail": f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+        
+        weeks = models.Week.objects.none()
+        try:
+            if request.user.is_superuser:
+                # weeks = models.Week.objects.filter(start_date__gte=month_start_date, end_date__lte=month_end_date)
+                weeks = models.Week.objects.filter()
+            elif request.user.is_staff:
+                weeks = models.Week.objects.filter(start_date__gte=month_start_date, end_date__lte=month_end_date, client__company=request.user.company)
+            else:    
+                weeks = models.Week.objects.filter(start_date__gte=month_start_date, end_date__lte=month_end_date, client__company=request.user.employee.company)
+        except Exception:
+            weeks = models.Week.objects.none()
+        
+        # serializer = self.get_serializer(data=request.data)
+        serialized_weeks = serializers.WeekResponseSerializer(weeks, many=True, context={'request': request})
+
+        try:
+            # serialized_weeks.is_valid(raise_exception=True)
+            resp_data = {'result': serialized_weeks.data,}
+            return response.Response(resp_data, status=status.HTTP_200_OK)
+            # return super().get(request, *args, **kwargs)
+        except Exception as e:
+            error_resp = {"detail": f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PublishMonthView(generics.GenericAPIView):
+    
+    # serializer_class = serializers.WeeklyReportSerializer
+    
+    @swagger_auto_schema(
+        operation_description="Publish Month",
+        operation_summary='Publish Month'
+    )
+    def get(self, request, *args, **kwargs):
+        
+        try:
+            all_months = models.Month.objects.all().update(is_active=False)
+            month = models.Month.objects.get(id=int(kwargs['id']))
+            month.is_active = True
+            month.save()
+            month.refresh_from_db()
+            serialized_month = serializers.MonthResponseSerializer(month, context={'request': request})
+            
+            try:
+                employees = models.Employee.objects.filter(company=month.company)
+                for employee in employees:
+                    email = utils.send_employee_schedule_publish_email(request, employee)
+            except Exception as e:
+                print(f'An exception occurred:{e}')
+            
+            resp_data = {'result': serialized_month.data,}
+            return response.Response(resp_data, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            error_resp = {"detail": f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
 
     # class MultipleEventView(generics.GenericAPIView):

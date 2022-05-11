@@ -58,12 +58,13 @@ def send_company_link(request, email: str) -> str:
   return url
 
 
-# def send_employee_event_email(request, employee, events) -> str:
-def send_employee_event_email(request, employee) -> str:
+# def send_employee_event_email(request, employee) -> str:
+def send_employee_event_email(request, employee, events) -> str:
   company = employee.company
   name = f"{employee.user.first_name}"
   email = employee.user.email
-  events = models.Event.objects.filter(Q(company=company) & Q(employee=employee) & ~Q(status="Completed") | ~Q(status="Dropped"))
+  # events = models.Event.objects.filter(Q(company=company) & Q(employee=employee) & ~Q(status="Completed") | ~Q(status="Dropped"))
+  events = events.filter(employee=employee)
   
   context = {
     'company': company,
@@ -81,13 +82,15 @@ def send_employee_event_email(request, employee) -> str:
   # return url
 
 
-# def send_client_event_email(request, client, events) -> str:
-def send_client_event_email(request, client) -> str:
+# def send_client_event_email(request, client) -> str:
+def send_client_event_email(request, client, events) -> str:
   user = client.name
   email = client.email
   company = client.company
   url = "https:// " # link to frontend schedule page for client
-  events = models.Event.objects.filter(Q(company=company) & Q(client=client) & ~Q(status="Completed") | ~Q(status="Dropped"))
+  # events = models.Event.objects.filter(Q(company=company) & Q(client=client) & ~Q(status="Completed") | ~Q(status="Dropped"))
+  events = events.filter(client=client)
+  
   
   context = {
     'company': company,
@@ -103,6 +106,28 @@ def send_client_event_email(request, client) -> str:
   except Exception as e:
     print(f'An exception occurred while sending the event schedule: {e}')
     return False
+    
+  # return url
+
+# def send_employee_event_email(request, employee, events) -> str:
+def send_employee_schedule_publish_email(request, employee) -> str:
+  company = employee.company
+  name = f"{employee.user.first_name}"
+  email = employee.user.email
+  events = models.Event.objects.filter(Q(company=company) & Q(employee=employee) & ~Q(status="Completed") | ~Q(status="Dropped"))
+  
+  context = {
+    'company': company,
+    'events': events,
+    'employee': employee,
+    'name': name,
+    # 'url': url,
+  }
+  try:
+    email = send_simple_email(request, 'email/employee_schedule_publish_email.html', [email], "Monthly Schedule", context)
+    print(f'Employee schedule publish mail sent {email}')
+  except Exception as e:
+    print(f'An exception occurred while sending the company link: {e}')
     
   # return url
 

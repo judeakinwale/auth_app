@@ -47,12 +47,15 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     title = "App"
     urls_app_name = urls.app_name
     sender_email = f"{settings.DEFAULT_FROM_NAME} <{settings.EMAIL_HOST_USER}>"
+    frontend_url = "https://hrtechleft.herokuapp.com/resetPassword/"
+    backend_url = instance.request.build_absolute_uri(reverse(f'{urls_app_name}:reset-password-confirm-list'))
     context = {
         'current_user': reset_password_token.user,
         'username': reset_password_token.user.username,
         'email': reset_password_token.user.email,
-        'reset_password_url': "{}?token={}".format(
-            instance.request.build_absolute_uri(reverse(f'{urls_app_name}:reset-password-confirm-list')),
+        # 'reset_password_url': "{}?token={}".format(
+        'reset_password_url': "{}{}".format(
+            frontend_url,
             reset_password_token.key)
     }
 
