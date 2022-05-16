@@ -1056,10 +1056,13 @@ class WeeklyReportView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         
         company = ""
-        if request.user.is_staff:
-            company=request.user.company
-        else:    
-            company=request.user.employee.company
+        try:
+            if request.user.is_staff:
+                company=request.user.company
+            else:    
+                company=request.user.employee.company
+        except Exception as e:
+            company = None
 
         try:
             serializer.is_valid(raise_exception=True)
@@ -1104,15 +1107,19 @@ class WeeklyReportView(generics.GenericAPIView):
                 report_data[f"{week.name}"] = serialized_events.data
                 # print(serialized_events.data)
                 data.append(report_data)
+                
+            event_id_list = []
+            for event in events:
+                event_id_list.append(event.id)
             
             try:
                 employees = models.Employee.objects.filter(Q(company=company) | Q(branch__company=company))
                 for employee in employees:
-                    email = utils.send_employee_event_email(request, employee, events)
+                    email = utils.send_employee_event_email(request, employee, event_id_list)
                     
                 clients = models.Client.objects.filter(company=company)
-                for employee in clients:
-                    email = utils.send_client_event_email(request, client, events)
+                for client in clients:
+                    email = utils.send_client_event_email(request, client, event_id_list)
             except Exception as e:
                 print(f'An exception occurred:{e}')
             

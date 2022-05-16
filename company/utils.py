@@ -12,7 +12,8 @@ from company import models
 def send_simple_email(request, template_path: str, reciepients: list, subject: str = "Email", context: dict = {}) -> bool:
   try:
     # subject = subject
-    sender_email = settings.EMAIL_HOST_USER
+    # sender_email = settings.EMAIL_HOST_USER
+    sender_email = f"{settings.DEFAULT_FROM_NAME} <{settings.EMAIL_HOST_USER}>"
     # context = context # context dictionary - {}
     message = get_template(template_path).render(context) # path to the email template - 'email/results.html'
     # reciepients = reciepients # list of emails
@@ -59,77 +60,104 @@ def send_company_link(request, email: str) -> str:
 
 
 # def send_employee_event_email(request, employee) -> str:
-def send_employee_event_email(request, employee, events) -> str:
-  company = employee.company
-  name = f"{employee.user.first_name}"
-  email = employee.user.email
-  # events = models.Event.objects.filter(Q(company=company) & Q(employee=employee) & ~Q(status="Completed") | ~Q(status="Dropped"))
-  events = events.filter(employee=employee)
-  
-  context = {
-    'company': company,
-    'events': events,
-    'employee': employee,
-    'name': name,
-    # 'url': url,
-  }
+def send_employee_event_email(request, employee, event_ids: list) -> str:
   try:
-    email = send_simple_email(request, 'email/employee_event_email.html', [email], "Shift Details", context)
-    print(f'Employee event nofitication mail sent {email}')
-  except Exception as e:
-    print(f'An exception occurred while sending the company link: {e}')
+    company = employee.company
+    name = f"{employee.user.first_name}"
+    email = employee.user.email
+    events = models.Event.objects.filter(
+      Q(id__in=event_ids) 
+      # & Q(company=company) 
+      & Q(employee=employee) 
+      # & ~Q(status="Completed") | ~Q(status="Dropped")
+    )
+    print(f"event ids: {event_ids}")
+    print(f"employee company: {company}")
+    print(f"employee: {employee}")
+    print(f"email events: {events}")
+    # events = events.filter(employee=employee)
     
-  # return url
+    context = {
+      'company': company,
+      'events': events,
+      'employee': employee,
+      'name': name,
+      # 'url': url,
+    }
+    try:
+      email = send_simple_email(request, 'email/employee_event_email.html', [email], "Shift Details", context)
+      print(f'Employee event nofitication mail sent {email}')
+    except Exception as e:
+      print(f'An exception occurred while sending the company link: {e}')
+      
+    # return url
+    
+  except Exception as e:
+    print(f'An exception occurred while getting employee details: {e}')
 
 
 # def send_client_event_email(request, client) -> str:
-def send_client_event_email(request, client, events) -> str:
-  user = client.name
-  email = client.email
-  company = client.company
-  url = "https:// " # link to frontend schedule page for client
-  # events = models.Event.objects.filter(Q(company=company) & Q(client=client) & ~Q(status="Completed") | ~Q(status="Dropped"))
-  events = events.filter(client=client)
-  
-  
-  context = {
-    'company': company,
-    'events': events,
-    'client': client,
-    'name': user,
-    'url': url,
-  }
+def send_client_event_email(request, client, event_ids: list) -> str:
   try:
-    email = send_simple_email(request, 'client_event_email.html', [email], "Company Link", context)
-    print(f'Client event schedule email sent {email}')
-    return True
-  except Exception as e:
-    print(f'An exception occurred while sending the event schedule: {e}')
-    return False
+    user = client.name
+    email = client.email
+    company = client.company
+    url = "https:// " # link to frontend schedule page for client
+    events = models.Event.objects.filter(
+      Q(id__in=event_ids) 
+      # & Q(company=company) 
+      & Q(client=client) 
+      # & ~Q(status="Completed") | ~Q(status="Dropped")
+    )
+    # events = events.filter(client=client)
     
-  # return url
+    
+    context = {
+      'company': company,
+      'events': events,
+      'client': client,
+      'name': user,
+      'url': url,
+    }
+    try:
+      email = send_simple_email(request, 'client_event_email.html', [email], "Company Link", context)
+      print(f'Client event schedule email sent {email}')
+      return True
+    except Exception as e:
+      print(f'An exception occurred while sending the event schedule: {e}')
+      return False
+      
+    # return url
+        
+  except Exception as e:
+    print(f'An exception occurred while getting client details: {e}')
+
 
 # def send_employee_event_email(request, employee, events) -> str:
 def send_employee_schedule_publish_email(request, employee) -> str:
-  company = employee.company
-  name = f"{employee.user.first_name}"
-  email = employee.user.email
-  events = models.Event.objects.filter(Q(company=company) & Q(employee=employee) & ~Q(status="Completed") | ~Q(status="Dropped"))
-  
-  context = {
-    'company': company,
-    'events': events,
-    'employee': employee,
-    'name': name,
-    # 'url': url,
-  }
   try:
-    email = send_simple_email(request, 'email/employee_schedule_publish_email.html', [email], "Monthly Schedule", context)
-    print(f'Employee schedule publish mail sent {email}')
-  except Exception as e:
-    print(f'An exception occurred while sending the company link: {e}')
+    company = employee.company
+    name = f"{employee.user.first_name}"
+    email = employee.user.email
+    # events = models.Event.objects.filter(Q(company=company) & Q(employee=employee) & ~Q(status="Completed") | ~Q(status="Dropped"))
     
-  # return url
+    context = {
+      'company': company,
+      # 'events': events,
+      'employee': employee,
+      'name': name,
+      # 'url': url,
+    }
+    try:
+      email = send_simple_email(request, 'email/employee_schedule_publish_email.html', [email], "Monthly Schedule", context)
+      print(f'Employee schedule publish mail sent {email}')
+    except Exception as e:
+      print(f'An exception occurred while sending the company link: {e}')
+      
+    # return url
+        
+  except Exception as e:
+    print(f'An exception occurred while getting employee details: {e}')
 
 
 # def get_tokens_for_employee(employee):
