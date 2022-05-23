@@ -595,7 +595,12 @@ class EventViewSet(viewsets.ModelViewSet):
     filterset_class = filters.EventFilter
 
     def perform_create(self, serializer):
-        event = serializer.save()
+        event = ''
+        if "date" in serializer.validated_data and "end_date" not in serializer.validated_data:
+            event = serializer.save(end_date=serializer.validated_data["date"])
+        else:
+            event = serializer.save()
+            
         try:
             client = event.client
             employee = event.employee

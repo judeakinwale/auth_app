@@ -230,6 +230,7 @@ class Event(models.Model):
     start_time = models.CharField(max_length=250, null=True, blank=True)
     end_time = models.CharField(max_length=250, null=True, blank=True)
     date = models.CharField(max_length=250, null=True, blank=True)
+    end_date = models.CharField(max_length=250, null=True, blank=True)
     note = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=250, choices=StatusChoices.choices, default=StatusChoices.Pending)
     is_active = models.BooleanField(default=True)
