@@ -1330,7 +1330,7 @@ class MonthEventView(generics.GenericAPIView):
                 # month = models.Month.objects.get(is_active=True)
                 month = models.Month.objects.get(id=int(kwargs['id']))
             except Exception as e:
-                error_resp = {"detail": f"More than one month is active"}
+                error_resp = {"detail": f"Month not found"}
                 return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
             day = 1
             year = int(month.year)
