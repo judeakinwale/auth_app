@@ -28,8 +28,9 @@
   <body>
     <h4>Hello {{name}},</h4>
     <br />
-    <p>Kindly find <a class="link" href={{url}}>your schedule<a/> for the month <a class="link" href={{url}}>here<a/></p>
-    {% comment %} <p>You have been assigned to a shift. Kindly find the details below</p>
+    {% comment %} <p>Kindly find <a class="link" href={{url}}>your schedule<a/> for the month <a class="link" href={{url}}>here<a/></p> {% endcomment %}
+    {% comment %} <p>You have been assigned to a shift. Kindly find the details below</p> {% endcomment %}
+    <p>Your shifts have been updated. Kindly find the details below</p>
     <br />
     <h3>Shift Details</h3>
 
@@ -52,6 +53,6 @@
         <td>{{event.end_time}}</td>
       </tr>
       {% endfor %}
-    </table> {% endcomment %}
+    </table>
   </body>
 </html>

@@ -73,11 +73,18 @@ def send_employee_event_email(request, employee, event_ids: list) -> str:
       & Q(employee=employee) 
       # & ~Q(status="Completed") | ~Q(status="Dropped")
     )
-    print(f"event ids: {event_ids}")
-    print(f"employee company: {company}")
-    print(f"employee: {employee}")
-    print(f"email events: {events}")
-    # events = events.filter(employee=employee)
+    # print(f"event ids: {event_ids}")
+    # print(f"employee company: {company}")
+    # print(f"employee: {employee}")
+    # print(f"email events: {events}")
+    # for event in events:
+    #   print(f"event.date: {event.date}")
+    #   print(f"event.company: {event.company}")
+    #   print(f"event.client: {event.client}")
+    #   print(f"event.employee: {event.employee}")
+    #   print(f"event.start_time: {event.start_time}")
+    #   print(f"event.end_time: {event.end_time}")
+    # # events = events.filter(employee=employee)
     
     context = {
       'company': company,
@@ -90,7 +97,7 @@ def send_employee_event_email(request, employee, event_ids: list) -> str:
       email = send_simple_email(request, 'email/employee_event_email.html', [email], "Shift Details", context)
       print(f'Employee event nofitication mail sent {email}')
     except Exception as e:
-      print(f'An exception occurred while sending the company link: {e}')
+      print(f'An exception occurred while sending employee event mail: {e}')
       
     # return url
     
@@ -111,8 +118,16 @@ def send_client_event_email(request, client, event_ids: list) -> str:
       & Q(client=client) 
       # & ~Q(status="Completed") | ~Q(status="Dropped")
     )
-    # events = events.filter(client=client)
-    
+    # # events = events.filter(client=client)
+    # print(events)
+    # print("\n\nFor The Client\n\n")
+    # for event in events:
+    #   print(f"event.date: {event.date}")
+    #   print(f"event.company: {event.company}")
+    #   print(f"event.client: {event.client}")
+    #   print(f"event.employee: {event.employee}")
+    #   print(f"event.start_time: {event.start_time}")
+    #   print(f"event.end_time: {event.end_time}")
     
     context = {
       'company': company,
@@ -122,11 +137,11 @@ def send_client_event_email(request, client, event_ids: list) -> str:
       'url': url,
     }
     try:
-      email = send_simple_email(request, 'client_event_email.html', [email], "Company Link", context)
-      print(f'Client event schedule email sent {email}')
+      email = send_simple_email(request, 'email/client_event_email.html', [email], "Company Link", context)
+      print(f'Client event notification email sent {email}')
       return True
     except Exception as e:
-      print(f'An exception occurred while sending the event schedule: {e}')
+      print(f'An exception occurred while sending client event mail: {e}')
       return False
       
     # return url

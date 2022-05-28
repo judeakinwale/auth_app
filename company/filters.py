@@ -42,7 +42,15 @@ class EmployeeFilter(filters.FilterSet):
         model = models.Employee
         fields = {
             'user__first_name': ['icontains'],
+            'user__last_name': ['icontains'],
             'user__email': ['icontains'],
+            'company__name': ['icontains'],
+            'branch__name': ['icontains'],
+            'department__name': ['icontains'],
+            'role': ['iexact'],
+            'province': ['iexact'],
+            'state': ['iexact'],
+            'country': ['iexact'],
             'is_active': ['exact'],
         }
 

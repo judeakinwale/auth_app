@@ -210,6 +210,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
       'start_time',
       'end_time',
       'date',
+      'end_date',
       'note',
       'status',
       'is_active',
