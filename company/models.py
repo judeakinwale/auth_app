@@ -126,7 +126,7 @@ class Employee(models.Model):
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="employees", on_delete=models.CASCADE, null=True, blank=True)
     branch = models.ForeignKey(Branch, verbose_name=_("Branch"), related_name="employees", on_delete=models.CASCADE, null=True)
     department = models.ForeignKey(Department, verbose_name=_("Department"), related_name="employees", on_delete=models.CASCADE, null=True)
-    employee_id = models.CharField(max_length=250, unique=True, null=True)
+    employee_id = models.CharField(max_length=250, unique=True, null=True, blank=True)
     role = models.CharField(
         max_length=250,
         choices=RoleChoices.choices,

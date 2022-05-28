@@ -1134,7 +1134,7 @@ class WeeklyReportView(generics.GenericAPIView):
             return response.Response(resp_data, status=status.HTTP_200_OK)
         except Exception as e:
             # print(f"\n\n{e}\n\n")
-            error_resp = {'errors': serializer.errors, 'detail': e}
+            error_resp = {'errors': serializer.errors, 'detail': f"{e}"}
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
         
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
