@@ -118,16 +118,25 @@ def send_client_event_email(request, client, event_ids: list) -> str:
       & Q(client=client) 
       # & ~Q(status="Completed") | ~Q(status="Dropped")
     )
-    # # events = events.filter(client=client)
+    # events = events.filter(client=client)
+    if not client.email:
+      print("no client email")
+      return False
+    # print("\nClient Details\n")
+    # print(f"client.name: {client.name}")
+    # print(f"client.email: {client.email}")
+    # print(f"client.company: {client.company}")
     # print(events)
+    if len(events) < 1:
+      return False
     # print("\n\nFor The Client\n\n")
     # for event in events:
-    #   print(f"event.date: {event.date}")
-    #   print(f"event.company: {event.company}")
-    #   print(f"event.client: {event.client}")
-    #   print(f"event.employee: {event.employee}")
-    #   print(f"event.start_time: {event.start_time}")
-    #   print(f"event.end_time: {event.end_time}")
+    #   print(f"client.event.date: {event.date}")
+    #   print(f"client.event.company: {event.company}")
+    #   print(f"client.event.client: {event.client}")
+    #   print(f"client.event.employee: {event.employee}")
+    #   print(f"client.event.start_time: {event.start_time}")
+    #   print(f"client.event.end_time: {event.end_time}")
     
     context = {
       'company': company,

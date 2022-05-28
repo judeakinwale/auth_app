@@ -1126,6 +1126,7 @@ class WeeklyReportView(generics.GenericAPIView):
                     email = utils.send_employee_event_email(request, employee, event_id_list)
                     
                 clients = models.Client.objects.filter(company=company)
+                # print(f"\n\nAll Clients: {clients}\n\n")
                 for client in clients:
                     email = utils.send_client_event_email(request, client, event_id_list)
             except Exception as e:
