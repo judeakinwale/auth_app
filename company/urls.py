@@ -22,6 +22,7 @@ urlpatterns = [
   path("week/report", views.WeeklyReportView.as_view(), name='weekly_report'),
   path("client/<id>/employee/add", views.AddClientEmployeeView.as_view(), name='client_employee_add'),
   path("client/<id>/employee/remove", views.DeleteClientEmployeeView.as_view(), name='client_employee_remove'),
-  path("month/<id>/publish", views.PublishMonthView.as_view(), name='publish month'),
+  path("month/<id>/publish", views.PublishMonthView.as_view(), name='publish_month'),
+  path("month/<id>/events", views.MonthEventView.as_view(), name='month_event'),
   # path("test/", views.test, name="testing"),
 ]

@@ -30,13 +30,14 @@ def send_simple_email(request, template_path: str, reciepients: list, subject: s
     print(f"\nMail successfully sent: {msg}")
     return True
   except Exception as e:
-    print(f"There was an exception sending mail: {e}")
+    # print(f"There was an exception sending mail: {e}")
+    raise Exception(f"{e}")
     return False
 
 
 def send_company_link(request, email: str) -> str:
   user = request.user
-  print(user)
+  # print(user)
   try:
     company = user.employee.company
   except:
@@ -53,10 +54,11 @@ def send_company_link(request, email: str) -> str:
   try:
     email = send_simple_email(request, 'email/company_link.html', [email], "Company Link", context)
     print(f'Company link sent {email}')
+    return url
   except Exception as e:
-    print(f'An exception occurred while sending the company link: {e}')
+    # print(f'An exception occurred while sending the company link: {e}')
+    raise Exception(f'An exception occurred while sending the company link: {e}')
     
-  return url
 
 
 # def send_employee_event_email(request, employee) -> str:
@@ -139,7 +141,10 @@ def send_employee_schedule_publish_email(request, employee) -> str:
     company = employee.company
     name = f"{employee.user.first_name}"
     email = employee.user.email
-    # events = models.Event.objects.filter(Q(company=company) & Q(employee=employee) & ~Q(status="Completed") | ~Q(status="Dropped"))
+    # events = models.Event.objects.filter(
+    #   Q(company=company) & Q(employee=employee) 
+    #   # & ~Q(status="Completed") | ~Q(status="Dropped")
+    # )
     
     context = {
       'company': company,

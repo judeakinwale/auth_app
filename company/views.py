@@ -1032,11 +1032,13 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
         email = serializer.validated_data['email']
         try:
             link = utils.send_company_link(request, email)
-        except:
-            print(serializer)
+        except Exception as e:
+            # print("error:")
+            # print(e)
+            # print(serializer)
             error_response = {
-                'errors': serializer.errors,
-                'detail': "Link could not be created"
+                'errors': (serializer.errors or f"{e}"),
+                'detail': "Link could not be sent"
             }
             return response.Response(error_response, status=status.HTTP_400_BAD_REQUEST)
         
@@ -1239,6 +1241,172 @@ class PublishMonthView(generics.GenericAPIView):
         except Exception as e:
             error_resp = {"detail": f"{e}"}
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+
+
+    # class MultipleEventView(generics.GenericAPIView):
+        
+    #     serializer_class = serializers.MultipleEventSerializer
+    #     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+            
+    #     @swagger_auto_schema(
+    #         operation_description="Create and Send Company Link to an email",
+    #         operation_summary='Create and Send Company Link to email'
+    #     )
+    #     # def create(self, request, *args, **kwargs):
+    #     #     """create method docstring"""
+    #     #     try:
+    #     #         return super().create(request, *args, **kwargs)
+    #     #         print(**kwargs)
+    #     #     except Exception as e:
+    #     #         error_resp = {'detail': f"{e}"}
+    #     #         return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+
+    #     def post(self, request, *args, **kwargs):
+    #         serializer = self.get_serializer(data=request.data)
+
+    #         try:
+    #             serializer.is_valid(raise_exception=True)
+    #         except Exception as e:
+    #             return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+    #         # email = serializer.validated_data['email']
+    #         try:
+    #             events = serializer.validated_data['events']
+    #             for event_data in events:
+    #                 models.Event.objects.create(**event_data)
+    #                 # serializers.EventSerializer.create(event_data) # Not sure this works
+    #         except:
+    #             print(serializer)
+    #             error_response = {
+    #                 'errors': serializer.errors,
+    #                 'detail': "There was an error creating"
+    #             }
+    #             return response.Response(error_response, status=status.HTTP_400_BAD_REQUEST)
+            
+    #         # serializer.validated_data['link'] = link
+    #         print(serializer.validated_data)
+
+    #         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+class MonthEventView(generics.GenericAPIView):
+    
+    # serializer_class = serializers.WeeklyReportSerializer
+    
+    @swagger_auto_schema(
+        operation_description="Get all events in a month",
+        operation_summary='Get all events in a month'
+    )
+    # def get(self, request, *args, **kwargs):
+        
+    #     try:
+    #         all_months = models.Month.objects.all().update(is_active=False)
+    #         month = models.Month.objects.get(id=int(kwargs['id']))
+    #         month.is_active = True
+    #         month.save()
+    #         month.refresh_from_db()
+    #         serialized_month = serializers.MonthResponseSerializer(month, context={'request': request})
+            
+    #         try:
+    #             employees = models.Employee.objects.filter(company=month.company)
+    #             for employee in employees:
+    #                 email = utils.send_employee_schedule_publish_email(request, employee)
+    #         except Exception as e:
+    #             print(f'An exception occurred:{e}')
+            
+    #         resp_data = {'result': serialized_month.data,}
+    #         return response.Response(resp_data, status=status.HTTP_200_OK)
+            
+    #     except Exception as e:
+    #         error_resp = {"detail": f"{e}"}
+    #         return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    def get(self, request, *args, **kwargs):
+        
+        try:
+            try:
+                month = models.Month.objects.get(is_active=True)
+            except Exception as e:
+                error_resp = {"detail": f"More than one month is active"}
+                return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
+            day = 1
+            year = int(month.year)
+            
+            month_repr = f"{day} {month.month}, {month.year}"
+            print(f"month_repr: {month_repr}")
+            
+            month_start = datetime.strptime(month_repr, '%d %B, %Y')
+            print(f"month_start: {month_start}")
+            
+            month_int = str(datetime.strptime(month.month, '%B'))
+            print(f"month_int: {month_int}")
+            print(f"month_start.month: {month_start.month}")
+            
+            month_range = calendar.monthrange(year, month_start.month)
+            print(f"month_range: {month_range}")
+            
+            last_day = month_range[1]
+            
+            month_end_repr = f"{last_day} {month.month}, {month.year}"
+            print(f"month_end_repr: {month_end_repr}")
+            
+            month_end = datetime.strptime(month_end_repr, '%d %B, %Y')
+            print(f"month_end: {month_end}")
+            
+            print("month start repr")
+            print(month_start.strftime('%Y-%m-%d'))
+            month_start_date = month_start.strftime('%Y-%m-%d')
+            print("month end repr")
+            print(month_end.strftime('%Y-%m-%d'))
+            month_end_date = month_end.strftime('%Y-%m-%d')
+        except Exception as e:
+            error_resp = {"detail": f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+        
+        # weeks = models.Week.objects.none()
+        # try:
+        #     if request.user.is_superuser:
+        #         # weeks = models.Week.objects.filter(start_date__gte=month_start_date, end_date__lte=month_end_date)
+        #         weeks = models.Week.objects.filter()
+        #     elif request.user.is_staff:
+        #         weeks = models.Week.objects.filter(start_date__gte=month_start_date, end_date__lte=month_end_date, client__company=request.user.company)
+        #     else:    
+        #         weeks = models.Week.objects.filter(start_date__gte=month_start_date, end_date__lte=month_end_date, client__company=request.user.employee.company)
+        # except Exception:
+        #     weeks = models.Week.objects.none()
+        
+        events = models.Event.objects.none()
+        try:
+            if request.user.is_superuser:
+                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date)
+            elif request.user.is_staff:
+                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.company)
+            else:    
+                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.employee.company)
+        except Exception:
+            events = models.Event.objects.none()
+        
+        try:
+            events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=company)
+        except:
+            pass
+        
+        # serializer = self.get_serializer(data=request.data)
+        # serialized_weeks = serializers.WeekResponseSerializer(weeks, many=True, context={'request': request})
+        serialized_events = serializers.EventResponseSerializer(events, many=True, context={'request': request})
+
+        try:
+            # serialized_weeks.is_valid(raise_exception=True)
+            # resp_data = {'result': serialized_weeks.data,}
+            resp_data = {'result': serialized_events.data,}
+            return response.Response(resp_data, status=status.HTTP_200_OK)
+            # return super().get(request, *args, **kwargs)
+        except Exception as e:
+            error_resp = {"detail": f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+        
+        
 
 
     # class MultipleEventView(generics.GenericAPIView):
