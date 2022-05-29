@@ -301,3 +301,4 @@ class Week(models.Model):
             return f"{self.client.name} - {self.name}"
         return f"{self.name}"
 
+# Testing
