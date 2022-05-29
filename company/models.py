@@ -297,5 +297,7 @@ class Week(models.Model):
         verbose_name_plural = _("Weeks")
 
     def __str__(self):
-        return f"{self.client.name} - {self.name}"
+        if self.client:
+            return f"{self.client.name} - {self.name}"
+        return f"{self.name}"
 
