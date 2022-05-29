@@ -13,6 +13,7 @@ class Company(models.Model):
     name = models.CharField(max_length=250)
     email = models.CharField(max_length=250)
     description = models.TextField(null=True, blank=True)
+    phone = models.CharField(max_length=50)
     address = models.CharField(max_length=250, null=True)
     province = models.CharField(max_length=250, null=True, blank=True)
     state = models.CharField(max_length=250, null=True, blank=True)

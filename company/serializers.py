@@ -165,6 +165,7 @@ class CompanyBaseSerializer(serializers.HyperlinkedModelSerializer):
       'name',
       'email',
       'description',
+      'phone',
       'phone_numbers',
       'address',
       'province',
