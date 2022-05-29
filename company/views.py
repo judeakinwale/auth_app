@@ -37,7 +37,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
         if self.request.user.is_superuser:
             return serializer.save()
         else:
-            return serializer.save(admin=self.request.user, contact_person=self.request.user)
+            return serializer.save(admin=self.request.user)
     
     def get_queryset(self):
         if self.request.user.is_superuser:
