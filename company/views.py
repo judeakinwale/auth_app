@@ -712,7 +712,7 @@ class MonthViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try: 
-            month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'])
+            month = models.Month.objects.get(month=serializer.validated_data['month'], year=serializer.validated_data['year'])
             if month:
                 error_resp = {'detail': "Month already exists"}
                 return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
@@ -750,10 +750,10 @@ class MonthViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         """create method docstring"""
         try:
-            month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'])
-            if month:
-                error_resp = {'detail': "Month already exists"}
-                return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+            # month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'])
+            # if month:
+            #     error_resp = {'detail': "Month already exists"}
+            #     return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
             
             return super().create(request, *args, **kwargs)
             print(**kwargs)
