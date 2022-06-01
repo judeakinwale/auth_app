@@ -712,6 +712,11 @@ class MonthViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try: 
+            month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'])
+            if month:
+                error_resp = {'detail': "Month already exists"}
+                return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+            
             if "company" not in serializer.validated_data:
                 if self.request.user.is_staff:
                     return serializer.save(company=self.request.user.company)
