@@ -940,11 +940,11 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             # print("month start repr")
             # print(month_start.strftime('%Y-%m-%d'))
             month_start_date = month_start.strftime('%Y-%m-%d')
-            month_start_date_timestamp = datetime.timestamp(month_start_date)
+            month_start_date_timestamp = datetime.timestamp(month_start)
             # print("month end repr")
             # print(month_end.strftime('%Y-%m-%d'))
             month_end_date = month_end.strftime('%Y-%m-%d')
-            month_end_date_timestamp = datetime.timestamp(month_end_date)
+            month_end_date_timestamp = datetime.timestamp(month_end)
         except Exception as e:
             error_resp = {"detail": f"{e}"}
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
