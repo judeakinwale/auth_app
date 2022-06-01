@@ -823,6 +823,11 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     # filterset_class = filters.ScheduleFilter
 
     def perform_create(self, serializer):
+        schedule = models.Schedule.objects.get(month=serializer.validated_data['month'])
+        if schedule:
+            error_resp = {'detail': "Schedule already exists"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+        
         return serializer.save()
     
     def get_serializer_class(self):

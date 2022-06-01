@@ -66,12 +66,38 @@ class MonthSerializer(serializers.HyperlinkedModelSerializer):
   def create(self, validated_data):
     if "month" in validated_data:
       validated_data['month'] = f"{validated_data['month']}".title()
+      
+    month = None
+    if "month" and "year" and "index" in validated_data:
+      print("one or more found")
+      month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'], index=validated_data['index'])
+      if month:
+        raise Exception("Month with index already exists!")
+      
+    if "month" and "year" in validated_data:
+      print("one or more found")
+      month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'])
+      if month:
+        raise Exception("Month already exists!")
 
     return super().create(validated_data)
 
   def update(self, instance, validated_data):
     if "month" in validated_data:
       validated_data['month'] = f"{validated_data['month']}".title()
+      
+    month = None
+    if "month" and "year" and "index" in validated_data:
+      print("one or more found")
+      month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'], index=validated_data['index'])
+      if month:
+        raise Exception("Month with index already exists!")
+      
+    if "month" and "year" in validated_data:
+      print("one or more found")
+      month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'])
+      if month:
+        raise Exception("Month already exists!")
 
     return super().create(validated_data)
 
@@ -103,6 +129,24 @@ class ScheduleSerializer(serializers.HyperlinkedModelSerializer):
     extra_kwargs = {
       'url': {'view_name': 'company:schedule-detail'},
     }
+    
+  def create(self, validated_data):
+    if "month" in validated_data:      
+      schedule = models.Schedule.objects.get(month=validated_data['month'], client=validated_data['client'])
+      if schedule:
+        # return schedule
+        raise Exception("Schedule already exists!")
+
+    return super().create(validated_data)
+
+  def update(self, instance, validated_data):
+    if "month" in validated_data:      
+      schedule = models.Schedule.objects.get(month=validated_data['month'], client=validated_data['client'])
+      if schedule:
+        # return schedule
+        raise Exception("Schedule already exists!")
+
+    return super().create(validated_data)
 
 
 class WeekSerializer(serializers.HyperlinkedModelSerializer):
