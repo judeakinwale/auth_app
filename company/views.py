@@ -745,6 +745,11 @@ class MonthViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         """create method docstring"""
         try:
+            month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'])
+            if month:
+                error_resp = {'detail': "Month already exists"}
+                return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+            
             return super().create(request, *args, **kwargs)
             print(**kwargs)
         except Exception as e:
@@ -935,9 +940,11 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             # print("month start repr")
             # print(month_start.strftime('%Y-%m-%d'))
             month_start_date = month_start.strftime('%Y-%m-%d')
+            month_start_date_timestamp = datetime.timestamp(month_start_date)
             # print("month end repr")
             # print(month_end.strftime('%Y-%m-%d'))
             month_end_date = month_end.strftime('%Y-%m-%d')
+            month_end_date_timestamp = datetime.timestamp(month_end_date)
         except Exception as e:
             error_resp = {"detail": f"{e}"}
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
@@ -951,11 +958,13 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                 print("User is super user, so, no events deleted")
                 # print(events)
             elif request.user.is_staff:
-                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.company).delete()
+                # events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.company).delete()
+                events = models.Event.objects.filter(date__gte=month_start_date_timestamp, date__lte=month_end_date_timestamp, company=request.user.company).delete()
                 print("user is a staff, so events deleted")
                 print(events)
             else:    
-                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.employee.company).delete()
+                # events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.employee.company).delete()
+                events = models.Event.objects.filter(date__gte=month_start_date_timestamp, date__lte=month_end_date_timestamp, company=request.user.employee.company).delete()
                 print("user is an employee, so events deleted")
                 print(events)
         except Exception:
