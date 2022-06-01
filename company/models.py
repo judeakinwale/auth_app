@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from user import managers
 from company.mixins import EmployeePermissionsMixin
+from datetime import datetime
 
 # Create your models here.
 
@@ -245,13 +246,27 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def formatted_date(self):
+        try:
+            date = datetime.fromtimestamp(int(self.date) / 1000.0)
+            return f"{date}"
+        except Exception:
+            return f"{self.date}"
+        
+    def formatted_end_date(self):
+        try:
+            date = datetime.fromtimestamp(int(self.end_date) / 1000.0)
+            return f"{end_date}"
+        except Exception:
+            return f"{self.end_date}"
 
 
 class Month(models.Model):
 
     company = models.ForeignKey(Company, verbose_name=_("Company"), related_name="months", on_delete=models.CASCADE, null=True, blank=True)
     # client = models.ForeignKey(Client, verbose_name=_("Client"), related_name="months", on_delete=models.CASCADE, null=True, blank=True)
-    month = models.CharField(max_length=250, null=True, blank=True)
+    month = models.CharField(max_length=250, unique=True, null=True, blank=True)
     year = models.CharField(max_length=250, null=True, blank=True)
     index = models.IntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=False)

@@ -62,6 +62,18 @@ class MonthSerializer(serializers.HyperlinkedModelSerializer):
     extra_kwargs = {
       'url': {'view_name': 'company:month-detail'},
     }
+    
+  def create(self, validated_data):
+    if "month" in validated_data:
+      validated_data['month'] = f"{validated_data['month']}".title()
+
+    return super().create(validated_data)
+
+  def update(self, instance, validated_data):
+    if "month" in validated_data:
+      validated_data['month'] = f"{validated_data['month']}".title()
+
+    return super().create(validated_data)
 
 
 class ScheduleSerializer(serializers.HyperlinkedModelSerializer):

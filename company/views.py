@@ -895,6 +895,70 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         """destroy method docstring"""
+        try:
+            schedule = self.get_object()
+            month = schedule.month
+        except Exception as e:
+            error_resp = {"detail": f"Month not found: {e}"}
+            return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
+        try:
+            # try:
+            #     # month = models.Month.objects.get(is_active=True)
+            #     month = models.Month.objects.get(id=int(kwargs['id']))
+            # except Exception as e:
+            #     error_resp = {"detail": f"Month not found"}
+            #     return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
+            day = 1
+            year = int(month.year)
+            
+            month_repr = f"{day} {month.month}, {month.year}"
+            # print(f"month_repr: {month_repr}")
+            
+            month_start = datetime.strptime(month_repr, '%d %B, %Y')
+            # print(f"month_start: {month_start}")
+            
+            month_int = str(datetime.strptime(month.month, '%B'))
+            # print(f"month_int: {month_int}")
+            # print(f"month_start.month: {month_start.month}")
+            
+            month_range = calendar.monthrange(year, month_start.month)
+            # print(f"month_range: {month_range}")
+            
+            last_day = month_range[1]
+            
+            month_end_repr = f"{last_day} {month.month}, {month.year}"
+            # print(f"month_end_repr: {month_end_repr}")
+            
+            month_end = datetime.strptime(month_end_repr, '%d %B, %Y')
+            # print(f"month_end: {month_end}")
+            
+            # print("month start repr")
+            # print(month_start.strftime('%Y-%m-%d'))
+            month_start_date = month_start.strftime('%Y-%m-%d')
+            # print("month end repr")
+            # print(month_end.strftime('%Y-%m-%d'))
+            month_end_date = month_end.strftime('%Y-%m-%d')
+        except Exception as e:
+            error_resp = {"detail": f"{e}"}
+            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+        
+        events = models.Event.objects.none()
+        print(events)
+        try:
+            if request.user.is_superuser:
+                # events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date)
+                events = models.Event.objects.none()
+                print("User is super user, so, no events deleted")
+                # print(events)
+            elif request.user.is_staff:
+                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.company)
+                # print(events)
+            else:    
+                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.employee.company)
+                # print(events)
+        except Exception:
+            events = models.Event.objects.none()
+        events.delete()
         return super().destroy(request, *args, **kwargs)
 
 
