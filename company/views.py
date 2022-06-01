@@ -943,7 +943,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
         
         events = models.Event.objects.none()
-        print(events)
+        # print(events)
         try:
             if request.user.is_superuser:
                 # events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date)
@@ -951,14 +951,16 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                 print("User is super user, so, no events deleted")
                 # print(events)
             elif request.user.is_staff:
-                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.company)
-                # print(events)
+                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.company).delete()
+                print("user is a staff, so events deleted")
+                print(events)
             else:    
-                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.employee.company)
-                # print(events)
+                events = models.Event.objects.filter(date__gte=month_start_date, date__lte=month_end_date, company=request.user.employee.company).delete()
+                print("user is an employee, so events deleted")
+                print(events)
         except Exception:
             events = models.Event.objects.none()
-        events.delete()
+        # events.delete()
         return super().destroy(request, *args, **kwargs)
 
 
