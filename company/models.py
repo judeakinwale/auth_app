@@ -294,7 +294,7 @@ class Schedule(models.Model):
         verbose_name_plural = _("Schedules")
 
     def __str__(self):
-        return f"{self.client.name or self.client}"
+        return f"{self.month} - schedule"
 
 
 class Week(models.Model):
