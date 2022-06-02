@@ -712,10 +712,11 @@ class MonthViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try: 
-            month = models.Month.objects.get(month=serializer.validated_data['month'], year=serializer.validated_data['year'])
-            if month:
-                error_resp = {'detail': "Month already exists"}
-                return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+            # month = models.Month.objects.get(month=serializer.validated_data['month'], year=serializer.validated_data['year'])
+            # if month:
+            #     # error_resp = {'detail': "Month already exists"}
+            #     # return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+            #     raise Exception("Month already exists!")
             
             if "company" not in serializer.validated_data:
                 if self.request.user.is_staff:
@@ -823,10 +824,11 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     # filterset_class = filters.ScheduleFilter
 
     def perform_create(self, serializer):
-        schedule = models.Schedule.objects.get(month=serializer.validated_data['month'])
-        if schedule:
-            error_resp = {'detail': "Schedule already exists"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+        # schedule = models.Schedule.objects.get(month=serializer.validated_data['month'], client=serializer.validated_data['client'])
+        # if schedule:
+        #     # error_resp = {'detail': "Schedule already exists"}
+        #     # return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
+        #     raise Exception("Schedule already exists!")
         
         return serializer.save()
     

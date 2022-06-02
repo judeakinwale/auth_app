@@ -70,6 +70,7 @@ class MonthSerializer(serializers.HyperlinkedModelSerializer):
     month = None
     if "month" and "year" and "index" in validated_data:
       try:
+        month = models.Month.objects.filter(month=validated_data['month'], year=validated_data['year'], index=validated_data['index'])
         month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'], index=validated_data['index'])
       except Exception:
         pass
@@ -79,6 +80,7 @@ class MonthSerializer(serializers.HyperlinkedModelSerializer):
       
     if "month" and "year" in validated_data:
       try:
+        month = models.Month.objects.filter(month=validated_data['month'], year=validated_data['year'])
         month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'])
       except Exception:
         pass
@@ -143,9 +145,10 @@ class ScheduleSerializer(serializers.HyperlinkedModelSerializer):
     }
     
   def create(self, validated_data):
-    if "month" in validated_data:
+    if "month" and "client" in validated_data:
       schedule = None
       try:
+        schedule = models.Schedule.objects.filter(month=validated_data['month'], client=validated_data['client'])
         schedule = models.Schedule.objects.get(month=validated_data['month'], client=validated_data['client'])
       except Exception:
         pass
@@ -157,9 +160,10 @@ class ScheduleSerializer(serializers.HyperlinkedModelSerializer):
     return super().create(validated_data)
 
   def update(self, instance, validated_data):
-    if "month" in validated_data:      
+    if "month" and "client" in validated_data:      
       schedule = None
       try:
+        schedule = models.Schedule.objects.filter(month=validated_data['month'], client=validated_data['client'])
         schedule = models.Schedule.objects.get(month=validated_data['month'], client=validated_data['client'])
       except Exception:
         pass
