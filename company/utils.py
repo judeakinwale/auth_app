@@ -8,12 +8,40 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from company import models
 
+from datetime import datetime
+import calendar
+
+
+def get_user_company(request):
+  company = None
+  if self.request.user.is_superuser:
+    return company
+
+  try:
+    if self.request.user.is_staff:
+        company=self.request.user.company    
+    company=self.request.user.employee.company
+  except Exception:
+    company = None
+  return company
+
+
+def get_active_month():
+  active_month = models.Month.objects.none()
+  try: 
+    active_month = models.Month.objects.get(is_active=True)
+    return active_month
+  except Exception as e:
+    raise Exception(e)
+    return None
+  
+
 
 def send_simple_email(request, template_path: str, reciepients: list, subject: str = "Email", context: dict = {}) -> bool:
   try:
     # subject = subject
     # sender_email = settings.EMAIL_HOST_USER
-    sender_email = f"{settings.DEFAULT_FROM_NAME} <{settings.EMAIL_HOST_USER}>"
+    sender_email = f"{settings.DEFAULT_FROM_NAME} <{settings.DEFAULT_FROM_EMAIL}>"
     # context = context # context dictionary - {}
     message = get_template(template_path).render(context) # path to the email template - 'email/results.html'
     # reciepients = reciepients # list of emails
@@ -165,14 +193,18 @@ def send_employee_schedule_publish_email(request, employee) -> str:
     company = employee.company
     name = f"{employee.user.first_name}"
     email = employee.user.email
-    # events = models.Event.objects.filter(
-    #   Q(company=company) & Q(employee=employee) 
-    #   # & ~Q(status="Completed") | ~Q(status="Dropped")
-    # )
+    month = utils.get_month_dates()
+    month_start_date = month["start_timestamp"]
+    month_end_date = month["end_timestamp"]
+    events = models.Event.objects.filter(
+      Q(company=company) & Q(employee=employee) 
+      & Q(date__gte=month_start_date) & Q(date__lte=month_end_date) 
+      # & ~Q(status="Completed") | ~Q(status="Dropped")
+    )
     
     context = {
       'company': company,
-      # 'events': events,
+      'events': events,
       'employee': employee,
       'name': name,
       # 'url': url,
@@ -187,6 +219,58 @@ def send_employee_schedule_publish_email(request, employee) -> str:
         
   except Exception as e:
     print(f'An exception occurred while getting employee details: {e}')
+
+
+def get_month_dates(month = get_active_month()):
+  try:
+    if month is None:
+      raise Exception(f"Cannot Get Active Month")
+      return None
+    
+    day = 1
+    year = int(month.year)
+    
+    month_repr = f"{day} {month.month}, {month.year}"
+    # print(f"month_repr: {month_repr}")
+    
+    month_start = datetime.strptime(month_repr, '%d %B, %Y')
+    # print(f"month_start: {month_start}")
+    
+    month_int = str(datetime.strptime(month.month, '%B'))
+    # print(f"month_int: {month_int}")
+    # print(f"month_start.month: {month_start.month}")
+    
+    month_range = calendar.monthrange(year, month_start.month)
+    # print(f"month_range: {month_range}")
+    
+    last_day = month_range[1]
+    
+    month_end_repr = f"{last_day} {month.month}, {month.year}"
+    # print(f"month_end_repr: {month_end_repr}")
+    
+    month_end = datetime.strptime(month_end_repr, '%d %B, %Y')
+    # print(f"month_end: {month_end}")
+    
+    # print("month start repr")
+    # print(month_start.strftime('%Y-%m-%d'))
+    month_start_date = month_start.strftime('%Y-%m-%d')
+    month_start_date_timestamp = datetime.timestamp(month_start)
+    # print("month end repr")
+    # print(month_end.strftime('%Y-%m-%d'))
+    month_end_date = month_end.strftime('%Y-%m-%d')
+    month_end_date_timestamp = datetime.timestamp(month_end)
+    
+    responses = {
+      start_timestamp: month_start_date_timestamp,
+      end_timestamp: month_end_date_timestamp,
+      start: month_start_date,
+      end: month_end_date,
+    }
+    return responses
+  except Exception as e:
+    raise Exception(e)
+    return None
+  
 
 
 # def get_tokens_for_employee(employee):
