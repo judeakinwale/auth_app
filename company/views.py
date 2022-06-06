@@ -1278,7 +1278,6 @@ class WeeklyReportView(generics.GenericAPIView):
             # print("month end repr")
             # print(month_end.strftime('%Y-%m-%d'))
             # month_end_date = month_end.strftime('%Y-%m-%d')
-            
             month = utils.get_month_dates()
             month_start_date = month["start_timestamp"]
             month_end_date = month["end_timestamp"]

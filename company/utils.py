@@ -261,10 +261,10 @@ def get_month_dates(month = get_active_month()):
     month_end_date_timestamp = datetime.timestamp(month_end)
     
     responses = {
-      start_timestamp: month_start_date_timestamp,
-      end_timestamp: month_end_date_timestamp,
-      start: month_start_date,
-      end: month_end_date,
+      "start_timestamp": month_start_date_timestamp,
+      "end_timestamp": month_end_date_timestamp,
+      "start": month_start_date,
+      "end": month_end_date,
     }
     return responses
   except Exception as e:
