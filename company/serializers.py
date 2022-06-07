@@ -68,20 +68,20 @@ class MonthSerializer(serializers.HyperlinkedModelSerializer):
       validated_data['month'] = f"{validated_data['month']}".title()
       
     month = None
-    if "month" and "year" and "index" in validated_data:
+    if "company" and "month" and "year" and "index" in validated_data:
       try:
-        month = models.Month.objects.filter(month=validated_data['month'], year=validated_data['year'], index=validated_data['index'])
-        month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'], index=validated_data['index'])
+        month = models.Month.objects.filter(company=validated_data['company'], month=validated_data['month'], year=validated_data['year'], index=validated_data['index'])
+        month = models.Month.objects.get(company=validated_data['company'], month=validated_data['month'], year=validated_data['year'], index=validated_data['index'])
       except Exception:
         pass
 
       if month:
         raise Exception("Month with index already exists!")
       
-    if "month" and "year" in validated_data:
+    if "company" and "month" and "year" in validated_data:
       try:
-        month = models.Month.objects.filter(month=validated_data['month'], year=validated_data['year'])
-        month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'])
+        month = models.Month.objects.filter(company=validated_data['company'], month=validated_data['month'], year=validated_data['year'])
+        month = models.Month.objects.get(company=validated_data['company'], month=validated_data['month'], year=validated_data['year'])
       except Exception:
         pass
 
