@@ -71,7 +71,8 @@ def send_company_link(request, email: str) -> str:
   except:
     company = user.company
   # url = request.get_absolute_url()
-  url = request.build_absolute_uri(reverse(f'company:employee-list')) 
+  # url = request.build_absolute_uri(reverse(f'company:employee-list')) 
+  url = "http://www.hrtechleft.com/"
   url += f"create?company={company.id}"
   
   context = {

@@ -145,17 +145,17 @@ class ScheduleSerializer(serializers.HyperlinkedModelSerializer):
     }
     
   def create(self, validated_data):
-    if "month" and "client" in validated_data:
-      schedule = None
-      try:
-        schedule = models.Schedule.objects.filter(month=validated_data['month'], client=validated_data['client'])
-        schedule = models.Schedule.objects.get(month=validated_data['month'], client=validated_data['client'])
-      except Exception:
-        pass
+    # if "month" and "client" in validated_data:
+    #   schedule = None
+    #   try:
+    #     schedule = models.Schedule.objects.filter(month=validated_data['month'], client=validated_data['client'])
+    #     schedule = models.Schedule.objects.get(month=validated_data['month'], client=validated_data['client'])
+    #   except Exception:
+    #     pass
       
-      if schedule:
-          # return schedule
-          raise Exception("Schedule already exists!")
+    #   if schedule:
+    #       # return schedule
+    #       raise Exception("Schedule already exists!")
 
     return super().create(validated_data)
 
