@@ -14,26 +14,46 @@ import calendar
 
 def get_user_company(request):
   company = None
-  if self.request.user.is_superuser:
+  if request.user.is_superuser:
     return company
 
   try:
-    if self.request.user.is_staff:
-        company=self.request.user.company    
-    company=self.request.user.employee.company
+    if request.user.is_staff:
+        company=request.user.company    
+    company=request.user.employee.company
   except Exception:
     company = None
   return company
 
 
-def get_active_month():
+def get_active_month(request):
+  
   active_month = models.Month.objects.none()
-  try: 
-    active_month = models.Month.objects.get(is_active=True)
-    return active_month
+  try:
+    active_month = models.Month.objects.filter(company=get_user_company(request), is_active=True) 
+    active_month = models.Month.objects.get(company=get_user_company(request), is_active=True)
+    # return active_month
   except Exception as e:
-    raise Exception(e)
-    return None
+    if active_month:
+      active_month = models.Month.objects.none()
+      raise Exception("There are more than one active months")
+    
+    # get current month name and current year
+    today = datetime.now().date()
+    year = str(today.year)
+    # month = str(today.month) # Returns the month as a number
+    month = today.strftime("%B")
+    # print(month, year)
+    try:
+      month, created = models.Month.objects.get_or_create(month=month, year=year, company=get_user_company(request))
+      month.is_active = True
+      month.save()
+      active_month = month
+    except:
+      active_month = models.Month.objects.none()
+      raise Exception(e)
+    
+  return active_month
   
 
 
@@ -194,7 +214,7 @@ def send_employee_schedule_publish_email(request, employee) -> str:
     company = employee.company
     name = f"{employee.user.first_name}"
     email = employee.user.email
-    month = utils.get_month_dates()
+    month = utils.get_month_dates(request)
     month_start_date = month["start_timestamp"]
     month_end_date = month["end_timestamp"]
     events = models.Event.objects.filter(
@@ -222,7 +242,9 @@ def send_employee_schedule_publish_email(request, employee) -> str:
     print(f'An exception occurred while getting employee details: {e}')
 
 
-def get_month_dates(month = get_active_month()):
+def get_month_dates(request, month = None):
+  if month is None:
+    get_active_month(request)
   try:
     if month is None:
       raise Exception(f"Cannot Get Active Month")

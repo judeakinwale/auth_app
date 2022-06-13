@@ -605,7 +605,7 @@ class EventViewSet(viewsets.ModelViewSet):
             client = event.client
             employee = event.employee
             event_ids = [event.id,]
-            active_month = utils.get_month_dates()
+            active_month = utils.get_month_dates(self.request)
             # if active_month is not None and event.date <= active_month.end_timestamp and event.date >= active_month.start_timestamp:
             if active_month is not None and active_month.start_timestamp <= event.date <= active_month.end_timestamp:
                 utils.send_employee_event_email(self.request, employee, event_ids)
@@ -961,7 +961,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             # month_end_date = month_end.strftime('%Y-%m-%d')
             # month_end_date_timestamp = datetime.timestamp(month_end)
             
-            month = utils.get_month_dates(month)
+            month = utils.get_month_dates(request, month)
             month_start_date = month["start_timestamp"]
             month_end_date = month["end_timestamp"]
             
@@ -1278,7 +1278,7 @@ class WeeklyReportView(generics.GenericAPIView):
             # print("month end repr")
             # print(month_end.strftime('%Y-%m-%d'))
             # month_end_date = month_end.strftime('%Y-%m-%d')
-            month = utils.get_month_dates()
+            month = utils.get_month_dates(request)
             month_start_date = month["start_timestamp"]
             month_end_date = month["end_timestamp"]
             
@@ -1463,7 +1463,7 @@ class MonthEventView(generics.GenericAPIView):
             # # print(month_end.strftime('%Y-%m-%d'))
             # month_end_date = month_end.strftime('%Y-%m-%d')
             
-            month = utils.get_month_dates()
+            month = utils.get_month_dates(request)
             month_start_date = month["start_timestamp"]
             month_end_date = month["end_timestamp"]
             
