@@ -626,7 +626,13 @@ class CompanySerializer(CompanyBaseSerializer):
     depth = 0
 
   def create(self, validated_data):
+    comp = None
     try:
+      request = self.context['request']
+      comp = models.Company.objects.filter(admin=request.user)
+      if comp:
+        raise Exception("You've created another company")
+      
       phone_numbers = validated_data.pop('phone_numbers')
       company =  super().create(validated_data)
       for data in phone_numbers:
@@ -634,6 +640,8 @@ class CompanySerializer(CompanyBaseSerializer):
         models.Phone.objects.create(**data)
     except Exception:
       company =  super().create(validated_data)
+      if comp:
+        raise Exception(f"Error creating new company: {e}")
 
     return company
 
