@@ -1,5 +1,18 @@
 from rest_framework import status, views, response
 from drf_yasg.utils import no_body, swagger_auto_schema
+from datetime import datetime
+
+
+def usable_time(time: str) -> datetime.time:
+    time = datetime.strptime(time, "%I:%M %p")
+    return time
+
+
+def hourly_time_difference(start: datetime, end: datetime):
+    difference = (start - end).total_seconds()
+    hours = divmod(difference, 3600)[0]
+    return hours
+
 
 def auth_user_company(request):
     try:
