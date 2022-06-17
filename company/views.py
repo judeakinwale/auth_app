@@ -33,8 +33,11 @@ class CompanyViewSet(utility.swagger_documentation_factory("company", "a", "comp
     filterset_class = filters.CompanyFilter
 
     def perform_create(self, serializer):
-        if models.Company.objects.filter(admin=self.request.user):
-            raise Exception("You've created another company")
+        try:
+            if models.Company.objects.filter(admin=self.request.user):
+                raise Exception("You've created another company")
+        except Exception as e:
+            print(f"Exception while checking if user is company admin: {e}")
         
         if not self.request.user.is_superuser:
             serializer.validated_data['admin'] = self.request.user
@@ -648,8 +651,8 @@ class PublishMonthView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         
         try:
-            all_months = models.Month.objects.filter(company=month.company).update(is_active=False)
             month = models.Month.objects.get(id=int(kwargs['id']))
+            all_months = models.Month.objects.filter(company=month.company).update(is_active=False)
             month.is_active = True
             month.save()
             month.refresh_from_db()
