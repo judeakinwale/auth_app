@@ -267,7 +267,9 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
       events = models.Event.objects.filter(date__gte=week.start_date, date__lte=week.end_date)
       
       hours_list = [utility.hourly_time_difference(utility.usable_time(event.start_time), utility.usable_time(event.end_time)) for event in events]
-      week_time = sum([hours_list])iterable
+      week_time = sum([hours_list])
+      
+      total_time += week_time
       
       payload[f'{week.name}'] = {
         'week': week,
