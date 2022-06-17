@@ -156,7 +156,7 @@ class EmployeeViewSet(utility.swagger_documentation_factory("Employee", "an"), v
         except Exception as e:
             error_resp = {"detail": f"Error Deleting user: {e}"}
             return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
-        return super().destroy(request, *args, **kwargs)
+        return response.Response(status=status.HTTP_204_NO_CONTENT)
         
 
 

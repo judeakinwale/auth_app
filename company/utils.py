@@ -45,7 +45,6 @@ def get_active_month(request):
     year = str(today.year)
     # month = str(today.month) # Returns the month as a number
     month = today.strftime("%B")
-    # print(month, year)
     try:
       month, created = models.Month.objects.get_or_create(month=month, year=year, company=get_user_company(request))
       month.is_active = True
@@ -61,12 +60,8 @@ def get_active_month(request):
 
 def send_simple_email(request, template_path: str, reciepients: list, subject: str = "Email", context: dict = {}) -> bool:
   try:
-    # subject = subject
-    # sender_email = settings.EMAIL_HOST_USER
     sender_email = f"{settings.DEFAULT_FROM_NAME} <{settings.DEFAULT_FROM_EMAIL}>"
-    # context = context # context dictionary - {}
     message = get_template(template_path).render(context) # path to the email template - 'email/results.html'
-    # reciepients = reciepients # list of emails
 
     msg = EmailMessage(
       subject,
@@ -80,14 +75,12 @@ def send_simple_email(request, template_path: str, reciepients: list, subject: s
     print(f"\nMail successfully sent: {msg}")
     return True
   except Exception as e:
-    # print(f"There was an exception sending mail: {e}")
     raise Exception(f"{e}")
     return False
 
 
 def send_company_link(request, email: str) -> str:
   user = request.user
-  # print(user)
   try:
     company = user.employee.company
   except:
@@ -107,12 +100,10 @@ def send_company_link(request, email: str) -> str:
     print(f'Company link sent {email}')
     return url
   except Exception as e:
-    # print(f'An exception occurred while sending the company link: {e}')
     raise Exception(f'An exception occurred while sending the company link: {e}')
     
 
 
-# def send_employee_event_email(request, employee) -> str:
 def send_employee_event_email(request, employee, event_ids: list) -> str:
   try:
     company = employee.company
@@ -124,19 +115,7 @@ def send_employee_event_email(request, employee, event_ids: list) -> str:
       & Q(employee=employee) 
       # & ~Q(status="Completed") | ~Q(status="Dropped")
     )
-    # print(f"event ids: {event_ids}")
-    # print(f"employee company: {company}")
-    # print(f"employee: {employee}")
-    # print(f"email events: {events}")
-    # for event in events:
-    #   print(f"event.date: {event.date}")
-    #   print(f"event.company: {event.company}")
-    #   print(f"event.client: {event.client}")
-    #   print(f"event.employee: {event.employee}")
-    #   print(f"event.start_time: {event.start_time}")
-    #   print(f"event.end_time: {event.end_time}")
-    # # events = events.filter(employee=employee)
-    
+
     context = {
       'company': company,
       'events': events,
@@ -156,7 +135,6 @@ def send_employee_event_email(request, employee, event_ids: list) -> str:
     print(f'An exception occurred while getting employee details: {e}')
 
 
-# def send_client_event_email(request, client) -> str:
 def send_client_event_email(request, client, event_ids: list) -> str:
   try:
     user = client.name
@@ -169,25 +147,12 @@ def send_client_event_email(request, client, event_ids: list) -> str:
       & Q(client=client) 
       # & ~Q(status="Completed") | ~Q(status="Dropped")
     )
-    # events = events.filter(client=client)
     if not client.email:
       print("no client email")
       return False
-    # print("\nClient Details\n")
-    # print(f"client.name: {client.name}")
-    # print(f"client.email: {client.email}")
-    # print(f"client.company: {client.company}")
-    # print(events)
+
     if len(events) < 1:
       return False
-    # print("\n\nFor The Client\n\n")
-    # for event in events:
-    #   print(f"client.event.date: {event.date}")
-    #   print(f"client.event.company: {event.company}")
-    #   print(f"client.event.client: {event.client}")
-    #   print(f"client.event.employee: {event.employee}")
-    #   print(f"client.event.start_time: {event.start_time}")
-    #   print(f"client.event.end_time: {event.end_time}")
     
     context = {
       'company': company,
@@ -256,32 +221,18 @@ def get_month_dates(request, month = None):
     year = int(month.year)
     
     month_repr = f"{day} {month.month}, {month.year}"
-    # print(f"month_repr: {month_repr}")
-    
     month_start = datetime.strptime(month_repr, '%d %B, %Y')
-    # print(f"month_start: {month_start}")
     
     month_int = str(datetime.strptime(month.month, '%B'))
-    # print(f"month_int: {month_int}")
-    # print(f"month_start.month: {month_start.month}")
     
     month_range = calendar.monthrange(year, month_start.month)
-    # print(f"month_range: {month_range}")
     
     last_day = month_range[1]
-    
     month_end_repr = f"{last_day} {month.month}, {month.year}"
-    # print(f"month_end_repr: {month_end_repr}")
-    
     month_end = datetime.strptime(month_end_repr, '%d %B, %Y')
-    # print(f"month_end: {month_end}")
     
-    # print("month start repr")
-    # print(month_start.strftime('%Y-%m-%d'))
     month_start_date = month_start.strftime('%Y-%m-%d')
     month_start_date_timestamp = datetime.timestamp(month_start)
-    # print("month end repr")
-    # print(month_end.strftime('%Y-%m-%d'))
     month_end_date = month_end.strftime('%Y-%m-%d')
     month_end_date_timestamp = datetime.timestamp(month_end)
     
@@ -297,8 +248,7 @@ def get_month_dates(request, month = None):
     return None
   
 
-# def send_employee_event_email(request, employee) -> str:
-def send_employee_weekly_report_email(request, employee, event_ids: list) -> str:
+def send_employee_weekly_report_email(request, employee, week_list: list, event_ids: list) -> str:
   try:
     company = employee.company
     name = f"{employee.user.first_name}"
@@ -309,25 +259,22 @@ def send_employee_weekly_report_email(request, employee, event_ids: list) -> str
       & Q(employee=employee) 
       # & ~Q(status="Completed") | ~Q(status="Dropped")
     )
-    # print(f"event ids: {event_ids}")
-    # print(f"employee company: {company}")
-    # print(f"employee: {employee}")
-    # print(f"email events: {events}")
-    # for event in events:
-    #   print(f"event.date: {event.date}")
-    #   print(f"event.company: {event.company}")
-    #   print(f"event.client: {event.client}")
-    #   print(f"event.employee: {event.employee}")
-    #   print(f"event.start_time: {event.start_time}")
-    #   print(f"event.end_time: {event.end_time}")
-    # # events = events.filter(employee=employee)
+    payload = {}
+    total_time = 0
     
-    
-    # weeks = models.Week.objects.filter(id__in=weeks_data, client__company=company)
-    # events = models.Event.objects.none()
-    # for week in weeks:
-    #   events |= models.Event.objects.filter(date__gte=week.start_date, date__lte=week.end_date)
-    
+    for week_id in week_list:
+      week = models.Week.objects.get(id=week_id)
+      events = models.Event.objects.filter(date__gte=week.start_date, date__lte=week.end_date)
+      
+      hours_list = [utility.hourly_time_difference(utility.usable_time(event.start_time), utility.usable_time(event.end_time)) for event in events]
+      week_time = sum([hours_list])iterable
+      
+      payload[f'{week.name}'] = {
+        'week': week,
+        'event': events,
+        'time': week_time
+      }
+      
     
     context = {
       'company': company,
@@ -345,11 +292,10 @@ def send_employee_weekly_report_email(request, employee, event_ids: list) -> str
     # return url
     
   except Exception as e:
-    print(f'An exception occurred while getting employee details: {e}')
+    print(f'An exception occurred: {e}')
 
 
-# def send_client_event_email(request, client) -> str:
-def send_client_weekly_report_email(request, client, event_ids: list) -> str:
+def send_client_weekly_report_email(request, client, week_list: list, event_ids: list) -> str:
   try:
     user = client.name
     email = client.email
@@ -361,25 +307,12 @@ def send_client_weekly_report_email(request, client, event_ids: list) -> str:
       & Q(client=client) 
       # & ~Q(status="Completed") | ~Q(status="Dropped")
     )
-    # events = events.filter(client=client)
     if not client.email:
       print("no client email")
       return False
-    # print("\nClient Details\n")
-    # print(f"client.name: {client.name}")
-    # print(f"client.email: {client.email}")
-    # print(f"client.company: {client.company}")
-    # print(events)
+
     if len(events) < 1:
       return False
-    # print("\n\nFor The Client\n\n")
-    # for event in events:
-    #   print(f"client.event.date: {event.date}")
-    #   print(f"client.event.company: {event.company}")
-    #   print(f"client.event.client: {event.client}")
-    #   print(f"client.event.employee: {event.employee}")
-    #   print(f"client.event.start_time: {event.start_time}")
-    #   print(f"client.event.end_time: {event.end_time}")
     
     context = {
       'company': company,
@@ -400,98 +333,3 @@ def send_client_weekly_report_email(request, client, event_ids: list) -> str:
         
   except Exception as e:
     print(f'An exception occurred while getting client details: {e}')
-
-
-# def get_tokens_for_employee(employee):
-#   user = employee.user
-#   refresh = RefreshToken.for_user(user)
-
-#   return {
-#     'refresh': str(refresh),
-#     'access': str(refresh.access_token),
-#   }
-
-
-# class EmployeeTokenObtainPairSerializer(TokenObtainPairSerializer):
-  
-#   def validate(self, attrs):
-#     self.username_field = 'employee_id'
-    
-#     authenticate_kwargs = {
-#       self.username_field: attrs[self.username_field],
-#       "password": attrs["password"],
-#     }
-#     super().validate(attrs)
-  
-#   @classmethod
-#   def get_token(cls, user):
-#       # token = super().get_token(user)
-
-#       # Add custom claims
-#       token['name'] = user.name
-#       # ...
-
-#       return token
-
-
-# class EmployeeTokenObtainPairView(TokenObtainPairView):
-#     serializer_class = EmployeeTokenObtainPairSerializer
-
-
-# Template for modifying the token obtain pair serializer
-  """
-  class TokenObtainSerializer(serializers.Serializer):
-    username_field = get_user_model().USERNAME_FIELD
-    token_class = None
-
-    default_error_messages = {
-        "no_active_account": _("No active account found with the given credentials")
-    }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields[self.username_field] = serializers.CharField()
-        self.fields["password"] = PasswordField()
-
-    def validate(self, attrs):
-        authenticate_kwargs = {
-            self.username_field: attrs[self.username_field],
-            "password": attrs["password"],
-        }
-        try:
-            authenticate_kwargs["request"] = self.context["request"]
-        except KeyError:
-            pass
-
-        self.user = authenticate(**authenticate_kwargs)
-
-        if not api_settings.USER_AUTHENTICATION_RULE(self.user):
-            raise exceptions.AuthenticationFailed(
-                self.error_messages["no_active_account"],
-                "no_active_account",
-            )
-
-        return {}
-
-    @classmethod
-    def get_token(cls, user):
-        return cls.token_class.for_user(user)
-
-
-class TokenObtainPairSerializer(TokenObtainSerializer):
-    token_class = RefreshToken
-
-    def validate(self, attrs):
-        data = super().validate(attrs)
-
-        refresh = self.get_token(self.user)
-
-        data["refresh"] = str(refresh)
-        data["access"] = str(refresh.access_token)
-
-        if api_settings.UPDATE_LAST_LOGIN:
-            update_last_login(None, self.user)
-
-        return data
-  """
