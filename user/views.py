@@ -8,6 +8,7 @@ from rest_framework_simplejwt.views import (
   TokenObtainPairView, TokenRefreshView, TokenVerifyView
 )
 from user import serializers, models, filters, utils
+from util import utils as utility
 
 from django_rest_passwordreset.signals import reset_password_token_created
 from django_rest_passwordreset.views import (
@@ -16,20 +17,19 @@ from django_rest_passwordreset.views import (
     ResetPasswordRequestTokenViewSet
 )
 from drf_yasg.utils import no_body, swagger_auto_schema
-# from util.utils import generate_swagger_overrides
 from user.utils import EmployeeResponseSerializer
 
 # Create your views here.
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(utility.swagger_documentation_factory("user"), viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = serializers.UserSerializer
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filterset_class = filters.UserFilter
 
     def perform_create(self, serializer):
-        user = serializer.save()
+        user = super().perform_create(serializer)
         try:
             reciepients = [user.email]
             url =  self.request.build_absolute_uri(reverse(f'user:token_obtain_pair')) 
@@ -44,70 +44,6 @@ class UserViewSet(viewsets.ModelViewSet):
             print(f"user creation email error: {e} \n")
 
         return user
-
-    # generate_swagger_overrides("a", "user") # Attempt at simplifying swagger overriding
-    @swagger_auto_schema(
-        operation_description="create a user",
-        operation_summary='create user'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all users",
-        operation_summary='list users'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="retrieve a user",
-        operation_summary='retrieve user'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update a user",
-        operation_summary='update user'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update a user",
-        operation_summary='partial_update user'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete a user",
-        operation_summary='delete user'
-    )
-    def destroy(self, request, *args, **kwargs):
-        """destroy method docstring"""
-        return super().destroy(request, *args, **kwargs)
 
 
 class ManageUserApiView(generics.RetrieveUpdateAPIView):
