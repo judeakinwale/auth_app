@@ -176,12 +176,12 @@ def send_client_event_email(request, client, event_ids: list) -> str:
 
 
 # def send_employee_event_email(request, employee, events) -> str:
-def send_employee_schedule_publish_email(request, employee) -> str:
+def send_employee_schedule_publish_email(request, employee, month=None) -> str:
   try:
     company = employee.company
     name = f"{employee.user.first_name}"
     email = employee.user.email
-    month = get_month_dates(request)
+    month = get_month_dates(request, month=month)
     month_start_date = month["start_timestamp"]
     month_end_date = month["end_timestamp"]
     events = models.Event.objects.filter(
@@ -253,12 +253,14 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
     company = employee.company
     name = f"{employee.user.first_name}"
     email = employee.user.email
-    events = models.Event.objects.filter(
-      Q(id__in=event_ids) 
-      # & Q(company=company) 
-      & Q(employee=employee) 
-      # & ~Q(status="Completed") | ~Q(status="Dropped")
-    )
+    # events = models.Event.objects.filter(
+    #   Q(id__in=event_ids) 
+    #   # & Q(company=company) 
+    #   & Q(employee=employee) 
+    #   # & ~Q(status="Completed") | ~Q(status="Dropped")
+    # )
+    
+    events = models.Event.objects.none()
     payload = {}
     total_time = 0
     
@@ -276,20 +278,21 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
         'event': events,
         'time': week_time
       }
-      
-    
+
     context = {
       'company': company,
       'events': events,
       'employee': employee,
       'name': name,
-      # 'url': url,
+      'payload': payload,
+      'total_time': total_time,
     }
+    
     try:
       email = send_simple_email(request, 'email/employee_weekly_report_email.html', [email], "Shift Details", context)
-      print(f'Employee event nofitication mail sent {email}')
+      print(f'Employee weekly report nofitication mail sent {email}')
     except Exception as e:
-      print(f'An exception occurred while sending employee event mail: {e}')
+      print(f'An exception occurred while sending employee weekly report mail: {e}')
       
     # return url
     
@@ -303,14 +306,36 @@ def send_client_weekly_report_email(request, client, week_list: list, event_ids:
     email = client.email
     company = client.company
     url = "https:// " # link to frontend schedule page for client
-    events = models.Event.objects.filter(
-      Q(id__in=event_ids) 
-      # & Q(company=company) 
-      & Q(client=client) 
-      # & ~Q(status="Completed") | ~Q(status="Dropped")
-    )
+    
+    # events = models.Event.objects.filter(
+    #   Q(id__in=event_ids) 
+    #   # & Q(company=company) 
+    #   & Q(client=client) 
+    #   # & ~Q(status="Completed") | ~Q(status="Dropped")
+    # )
+    
+    events = models.Event.objects.none()
+    payload = {}
+    total_time = 0
+    
+    for week_id in week_list:
+      week = models.Week.objects.get(id=week_id)
+      events = models.Event.objects.filter(date__gte=week.start_date, date__lte=week.end_date)
+      
+      hours_list = [utility.hourly_time_difference(utility.usable_time(event.start_time), utility.usable_time(event.end_time)) for event in events]
+      week_time = sum([hours_list])
+      
+      total_time += week_time
+      
+      payload[f'{week.name}'] = {
+        'week': week,
+        'event': events,
+        'time': week_time
+      }
+
     if not client.email:
-      print("no client email")
+      # print("no client email")
+      raise Exception("Client Has no Email")
       return False
 
     if len(events) < 1:
@@ -321,17 +346,18 @@ def send_client_weekly_report_email(request, client, week_list: list, event_ids:
       'events': events,
       'client': client,
       'name': user,
+      'payload': payload,
+      'total_time': total_time,
       'url': url,
     }
+
     try:
       email = send_simple_email(request, 'email/client_weekly_report_email.html', [email], "Company Link", context)
-      print(f'Client event notification email sent {email}')
+      print(f'Client weekly report notification email sent {email}')
       return True
     except Exception as e:
-      print(f'An exception occurred while sending client event mail: {e}')
+      print(f'An exception occurred while sending client weekly report mail: {e}')
       return False
-      
-    # return url
         
   except Exception as e:
     print(f'An exception occurred while getting client details: {e}')

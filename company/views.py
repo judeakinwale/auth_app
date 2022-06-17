@@ -648,7 +648,7 @@ class PublishMonthView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         
         try:
-            all_months = models.Month.objects.all().update(is_active=False)
+            all_months = models.Month.objects.filter(company=month.company).update(is_active=False)
             month = models.Month.objects.get(id=int(kwargs['id']))
             month.is_active = True
             month.save()
@@ -658,7 +658,7 @@ class PublishMonthView(generics.GenericAPIView):
             try:
                 employees = models.Employee.objects.filter(company=month.company)
                 for employee in employees:
-                    email = utils.send_employee_schedule_publish_email(request, employee)
+                    email = utils.send_employee_schedule_publish_email(request, employee, month)
             except Exception as e:
                 print(f'An exception occurred:{e}')
             

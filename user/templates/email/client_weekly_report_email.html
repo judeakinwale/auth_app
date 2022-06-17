@@ -34,7 +34,7 @@
     <br />
     <h3>Weekly Report</h3>
 
-    <table>
+    {% comment %} <table>
       <tr>
         <th>Date</th>
         <th>Company</th>
@@ -53,6 +53,61 @@
         <td>{{event.end_time}}</td>
       </tr>
       {% endfor %}
+    </table> {% endcomment %}
+
+    <table>
+      <tr>
+        <th>Attribute</th>
+        <th>Sunday</th>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+        <th>Saturday</th>
+        <th>Hours</th>
+      </tr>
+      {% for week in payload %}
+      <tr>
+        <td>{{forloop.counter}}</td>
+
+        {% for event in week['events'] %}
+
+        {% if event.formatted_date.weekday() == 6%}
+        <td>{{event.start_time}} - {{event.end_time}}</td>
+        {% endif %}
+
+        {% if event.formatted_date.weekday() == 0%}
+        <td>{{event.start_time}} - {{event.end_time}}</td>
+        {% endif %}
+
+        {% if event.formatted_date.weekday() == 1%}
+        <td>{{event.start_time}} - {{event.end_time}}</td>
+        {% endif %}
+
+        {% if event.formatted_date.weekday() == 2%}
+        <td>{{event.start_time}} - {{event.end_time}}</td>
+        {% endif %}
+
+        {% if event.formatted_date.weekday() == 3%}
+        <td>{{event.start_time}} - {{event.end_time}}</td>
+        {% endif %}
+
+        {% if event.formatted_date.weekday() == 4%}
+        <td>{{event.start_time}} - {{event.end_time}}</td>
+        {% endif %}
+
+        {% if event.formatted_date.weekday() == 5%}
+        <td>{{event.start_time}} - {{event.end_time}}</td>
+        {% endif %}
+
+        {% endfor%}
+
+        <td>{{week.time}}</td>
+      </tr>
+      {% endfor %}
     </table>
+    <br/>
+    <p>Total Hours: {{total_time}}</p>
   </body>
 </html>
