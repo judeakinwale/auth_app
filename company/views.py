@@ -76,7 +76,7 @@ class BranchViewSet(utility.swagger_documentation_factory("branch", "a", "branch
         if self.request.user.is_superuser:
             return super().get_queryset()
         
-        utility.company_filtered_queryset(self.request, models.Branch)
+        return utility.company_filtered_queryset(self.request, models.Branch)
         
         # try:
         #     if self.request.user.is_staff:
