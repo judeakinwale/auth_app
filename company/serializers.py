@@ -641,11 +641,11 @@ class CompanySerializer(CompanyBaseSerializer):
     try:
       phone_numbers = validated_data.pop('phone_numbers')
       company = super().update(instance, validated_data)
-      nested_serializer = self.fields['phone_numbers']        
       
-      n = 0
       for nested_data in phone_numbers:            
         try:
+          nested_data['company'] = company
+          phone_number
           # print(f'continued, n is {n}')
           nested_instance = instance.phone_numbers.all()[n]
           # print("nested phone_number exists")
@@ -668,35 +668,23 @@ class CompanySerializer(CompanyBaseSerializer):
 class LocationResponseSerializer(LocationSerializer):
   
   branch = BranchSerializer(read_only=True)
-  
-  class Meta(LocationSerializer.Meta):
-    depth = 0
 
 
 class MonthResponseSerializer(MonthSerializer):
 
   company = CompanySerializer(read_only=True)
   # client = ClientSerializer(read_only=True)
-  
-  class Meta(MonthSerializer.Meta):
-    depth = 0
 
 
 class ScheduleResponseSerializer(ScheduleSerializer):
   
   client = ClientSerializer(read_only=True)
   month = MonthSerializer(read_only=True)
-  
-  class Meta(ScheduleSerializer.Meta):
-    depth = 0
 
 
 class WeekResponseSerializer(WeekSerializer):
   
   client = ClientSerializer(read_only=True)
-  
-  class Meta(WeekSerializer.Meta):
-    depth = 0
 
 
 class ClientResponseSerializer(ClientSerializer):
@@ -715,9 +703,6 @@ class EmployeeResponseSerializer(EmployeeSerializer):
   company = CompanyBaseSerializer(read_only=True)
   branch = BranchSerializer(read_only=True)
   department = DepartmentSerializer(read_only=True)
-  
-  class Meta(EmployeeSerializer.Meta):
-    depth = 0
     
     
 class EventResponseSerializer(EventSerializer):
@@ -725,24 +710,15 @@ class EventResponseSerializer(EventSerializer):
   company = CompanyBaseSerializer(read_only=True)
   employee = EmployeeSerializer(read_only=True)
   client = ClientSerializer(read_only=True)
-  
-  class Meta(EventSerializer.Meta):
-    depth = 0
 
 
 class BranchResponseSerializer(BranchSerializer):
   
   company = CompanyBaseSerializer(read_only=True)
-  
-  class Meta(BranchSerializer.Meta):
-    depth = 0
 
 
 class DepartmentResponseSerializer(DepartmentSerializer):
   
   company = CompanyBaseSerializer(read_only=True)
   branch = BranchSerializer(read_only=True)
-  
-  class Meta(DepartmentSerializer.Meta):
-    depth = 0
  

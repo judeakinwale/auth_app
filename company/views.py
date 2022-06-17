@@ -33,7 +33,7 @@ class CompanyViewSet(utility.swagger_documentation_factory("company", "a", "comp
     filterset_class = filters.CompanyFilter
 
     def perform_create(self, serializer):
-        if models.Company.objects.filter(admin=request.user):
+        if models.Company.objects.filter(admin=self.request.user):
             raise Exception("You've created another company")
         
         if not self.request.user.is_superuser:
