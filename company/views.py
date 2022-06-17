@@ -33,24 +33,17 @@ class CompanyViewSet(utility.swagger_documentation_factory("company", "a", "comp
     filterset_class = filters.CompanyFilter
 
     def perform_create(self, serializer):
-        request_user = self.request.user
-        if self.request.user.is_superuser:
-            return serializer.save()
-        else:
-            return serializer.save(admin=self.request.user)
+        if models.Company.objects.filter(admin=request.user):
+            raise Exception("You've created another company")
+        
+        if not self.request.user.is_superuser:
+            serializer.validated_data['admin'] = self.request.user
+        return super().perform_create(serializer)
     
     def get_queryset(self):
         if self.request.user.is_superuser:
             return super().get_queryset()
-        
         return utility.company_filtered_queryset(self.request, models.Company, "id")
-        
-        # try:
-        #     if self.request.user.is_staff:
-        #         return models.Company.objects.filter(name=self.request.user.company.name)    
-        #     return models.Company.objects.filter(name=self.request.user.employee.company.name)
-        # except Exception:
-        #     return models.Company.objects.none()
 
 
 class BranchViewSet(utility.swagger_documentation_factory("branch", "a", "branches"), viewsets.ModelViewSet):
@@ -75,15 +68,7 @@ class BranchViewSet(utility.swagger_documentation_factory("branch", "a", "branch
     def get_queryset(self):
         if self.request.user.is_superuser:
             return super().get_queryset()
-        
         return utility.company_filtered_queryset(self.request, models.Branch)
-        
-        # try:
-        #     if self.request.user.is_staff:
-        #         return models.Branch.objects.filter(company=self.request.user.company)
-        #     return models.Branch.objects.filter(company=self.request.user.employee.company)
-        # except Exception:
-        #     return models.Branch.objects.none()
 
 
 class DepartmentViewSet(utility.swagger_documentation_factory("company department"), viewsets.ModelViewSet):
@@ -863,16 +848,3 @@ class DeleteClientEmployeeView(generics.GenericAPIView):
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
         
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
-    
-    
-# def test(request):
-#     request_user = request.user
-#     return "request_user set"
-
-# # @receiver(post_save, sender=Company)
-# # def set_admin(request, sender, instance, created=False, **kwargs):
-# #     if not instance.admin and not request.user.is_superuser:
-# #         instance.admin = request.user
-# #         instance.save()
-        
-# # post_save.connect(set_admin, sender=Company)
