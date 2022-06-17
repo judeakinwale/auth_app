@@ -162,6 +162,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    "EXCEPTION_HANDLER": "app.utils.api_exception_handler",
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 999999999999999999999999999999999999999999999999999999999999999,
     'DEFAULT_FILTER_BACKENDS': (
