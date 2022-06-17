@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from company import models
+from util import utils as utility
 
 from datetime import datetime
 import calendar
@@ -30,13 +31,14 @@ def get_active_month(request):
   
   active_month = models.Month.objects.none()
   try:
-    active_month = models.Month.objects.filter(company=get_user_company(request), is_active=True) 
-    active_month = models.Month.objects.get(company=get_user_company(request), is_active=True)
+    active_month = models.Month.objects.filter(company=utility.auth_user_company(request), is_active=True) 
+    active_month = models.Month.objects.get(company=utility.auth_user_company(request), is_active=True)
     # return active_month
   except Exception as e:
     if active_month:
       active_month = models.Month.objects.none()
       raise Exception("There are more than one active months")
+    raise Exception(e)
     
     # get current month name and current year
     today = datetime.now().date()
@@ -214,7 +216,7 @@ def send_employee_schedule_publish_email(request, employee) -> str:
     company = employee.company
     name = f"{employee.user.first_name}"
     email = employee.user.email
-    month = utils.get_month_dates(request)
+    month = get_month_dates(request)
     month_start_date = month["start_timestamp"]
     month_end_date = month["end_timestamp"]
     events = models.Event.objects.filter(
@@ -294,6 +296,110 @@ def get_month_dates(request, month = None):
     raise Exception(e)
     return None
   
+
+# def send_employee_event_email(request, employee) -> str:
+def send_employee_weekly_report_email(request, employee, event_ids: list) -> str:
+  try:
+    company = employee.company
+    name = f"{employee.user.first_name}"
+    email = employee.user.email
+    events = models.Event.objects.filter(
+      Q(id__in=event_ids) 
+      # & Q(company=company) 
+      & Q(employee=employee) 
+      # & ~Q(status="Completed") | ~Q(status="Dropped")
+    )
+    # print(f"event ids: {event_ids}")
+    # print(f"employee company: {company}")
+    # print(f"employee: {employee}")
+    # print(f"email events: {events}")
+    # for event in events:
+    #   print(f"event.date: {event.date}")
+    #   print(f"event.company: {event.company}")
+    #   print(f"event.client: {event.client}")
+    #   print(f"event.employee: {event.employee}")
+    #   print(f"event.start_time: {event.start_time}")
+    #   print(f"event.end_time: {event.end_time}")
+    # # events = events.filter(employee=employee)
+    
+    
+    # weeks = models.Week.objects.filter(id__in=weeks_data, client__company=company)
+    # events = models.Event.objects.none()
+    # for week in weeks:
+    #   events |= models.Event.objects.filter(date__gte=week.start_date, date__lte=week.end_date)
+    
+    
+    context = {
+      'company': company,
+      'events': events,
+      'employee': employee,
+      'name': name,
+      # 'url': url,
+    }
+    try:
+      email = send_simple_email(request, 'email/employee_weekly_report_email.html', [email], "Shift Details", context)
+      print(f'Employee event nofitication mail sent {email}')
+    except Exception as e:
+      print(f'An exception occurred while sending employee event mail: {e}')
+      
+    # return url
+    
+  except Exception as e:
+    print(f'An exception occurred while getting employee details: {e}')
+
+
+# def send_client_event_email(request, client) -> str:
+def send_client_weekly_report_email(request, client, event_ids: list) -> str:
+  try:
+    user = client.name
+    email = client.email
+    company = client.company
+    url = "https:// " # link to frontend schedule page for client
+    events = models.Event.objects.filter(
+      Q(id__in=event_ids) 
+      # & Q(company=company) 
+      & Q(client=client) 
+      # & ~Q(status="Completed") | ~Q(status="Dropped")
+    )
+    # events = events.filter(client=client)
+    if not client.email:
+      print("no client email")
+      return False
+    # print("\nClient Details\n")
+    # print(f"client.name: {client.name}")
+    # print(f"client.email: {client.email}")
+    # print(f"client.company: {client.company}")
+    # print(events)
+    if len(events) < 1:
+      return False
+    # print("\n\nFor The Client\n\n")
+    # for event in events:
+    #   print(f"client.event.date: {event.date}")
+    #   print(f"client.event.company: {event.company}")
+    #   print(f"client.event.client: {event.client}")
+    #   print(f"client.event.employee: {event.employee}")
+    #   print(f"client.event.start_time: {event.start_time}")
+    #   print(f"client.event.end_time: {event.end_time}")
+    
+    context = {
+      'company': company,
+      'events': events,
+      'client': client,
+      'name': user,
+      'url': url,
+    }
+    try:
+      email = send_simple_email(request, 'email/client_weekly_report_email.html', [email], "Company Link", context)
+      print(f'Client event notification email sent {email}')
+      return True
+    except Exception as e:
+      print(f'An exception occurred while sending client event mail: {e}')
+      return False
+      
+    # return url
+        
+  except Exception as e:
+    print(f'An exception occurred while getting client details: {e}')
 
 
 # def get_tokens_for_employee(employee):

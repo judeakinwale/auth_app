@@ -8,6 +8,8 @@ from datetime import datetime, date, time
 from rest_framework import generics, viewsets, permissions
 from rest_framework import status, views, response
 from company import serializers, models, filters, utils
+# from company.models import Company
+from util import utils as utility
 
 from drf_yasg.utils import no_body, swagger_auto_schema
 
@@ -16,8 +18,6 @@ from django.dispatch import receiver
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save 
-from company.models import Company
-from company import utils
 
 import calendar # For get weekly report weeks
 
@@ -26,7 +26,7 @@ import calendar # For get weekly report weeks
 request_user = ""
 
 
-class CompanyViewSet(viewsets.ModelViewSet):
+class CompanyViewSet(utility.swagger_documentation_factory("company", "a", "companies"), viewsets.ModelViewSet):
     queryset = models.Company.objects.all()
     serializer_class = serializers.CompanySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -43,78 +43,17 @@ class CompanyViewSet(viewsets.ModelViewSet):
         if self.request.user.is_superuser:
             return super().get_queryset()
         
-        try:
-            if self.request.user.is_staff:
-                return models.Company.objects.filter(name=self.request.user.company.name)    
-            return models.Company.objects.filter(name=self.request.user.employee.company.name)
-        except Exception:
-            return models.Company.objects.none()
-
-    @swagger_auto_schema(
-        operation_description="create a company",
-        operation_summary='create company'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all companies",
-        operation_summary='list companies'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="retrieve a company",
-        operation_summary='retrieve company'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update a company",
-        operation_summary='update company'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update a company",
-        operation_summary='partial_update company'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete a company",
-        operation_summary='delete company'
-    )
-    def destroy(self, request, *args, **kwargs):
-        """destroy method docstring"""
-        return super().destroy(request, *args, **kwargs)
+        return utility.company_filtered_queryset(self.request, models.Company, "id")
+        
+        # try:
+        #     if self.request.user.is_staff:
+        #         return models.Company.objects.filter(name=self.request.user.company.name)    
+        #     return models.Company.objects.filter(name=self.request.user.employee.company.name)
+        # except Exception:
+        #     return models.Company.objects.none()
 
 
-class BranchViewSet(viewsets.ModelViewSet):
+class BranchViewSet(utility.swagger_documentation_factory("branch", "a", "branches"), viewsets.ModelViewSet):
     queryset = models.Branch.objects.all()
     serializer_class = serializers.BranchSerializer
     serializer_action_classes = {
@@ -137,78 +76,17 @@ class BranchViewSet(viewsets.ModelViewSet):
         if self.request.user.is_superuser:
             return super().get_queryset()
         
-        try:
-            if self.request.user.is_staff:
-                return models.Branch.objects.filter(company=self.request.user.company)
-            return models.Branch.objects.filter(company=self.request.user.employee.company)
-        except Exception:
-            return models.Branch.objects.none()
-
-    @swagger_auto_schema(
-        operation_description="create a company branch",
-        operation_summary='create company branch'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all company branches",
-        operation_summary='list company branches'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="retrieve a company branch",
-        operation_summary='retrieve company branch'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update a company branch",
-        operation_summary='update company branch'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update a company branch",
-        operation_summary='partial_update company branch'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete a company branch",
-        operation_summary='delete company branch'
-    )
-    def destroy(self, request, *args, **kwargs):
-        """destroy method docstring"""
-        return super().destroy(request, *args, **kwargs)
+        utility.company_filtered_queryset(self.request, models.Branch)
+        
+        # try:
+        #     if self.request.user.is_staff:
+        #         return models.Branch.objects.filter(company=self.request.user.company)
+        #     return models.Branch.objects.filter(company=self.request.user.employee.company)
+        # except Exception:
+        #     return models.Branch.objects.none()
 
 
-class DepartmentViewSet(viewsets.ModelViewSet):
+class DepartmentViewSet(utility.swagger_documentation_factory("company department"), viewsets.ModelViewSet):
     queryset = models.Department.objects.all()
     serializer_class = serializers.DepartmentSerializer
     serializer_action_classes = {
@@ -238,71 +116,8 @@ class DepartmentViewSet(viewsets.ModelViewSet):
         except Exception:
             return models.Department.objects.none()
 
-    @swagger_auto_schema(
-        operation_description="create a company department",
-        operation_summary='create company department'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all company departments",
-        operation_summary='list company departments'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
 
-    @swagger_auto_schema(
-        operation_description="retrieve a company department",
-        operation_summary='retrieve company department'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update a company department",
-        operation_summary='update company department'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update a company department",
-        operation_summary='partial_update company department'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete a company department",
-        operation_summary='delete company department'
-    )
-    def destroy(self, request, *args, **kwargs):
-        """destroy method docstring"""
-        return super().destroy(request, *args, **kwargs)
-
-
-class EmployeeViewSet(viewsets.ModelViewSet):
+class EmployeeViewSet(utility.swagger_documentation_factory("Employee", "an"), viewsets.ModelViewSet):
     queryset = models.Employee.objects.all()
     serializer_class = serializers.EmployeeSerializer
     serializer_action_classes = {
@@ -331,72 +146,21 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             return models.Employee.objects.filter(company=self.request.user.employee.company)
         except Exception:
             return models.Employee.objects.none()
-
-    @swagger_auto_schema(
-        operation_description="create an employee",
-        operation_summary='create employee'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all employees",
-        operation_summary='list employees'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="retrieve an employee",
-        operation_summary='retrieve employee'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update an employee",
-        operation_summary='update employee'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update an employee",
-        operation_summary='partial_update employee'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete an employee",
-        operation_summary='delete employee'
-    )
+        
     def destroy(self, request, *args, **kwargs):
         """destroy method docstring"""
+        try:
+            employee = self.get_object()
+            user = employee.user
+            user.delete()
+        except Exception as e:
+            error_resp = {"detail": f"Error Deleting user: {e}"}
+            return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
         return super().destroy(request, *args, **kwargs)
-    
+        
 
-class LocationViewSet(viewsets.ModelViewSet):
+
+class LocationViewSet(utility.swagger_documentation_factory("location"), viewsets.ModelViewSet):
     queryset = models.Location.objects.all()
     serializer_class = serializers.LocationSerializer
     serializer_action_classes = {
@@ -426,71 +190,8 @@ class LocationViewSet(viewsets.ModelViewSet):
         except Exception:
             return models.Location.objects.none()
 
-    @swagger_auto_schema(
-        operation_description="create a company location",
-        operation_summary='create company location'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all company locations",
-        operation_summary='list company locations'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
 
-    @swagger_auto_schema(
-        operation_description="retrieve a company location",
-        operation_summary='retrieve company location'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update a company location",
-        operation_summary='update company location'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update a company location",
-        operation_summary='partial_update company location'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete a company location",
-        operation_summary='delete company location'
-    )
-    def destroy(self, request, *args, **kwargs):
-        """destroy method docstring"""
-        return super().destroy(request, *args, **kwargs)
-
-
-class ClientViewSet(viewsets.ModelViewSet):
+class ClientViewSet(utility.swagger_documentation_factory("client"), viewsets.ModelViewSet):
     queryset = models.Client.objects.all()
     serializer_class = serializers.ClientSerializer
     serializer_action_classes = {
@@ -520,71 +221,8 @@ class ClientViewSet(viewsets.ModelViewSet):
         except Exception:
             return models.Client.objects.none()
 
-    @swagger_auto_schema(
-        operation_description="create a client",
-        operation_summary='create client'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all clients",
-        operation_summary='list clients'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
 
-    @swagger_auto_schema(
-        operation_description="retrieve a client",
-        operation_summary='retrieve client'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update a client",
-        operation_summary='update client'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update a client",
-        operation_summary='partial_update client'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete a client",
-        operation_summary='delete client'
-    )
-    def destroy(self, request, *args, **kwargs):
-        """destroy method docstring"""
-        return super().destroy(request, *args, **kwargs)
-
-
-class EventViewSet(viewsets.ModelViewSet):
+class EventViewSet(utility.swagger_documentation_factory("event", "an"), viewsets.ModelViewSet):
     queryset = models.Event.objects.all()
     serializer_class = serializers.EventSerializer
     serializer_action_classes = {
@@ -638,72 +276,9 @@ class EventViewSet(viewsets.ModelViewSet):
         except Exception:
             
             return models.Event.objects.none()
-
-    @swagger_auto_schema(
-        operation_description="create an event",
-        operation_summary='create event'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all events",
-        operation_summary='list events'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="retrieve an event",
-        operation_summary='retrieve event'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update an event",
-        operation_summary='update event'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update an event",
-        operation_summary='partial_update event'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete an event",
-        operation_summary='delete event'
-    )
-    def destroy(self, request, *args, **kwargs):
-        """destroy method docstring"""
-        return super().destroy(request, *args, **kwargs)
     
     
-class MonthViewSet(viewsets.ModelViewSet):
+class MonthViewSet(utility.swagger_documentation_factory("month"), viewsets.ModelViewSet):
     queryset = models.Month.objects.all()
     serializer_class = serializers.MonthSerializer
     serializer_action_classes = {
@@ -744,79 +319,9 @@ class MonthViewSet(viewsets.ModelViewSet):
             return models.Month.objects.filter(company=self.request.user.employee.company)
         except Exception:
             return models.Month.objects.none()
-        
-        # return super().get_queryset()
-
-    @swagger_auto_schema(
-        operation_description="create a month",
-        operation_summary='create month'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            # month = models.Month.objects.get(month=validated_data['month'], year=validated_data['year'])
-            # if month:
-            #     error_resp = {'detail': "Month already exists"}
-            #     return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-            
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all months",
-        operation_summary='list months'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="retrieve a month",
-        operation_summary='retrieve month'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update a month",
-        operation_summary='update month'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update a month",
-        operation_summary='partial_update month'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete a month",
-        operation_summary='delete month'
-    )
-    def destroy(self, request, *args, **kwargs):
-        """destroy method docstring"""
-        return super().destroy(request, *args, **kwargs)
 
 
-class ScheduleViewSet(viewsets.ModelViewSet):
+class ScheduleViewSet(utility.swagger_documentation_factory("schedule"), viewsets.ModelViewSet):
     queryset = models.Schedule.objects.all()
     serializer_class = serializers.ScheduleSerializer
     serializer_action_classes = {
@@ -852,67 +357,6 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         except Exception:
             return models.Schedule.objects.none()
         
-        # return super().get_queryset()
-
-    @swagger_auto_schema(
-        operation_description="create a client schedule",
-        operation_summary='create client schedule'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all client schedules",
-        operation_summary='list client schedules'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="retrieve a client schedule",
-        operation_summary='retrieve client schedule'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update a client schedule",
-        operation_summary='update client schedule'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update a client schedule",
-        operation_summary='partial_update client schedule'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete a client schedule",
-        operation_summary='delete client schedule'
-    )
     def destroy(self, request, *args, **kwargs):
         """destroy method docstring"""
         try:
@@ -922,49 +366,9 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             error_resp = {"detail": f"Month not found: {e}"}
             return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
         try:
-            # # try:
-            # #     # month = models.Month.objects.get(is_active=True)
-            # #     month = models.Month.objects.get(id=int(kwargs['id']))
-            # # except Exception as e:
-            # #     error_resp = {"detail": f"Month not found"}
-            # #     return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
-            # day = 1
-            # year = int(month.year)
-            
-            # month_repr = f"{day} {month.month}, {month.year}"
-            # # print(f"month_repr: {month_repr}")
-            
-            # month_start = datetime.strptime(month_repr, '%d %B, %Y')
-            # # print(f"month_start: {month_start}")
-            
-            # month_int = str(datetime.strptime(month.month, '%B'))
-            # # print(f"month_int: {month_int}")
-            # # print(f"month_start.month: {month_start.month}")
-            
-            # month_range = calendar.monthrange(year, month_start.month)
-            # # print(f"month_range: {month_range}")
-            
-            # last_day = month_range[1]
-            
-            # month_end_repr = f"{last_day} {month.month}, {month.year}"
-            # # print(f"month_end_repr: {month_end_repr}")
-            
-            # month_end = datetime.strptime(month_end_repr, '%d %B, %Y')
-            # # print(f"month_end: {month_end}")
-            
-            # # print("month start repr")
-            # # print(month_start.strftime('%Y-%m-%d'))
-            # month_start_date = month_start.strftime('%Y-%m-%d')
-            # month_start_date_timestamp = datetime.timestamp(month_start)
-            # # print("month end repr")
-            # # print(month_end.strftime('%Y-%m-%d'))
-            # month_end_date = month_end.strftime('%Y-%m-%d')
-            # month_end_date_timestamp = datetime.timestamp(month_end)
-            
             month = utils.get_month_dates(request, month)
             month_start_date = month["start_timestamp"]
             month_end_date = month["end_timestamp"]
-            
         except Exception as e:
             error_resp = {"detail": f"{e}"}
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
@@ -993,7 +397,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-class WeekViewSet(viewsets.ModelViewSet):
+class WeekViewSet(utility.swagger_documentation_factory("week"), viewsets.ModelViewSet):
     queryset = models.Week.objects.all()
     serializer_class = serializers.WeekSerializer
     serializer_action_classes = {
@@ -1024,69 +428,6 @@ class WeekViewSet(viewsets.ModelViewSet):
         #     return models.Week.objects.none()
         
         return super().get_queryset()
-
-    @swagger_auto_schema(
-        operation_description="create a week",
-        operation_summary='create week'
-    )
-    def create(self, request, *args, **kwargs):
-        """create method docstring"""
-        try:
-            return super().create(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-        operation_description="list all weeks",
-        operation_summary='list weeks'
-    )
-    def list(self, request, *args, **kwargs):
-        """list method docstring"""
-        return super().list(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="retrieve a week",
-        operation_summary='retrieve week'
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """retrieve method docstring"""
-        return super().retrieve(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        operation_description="update a week",
-        operation_summary='update week'
-    )
-    def update(self, request, *args, **kwargs):
-        """update method docstring"""
-        try:
-            return super().update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="partial_update a week",
-        operation_summary='partial_update week'
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """partial_update method docstring"""
-        try:
-            return super().partial_update(request, *args, **kwargs)
-            print(**kwargs)
-        except Exception as e:
-            error_resp = {'detail': f"{e}"}
-            return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(
-        operation_description="delete a week",
-        operation_summary='delete week'
-    )
-    def destroy(self, request, *args, **kwargs):
-        """destroy method docstring"""
-        return super().destroy(request, *args, **kwargs)
 
 
 class EmployeeSetupEmailView(generics.GenericAPIView):
@@ -1218,12 +559,12 @@ class WeeklyReportView(generics.GenericAPIView):
             try:
                 employees = models.Employee.objects.filter(Q(company=company) | Q(branch__company=company))
                 for employee in employees:
-                    email = utils.send_employee_event_email(request, employee, event_id_list)
+                    email = utils.send_employee_weekly_report_email(request, employee, event_id_list)
                     
                 clients = models.Client.objects.filter(company=company)
                 # print(f"\n\nAll Clients: {clients}\n\n")
                 for client in clients:
-                    email = utils.send_client_event_email(request, client, event_id_list)
+                    email = utils.send_client_weekly_report_email(request, client, event_id_list)
             except Exception as e:
                 print(f'An exception occurred:{e}')
             
@@ -1344,50 +685,6 @@ class PublishMonthView(generics.GenericAPIView):
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
 
-    # class MultipleEventView(generics.GenericAPIView):
-        
-    #     serializer_class = serializers.MultipleEventSerializer
-    #     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-            
-    #     @swagger_auto_schema(
-    #         operation_description="Create and Send Company Link to an email",
-    #         operation_summary='Create and Send Company Link to email'
-    #     )
-    #     # def create(self, request, *args, **kwargs):
-    #     #     """create method docstring"""
-    #     #     try:
-    #     #         return super().create(request, *args, **kwargs)
-    #     #         print(**kwargs)
-    #     #     except Exception as e:
-    #     #         error_resp = {'detail': f"{e}"}
-    #     #         return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
-
-    #     def post(self, request, *args, **kwargs):
-    #         serializer = self.get_serializer(data=request.data)
-
-    #         try:
-    #             serializer.is_valid(raise_exception=True)
-    #         except Exception as e:
-    #             return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
-    #         # email = serializer.validated_data['email']
-    #         try:
-    #             events = serializer.validated_data['events']
-    #             for event_data in events:
-    #                 models.Event.objects.create(**event_data)
-    #                 # serializers.EventSerializer.create(event_data) # Not sure this works
-    #         except:
-    #             print(serializer)
-    #             error_response = {
-    #                 'errors': serializer.errors,
-    #                 'detail': "There was an error creating"
-    #             }
-    #             return response.Response(error_response, status=status.HTTP_400_BAD_REQUEST)
-            
-    #         # serializer.validated_data['link'] = link
-    #         print(serializer.validated_data)
-
-    #         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class MonthEventView(generics.GenericAPIView):
@@ -1426,47 +723,9 @@ class MonthEventView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         
         try:
-            # try:
-            #     # month = models.Month.objects.get(is_active=True)
-            #     month = models.Month.objects.get(id=int(kwargs['id']))
-            # except Exception as e:
-            #     error_resp = {"detail": f"Month not found"}
-            #     return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
-            # day = 1
-            # year = int(month.year)
-            
-            # month_repr = f"{day} {month.month}, {month.year}"
-            # # print(f"month_repr: {month_repr}")
-            
-            # month_start = datetime.strptime(month_repr, '%d %B, %Y')
-            # # print(f"month_start: {month_start}")
-            
-            # month_int = str(datetime.strptime(month.month, '%B'))
-            # # print(f"month_int: {month_int}")
-            # # print(f"month_start.month: {month_start.month}")
-            
-            # month_range = calendar.monthrange(year, month_start.month)
-            # # print(f"month_range: {month_range}")
-            
-            # last_day = month_range[1]
-            
-            # month_end_repr = f"{last_day} {month.month}, {month.year}"
-            # # print(f"month_end_repr: {month_end_repr}")
-            
-            # month_end = datetime.strptime(month_end_repr, '%d %B, %Y')
-            # # print(f"month_end: {month_end}")
-            
-            # # print("month start repr")
-            # # print(month_start.strftime('%Y-%m-%d'))
-            # month_start_date = month_start.strftime('%Y-%m-%d')
-            # # print("month end repr")
-            # # print(month_end.strftime('%Y-%m-%d'))
-            # month_end_date = month_end.strftime('%Y-%m-%d')
-            
             month = utils.get_month_dates(request)
             month_start_date = month["start_timestamp"]
             month_end_date = month["end_timestamp"]
-            
         except Exception as e:
             error_resp = {"detail": f"{e}"}
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)

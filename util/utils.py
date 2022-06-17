@@ -1,6 +1,23 @@
 from rest_framework import status, views, response
 from drf_yasg.utils import no_body, swagger_auto_schema
 
+def auth_user_company(request):
+    try:
+        if request.user.is_staff:
+            return request.user.company
+        return request.user.employee.company
+    except:
+        raise Exception("Company not found")
+
+
+def company_filtered_queryset(request, model, filter_param=None):
+    try:
+        if filter_param == "id":
+            return model.objects.filter(name=auth_user_company(request).name)
+        return model.objects.filter(company=auth_user_company(request))
+    except Exception:
+        return model.objects.none()
+
 
 def base_viewset_error_handler(fn):
     """
