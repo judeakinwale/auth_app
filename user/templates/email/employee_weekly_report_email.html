@@ -85,45 +85,45 @@
         {% for event in week|get_item:"events" %}
 
           {% if event.formatted_weekday == 6%}
-          <td>{{event.start_time}} - {{event.end_time}}</td>
-          {%else%}
-          <td></td>
+          <td>{{event.formatted_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% comment %} {%else%}
+          <td></td> {% endcomment %}
           {% endif %}
 
           {% if event.formatted_weekday == 0%}
-          <td>{{event.start_time}} - {{event.end_time}}</td>
-          {%else%}
-          <td></td>
+          <td>{{event.formatted_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% comment %} {%else%}
+          <td></td> {% endcomment %}
           {% endif %}
 
           {% if event.formatted_weekday == 1%}
-          <td>{{event.start_time}} - {{event.end_time}}</td>
-          {%else%}
-          <td></td>
+          <td>{{event.formatted_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% comment %} {%else%}
+          <td></td> {% endcomment %}
           {% endif %}
 
           {% if event.formatted_weekday == 2%}
-          <td>{{event.start_time}} - {{event.end_time}}</td>
-          {%else%}
-          <td></td>
+          <td>{{event.formatted_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% comment %} {%else%}
+          <td></td> {% endcomment %}
           {% endif %}
 
           {% if event.formatted_weekday == 3%}
-          <td>{{event.start_time}} - {{event.end_time}}</td>
-          {%else%}
-          <td></td>
+          <td>{{event.formatted_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% comment %} {%else%}
+          <td></td> {% endcomment %}
           {% endif %}
 
           {% if event.formatted_weekday == 4%}
-          <td>{{event.start_time}} - {{event.end_time}}</td>
-          {%else%}
-          <td></td>
+          <td>{{event.formatted_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% comment %} {%else%}
+          <td></td> {% endcomment %}
           {% endif %}
 
           {% if event.formatted_weekday == 5%}
-          <td>{{event.start_time}} - {{event.end_time}}</td>
-          {%else%}
-          <td></td>
+          <td>{{event.formatted_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% comment %} {%else%}
+          <td></td> {% endcomment %}
           {% endif %}
 
         {% endfor%}
