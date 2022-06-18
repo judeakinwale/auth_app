@@ -32,7 +32,6 @@ def get_active_month(request, company=None):
   if not company:
     company = utility.auth_user_company(request)
 
-  print("company:", company)
   # get current month name and current year
   today = datetime.now().date()
   year = str(today.year)  # Returns year as a 4 digit integer
@@ -45,11 +44,8 @@ def get_active_month(request, company=None):
   
   active_month = models.Month.objects.none()
   try:
-    months = models.Month.objects.filter(company=company, is_active=True) 
-    print("Month list found")
-    print("active_months before getorcreate:", months)
+    months = models.Month.objects.filter(company=company, is_active=True)
     active_month, created = models.Month.objects.get_or_create(company=company, is_active=True, defaults=defaults)
-    print("active_month after getorcreate:", active_month)
     return active_month
   except Exception as e:
     if months:
@@ -225,7 +221,8 @@ def send_employee_schedule_publish_email(request, employee, month=None) -> str:
 
 def get_month_dates(request, month = None):
   if month is None:
-    get_active_month(request)
+    month = get_active_month(request)
+
   try:
     if month is None:
       raise Exception(f"Cannot Get Active Month")
