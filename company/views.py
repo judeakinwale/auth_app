@@ -526,7 +526,7 @@ class WeeklyReportView(generics.GenericAPIView):
             
             events = models.Event.objects.none()
             random_date = "2022-04-25"
-            data = []
+            data = [] 
             for week in weeks:
                 print(f"{week.start_date}, {week.end_date} - {week.end_date >= week.start_date} - {random_date >=  week.end_date}")
                 events = models.Event.objects.none()
@@ -544,12 +544,12 @@ class WeeklyReportView(generics.GenericAPIView):
             try:
                 employees = models.Employee.objects.filter(Q(company=company) | Q(branch__company=company))
                 for employee in employees:
-                    email = utils.send_employee_weekly_report_email(request, employee, event_id_list)
+                    email = utils.send_employee_weekly_report_email(request, employee, weeks_data, event_id_list)
                     
                 clients = models.Client.objects.filter(company=company)
                 # print(f"\n\nAll Clients: {clients}\n\n")
                 for client in clients:
-                    email = utils.send_client_weekly_report_email(request, client, event_id_list)
+                    email = utils.send_client_weekly_report_email(request, client, weeks_data, event_id_list)
             except Exception as e:
                 print(f'An exception occurred:{e}')
             

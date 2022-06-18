@@ -211,7 +211,7 @@ def send_employee_schedule_publish_email(request, employee, month=None) -> str:
       email = send_simple_email(request, 'email/employee_schedule_publish_email.html', [email], "Monthly Schedule", context)
       print(f'Employee schedule publish mail sent {email}')
     except Exception as e:
-      print(f'An exception occurred while sending the company link: {e}')
+      print(f'An exception occurred while sending the published schedule email: {e}')
       
     # return url
         
