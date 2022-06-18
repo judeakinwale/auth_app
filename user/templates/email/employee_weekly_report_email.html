@@ -45,27 +45,6 @@
     <br />
     <h3>Weekly Report</h3>
 
-    {% comment %} <table>
-      <tr>
-        <th>Date</th>
-        <th>Company</th>
-        <th>Client</th>
-        <th>Employee</th>
-        <th>Shift Start</th>
-        <th>Shift End</th>
-      </tr>
-      {% for event in events %}
-      <tr>
-        <td>{{event.formatted_date}}</td>
-        <td class="progTitle">{{event.company.name}}</td>
-        <td class="progTitle">{{event.client.name}}</td>
-        <td class="progTitle">{{event.employee.user.last_name}} {{event.employee.user.first_name}}</td>
-        <td>{{event.start_time}}</td>
-        <td>{{event.end_time}}</td>
-      </tr>
-      {% endfor %}
-    </table> {% endcomment %}
-
     <table>
       <tr>
         <th>Attribute</th>
@@ -84,7 +63,7 @@
 
         {% for event in week|get_item:"events" %}
 
-        <td>
+          <td>
             {% if event.formatted_weekday == 6%}
             {{event.formatted_weekday}} {{event.start_time}} - {{event.end_time}}
             {% endif %}
