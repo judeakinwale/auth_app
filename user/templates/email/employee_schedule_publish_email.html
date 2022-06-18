@@ -22,6 +22,14 @@
       /**tr:nth-child(even) {
         background-color: #dddddd;
       }*/
+
+    .progTitle {
+      text-transform: lowercase;
+    }
+    
+    .progTitle::first-letter {
+        text-transform: uppercase;
+    }
     </style>
   </head>
   <body>
@@ -45,9 +53,9 @@
       {% for event in events %}
       <tr>
         <td>{{event.formatted_date}}</td>
-        <td>{{event.company.name.title()}}</td>
-        <td>{{event.client.name.title()}}</td>
-        <td>{{event.employee.user.last_name.title()}} {{event.employee.user.first_name.title()}}</td>
+        <td class="progTitle">{{event.company.name}}</td>
+        <td class="progTitle">{{event.client.name}}</td>
+        <td><span class="progTitle">{{event.employee.user.last_name}}</span> <span class="progTitle">{{event.employee.user.first_name}}</span></td>
         <td>{{event.start_time}}</td>
         <td>{{event.end_time}}</td>
       </tr>
