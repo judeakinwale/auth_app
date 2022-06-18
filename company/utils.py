@@ -275,7 +275,7 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
     payload = {}
     total_time = 0
     
-    for week_id in week_list:
+    for count, week_id in enumerate(week_list):
       week = models.Week.objects.get(id=week_id)
       week_start_date = datetime.strptime(week.start_date, "%Y-%m-%d")
       week_start_timestamp = int(round(week_start_date.timestamp()))
@@ -296,11 +296,12 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
       
       total_time += week_time
       
-      payload[f'{week.name}'] = {
-        'week': week,
-        'events': events,
-        'time': week_time
-      }
+      # payload[f'{count}'] = {
+      #   'week': week,
+      #   'events': events,
+      #   'time': week_time
+      # }
+      payload[f'{count}'] = week
     print(payload)
     context = {
       'company': company,
