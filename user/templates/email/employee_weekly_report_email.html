@@ -78,12 +78,11 @@
         <th>Saturday</th>
         <th>Hours</th>
       </tr>
-      {{payload}}
-      {% comment %} {% for key,week in payload %}
+      {% for week in payload %}
       <tr>
         <td>{{forloop.counter}}</td>
 
-        {% for event in week.events %}
+        {% comment %} {% for event in week.events %}
         {{event}}
         {{event.formatted_weekday}}
 
@@ -115,11 +114,11 @@
         <td>{{event.start_time}} - {{event.end_time}}</td>
         {% endif %}
 
-        {% endfor%}
+        {% endfor%} {% endcomment %}
 
-        <td>{{week.time}}</td>
+        <td>{{week}}</td>
       </tr>
-      {% endfor %} {% endcomment %}
+      {% endfor %}
     </table>
     <br/>
     <p>Total Hours: {{total_time}}</p>
