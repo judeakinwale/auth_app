@@ -78,11 +78,11 @@
         <th>Saturday</th>
         <th>Hours</th>
       </tr>
-      {% for week in payload %}
+      {% for key, week in payload %}
       <tr>
         <td>{{forloop.counter}}</td>
-
-        {% for event in week|get_item:"events" %}
+        {{week}}
+        {% for key, event in week.events %}
         {{event}}
         {{event.formatted_weekday}}
 
