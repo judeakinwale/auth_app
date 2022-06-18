@@ -9,7 +9,7 @@ def usable_time(time: str) -> datetime.time:
 
 
 def hourly_time_difference(start: datetime, end: datetime):
-    difference = (start - end).total_seconds()
+    difference = (end - start).total_seconds()
     hours = divmod(difference, 3600)[0]
     return hours
 
