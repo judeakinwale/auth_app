@@ -35,9 +35,7 @@ def get_larget_employee_id(company, **kwargs) -> int:
   if not employees:
     return 0
   employee_id_list = [int(emp.employee_id.split(sep)[1]) for emp in employees]
-  print("employee_id_list:", employee_id_list)
   max_id  = max(employee_id_list)
-  print("max_id:", max_id)
   return max_id
   
 def generate_employee_id(company, prefix:str, length:int=5, seperator:str=" ") -> str:
