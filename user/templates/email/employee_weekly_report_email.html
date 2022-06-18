@@ -116,7 +116,9 @@
 
         {% endfor%} {% endcomment %}
 
-        <td>{{week|get_item:"0"}}</td>
+        <td>{{week|get_item:"week".name}}</td>
+        <td>{{week|get_item:"events"}}</td>
+        <td>{{week|get_item:"time"}}</td>
       </tr>
       {% endfor %}
     </table>

@@ -296,13 +296,22 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
       
       total_time += week_time
       
-      data = {}
-      # data[f'{count}'] = {
-      #   'week': week,
-      #   'events': events,
-      #   'time': week_time
-      # }
-      data[f'{count}'] = week
+      # data = {}
+      # # data[f'{count}'] = {
+      # #   'week': week,
+      # #   'events': events,
+      # #   'time': week_time
+      # # }
+      # data['week'] = week
+      # data['events'] = events
+      # data['time'] = week_time
+      
+      data = {
+        'week': week,
+        'events': events,
+        'time': week_time
+      }
+      
       payload.append(data)
     print(payload)
     context = {
