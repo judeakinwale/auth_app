@@ -267,7 +267,7 @@ class EventViewSet(utility.swagger_documentation_factory("event", "an"), viewset
     
     
 class MonthViewSet(utility.swagger_documentation_factory("month"), viewsets.ModelViewSet):
-    queryset = models.Month.objects.all()
+    queryset = models.Month.objects.all().order_by("is_active")
     serializer_class = serializers.MonthSerializer
     serializer_action_classes = {
         'list': serializers.MonthResponseSerializer,

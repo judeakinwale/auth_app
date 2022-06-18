@@ -260,7 +260,7 @@ class Event(models.Model):
             date = datetime.fromtimestamp(int(self.end_date) / 1000.0)
             return end_date
         except Exception:
-            return self.end_date
+            return self.end_date.date()
 
 
 class Month(models.Model):

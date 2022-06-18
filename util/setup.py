@@ -38,9 +38,9 @@ def get_larget_employee_id(company, **kwargs) -> int:
   max_id  = max(employee_id_list)
   return max_id
   
-def generate_employee_id(company, prefix:str, length:int=5, seperator:str=" ") -> str:
+def generate_employee_id(company, prefix:str="EMP", length:int=5, seperator:str=" ") -> str:
   try:
-    # latest_employee = models.Employee.objects.all().sort("-created_at")[0]
+    # latest_employee = models.Employee.objects.all().order_by("-created_at")[0]
     # latest_employee_id = latest_employee.employee_id
     # string_id = latest_employee_id.split(seperator)[1]
     # id = int(string_id)
