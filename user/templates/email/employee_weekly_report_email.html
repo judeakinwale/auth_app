@@ -79,9 +79,9 @@
       </tr>
       {% for week in payload %}
       <tr>
-        <h3>{{week['events']}}</h3>
-        <h3>{{week['week']}}</h3>
         <h3>{{week['time']}}</h3>
+        <h3>{{week['week']}}</h3>
+        <h3>{{week['events']}}</h3>
         {% comment %} <td>{{forloop.counter}}</td>
 
         {% for event in week['events'] %}
