@@ -272,7 +272,7 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
     # )
     
     events = models.Event.objects.none()
-    payload = {}
+    payload = []
     total_time = 0
     
     for count, week_id in enumerate(week_list):
@@ -296,12 +296,14 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
       
       total_time += week_time
       
-      # payload[f'{count}'] = {
+      data = {}
+      # data[f'{count}'] = {
       #   'week': week,
       #   'events': events,
       #   'time': week_time
       # }
-      payload[f'{count}'] = "week"
+      data[f'{count}'] = "week"
+      payload.append(data)
     print(payload)
     context = {
       'company': company,
