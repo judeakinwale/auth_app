@@ -308,7 +308,7 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
       'events': events,
       'employee': employee,
       'name': name,
-      # 'payload': payload,
+      'payload': payload,
       'total_time': total_time,
     }
     
