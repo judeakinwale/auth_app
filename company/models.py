@@ -274,7 +274,8 @@ class Month(models.Model):
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
-    class Meta: 
+    class Meta:
+        ordering = ['id']
         verbose_name = _("Month")
         verbose_name_plural = _("Months")
 
@@ -290,7 +291,8 @@ class Schedule(models.Model):
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
-    class Meta: 
+    class Meta:
+        ordering = ['id']
         verbose_name = _("Schedule")
         verbose_name_plural = _("Schedules")
 
@@ -308,7 +310,8 @@ class Week(models.Model):
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
-    class Meta: 
+    class Meta:
+        ordering = ['id']
         verbose_name = _("Week")
         verbose_name_plural = _("Weeks")
 

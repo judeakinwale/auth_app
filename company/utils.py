@@ -277,7 +277,9 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
     
     for week_id in week_list:
       week = models.Week.objects.get(id=week_id)
-      events = models.Event.objects.filter(date__gte=week.start_date, date__lte=week.end_date)
+      week_start_date = datetime.strptime(week.start_date, "%Y-%m-%d").date()
+      week_end_date = datetime.strptime(week.end_date, "%Y-%m-%d").date()
+      events = models.Event.objects.filter(company=company, employee=employee, date__gte=week_start_date, date__lte=week_end_date)
       
       hours_list = [utility.hourly_time_difference(utility.usable_time(event.start_time), utility.usable_time(event.end_time)) for event in events]
       print("hours_list:", hours_list)
