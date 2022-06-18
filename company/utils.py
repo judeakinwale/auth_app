@@ -30,7 +30,7 @@ def get_user_company(request):
 def get_active_month(request, company=None):
 
   if not company:
-    company = auth_user_company(request)
+    company = utility.auth_user_company(request)
     
   # get current month name and current year
   today = datetime.now().date()
