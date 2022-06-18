@@ -473,9 +473,6 @@ class EmployeeSetupEmailView(generics.GenericAPIView):
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
-
-
-
 class WeeklyReportView(generics.GenericAPIView):
     
     serializer_class = serializers.WeeklyReportSerializer
@@ -572,41 +569,6 @@ class WeeklyReportView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         
         try:
-            # try:
-            #     month = models.Month.objects.get(is_active=True)
-            # except Exception as e:
-            #     error_resp = {"detail": f"More than one month is active"}
-            #     return response.Response(error_resp, status=status.HTTP_404_NOT_FOUND)
-            # day = 1
-            # year = int(month.year)
-            
-            # month_repr = f"{day} {month.month}, {month.year}"
-            # print(f"month_repr: {month_repr}")
-            
-            # month_start = datetime.strptime(month_repr, '%d %B, %Y')
-            # print(f"month_start: {month_start}")
-            
-            # month_int = str(datetime.strptime(month.month, '%B'))
-            # print(f"month_int: {month_int}")
-            # print(f"month_start.month: {month_start.month}")
-            
-            # month_range = calendar.monthrange(year, month_start.month)
-            # print(f"month_range: {month_range}")
-            
-            # last_day = month_range[1]
-            
-            # month_end_repr = f"{last_day} {month.month}, {month.year}"
-            # print(f"month_end_repr: {month_end_repr}")
-            
-            # month_end = datetime.strptime(month_end_repr, '%d %B, %Y')
-            # print(f"month_end: {month_end}")
-            
-            # print("month start repr")
-            # print(month_start.strftime('%Y-%m-%d'))
-            # month_start_date = month_start.strftime('%Y-%m-%d')
-            # print("month end repr")
-            # print(month_end.strftime('%Y-%m-%d'))
-            # month_end_date = month_end.strftime('%Y-%m-%d')
             month = utils.get_month_dates(request)
             month_start_date = month["start_timestamp"]
             month_end_date = month["end_timestamp"]
@@ -642,7 +604,7 @@ class WeeklyReportView(generics.GenericAPIView):
 
 class PublishMonthView(generics.GenericAPIView):
     
-    # serializer_class = serializers.WeeklyReportSerializer
+    serializer_class = serializers.MonthResponseSerializer()
     
     @swagger_auto_schema(
         operation_description="Publish Month",
@@ -673,11 +635,9 @@ class PublishMonthView(generics.GenericAPIView):
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 class MonthEventView(generics.GenericAPIView):
     
-    # serializer_class = serializers.WeeklyReportSerializer
+    serializer_class = serializers.EventResponseSerializer
     
     @swagger_auto_schema(
         operation_description="Get all events in a month",
@@ -766,10 +726,9 @@ class MonthEventView(generics.GenericAPIView):
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
         
         
-        
 class EmployeeAccountView(generics.GenericAPIView):
     
-    # serializer_class = serializers.WeeklyReportSerializer
+    serializer_class = serializers.EmployeeResponseSerializer()
     
     @swagger_auto_schema(
         operation_description="Get Authenticated Employee",
