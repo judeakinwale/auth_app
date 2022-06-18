@@ -254,11 +254,23 @@ class Event(models.Model):
             return f"{date.date()}"
         except Exception:
             return f"{self.date}"
-        
+
     def formatted_end_date(self):
         try:
             date = datetime.fromtimestamp(int(self.end_date) / 1000.0)
             return f"{date.date()}"
+        except Exception:
+            return f"{self.date}"
+
+    def formatted_weekday(self):
+        try:
+            return self.formatted_date.weekday()
+        except Exception:
+            return f"{self.date}"
+
+    def formatted_end_weekday(self):
+        try:
+            return self.formatted_date.weekday()
         except Exception:
             return f"{self.date}"
 

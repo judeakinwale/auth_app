@@ -83,31 +83,31 @@
 
         {% for event in week.events %}
 
-        {% if event.formatted_date.weekday() == 6%}
+        {% if event.formatted_weekday == 6%}
         <td>{{event.start_time}} - {{event.end_time}}</td>
         {% endif %}
 
-        {% if event.formatted_date.weekday() == 0%}
+        {% if event.formatted_weekday == 0%}
         <td>{{event.start_time}} - {{event.end_time}}</td>
         {% endif %}
 
-        {% if event.formatted_date.weekday() == 1%}
+        {% if event.formatted_weekday == 1%}
         <td>{{event.start_time}} - {{event.end_time}}</td>
         {% endif %}
 
-        {% if event.formatted_date.weekday() == 2%}
+        {% if event.formatted_weekday == 2%}
         <td>{{event.start_time}} - {{event.end_time}}</td>
         {% endif %}
 
-        {% if event.formatted_date.weekday() == 3%}
+        {% if event.formatted_weekday == 3%}
         <td>{{event.start_time}} - {{event.end_time}}</td>
         {% endif %}
 
-        {% if event.formatted_date.weekday() == 4%}
+        {% if event.formatted_weekday == 4%}
         <td>{{event.start_time}} - {{event.end_time}}</td>
         {% endif %}
 
-        {% if event.formatted_date.weekday() == 5%}
+        {% if event.formatted_weekday == 5%}
         <td>{{event.start_time}} - {{event.end_time}}</td>
         {% endif %}
 
