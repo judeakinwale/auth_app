@@ -78,7 +78,8 @@
         <th>Saturday</th>
         <th>Hours</th>
       </tr>
-      {% for key, value in payload %}
+      {{payload}}
+      {% comment %} {% for key, value in payload %}
       <tr>
         {% comment %} <td>{{forloop.counter}}</td> {% endcomment %}
         {{value}}
@@ -118,7 +119,7 @@
 
         {% comment %} <td>{{week.time}}</td> {% endcomment %}
       </tr>
-      {% endfor %}
+      {% endfor %} {% endcomment %}
     </table>
     <br/>
     <p>Total Hours: {{total_time}}</p>
