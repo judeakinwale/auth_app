@@ -81,7 +81,7 @@
       {% for key, value in payload %}
       <tr>
         {% comment %} <td>{{forloop.counter}}</td> {% endcomment %}
-        {{value|get_item:events}}
+        {{value}}
         {% comment %} {% for key, event in week %}
         {{event}}
         {{event.formatted_weekday}}
