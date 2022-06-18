@@ -293,7 +293,7 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
         'event': events,
         'time': week_time
       }
-
+    print(payload)
     context = {
       'company': company,
       'events': events,
