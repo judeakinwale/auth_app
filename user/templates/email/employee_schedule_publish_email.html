@@ -45,9 +45,9 @@
       {% for event in events %}
       <tr>
         <td>{{event.formatted_date}}</td>
-        <td>{{event.company.name}}</td>
-        <td>{{event.client.name}}</td>
-        <td>{{event.employee.user.last_name}} {{event.employee.user.first_name}}</td>
+        <td>{{event.company.name.title()}}</td>
+        <td>{{event.client.name.title()}}</td>
+        <td>{{event.employee.user.last_name.title()}} {{event.employee.user.first_name.title()}}</td>
         <td>{{event.start_time}}</td>
         <td>{{event.end_time}}</td>
       </tr>

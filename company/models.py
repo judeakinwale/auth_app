@@ -258,9 +258,9 @@ class Event(models.Model):
     def formatted_end_date(self):
         try:
             date = datetime.fromtimestamp(int(self.end_date) / 1000.0)
-            return end_date
+            return end_date.date()
         except Exception:
-            return self.end_date.date()
+            return self.end_date
 
 
 class Month(models.Model):
