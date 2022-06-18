@@ -258,25 +258,25 @@ class Event(models.Model):
     
     def formatted_date(self):
         try:
-            return f"{self.date_datetime.date()}"
+            return f"{self.date_datetime().date()}"
         except Exception:
             return f"{self.date}"
 
     def formatted_end_date(self):
         try:
-            return f"{self.end_date_datetime.date()}"
+            return f"{self.end_date_datetime().date()}"
         except Exception:
             return f"{self.date}"
 
     def formatted_weekday(self):
         try:
-            return self.date_datetime.weekday()
+            return self.date_datetime().weekday()
         except Exception:
             return f"{self.date}"
 
     def formatted_end_weekday(self):
         try:
-            return self.end_date_datetime.weekday()
+            return self.end_date_datetime().weekday()
         except Exception:
             return f"{self.date}"
 
