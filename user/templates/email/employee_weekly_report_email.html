@@ -79,7 +79,8 @@
       </tr>
       {% for week in payload %}
       <tr>
-        <td>{{forloop.counter}}</td>
+        <h3>{{week}}</h3>
+        {% comment %} <td>{{forloop.counter}}</td>
 
         {% for event in week['events'] %}
 
@@ -113,7 +114,7 @@
 
         {% endfor%}
 
-        <td>{{week.time}}</td>
+        <td>{{week.time}}</td> {% endcomment %}
       </tr>
       {% endfor %}
     </table>
