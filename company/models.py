@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from user import managers
 from company.mixins import EmployeePermissionsMixin
 from datetime import datetime
@@ -142,7 +143,7 @@ class Employee(models.Model):
     postal_code = models.CharField(max_length=250, null=True)
     image = models.ImageField(upload_to='images/profile/%Y/%m/%d/', max_length=254, null=True, blank=True)
     hobbies = models.TextField(null=True, blank=True)
-    join_date = models.DateField(null=True)
+    join_date = models.DateField(null=True, default=timezone.now)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)

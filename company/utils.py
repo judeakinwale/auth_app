@@ -27,13 +27,16 @@ def get_user_company(request):
   return company
 
 
-def get_active_month(request):
+def get_active_month(request, company=None):
+  
+  if not company:
+    company = auth_user_company(request)
   
   active_month = models.Month.objects.none()
   try:
-    active_month = models.Month.objects.filter(company=utility.auth_user_company(request), is_active=True) 
-    active_month = models.Month.objects.get(company=utility.auth_user_company(request), is_active=True)
-    # return active_month
+    active_month = models.Month.objects.filter(company=company, is_active=True) 
+    active_month = models.Month.objects.get(company=company, is_active=True)
+    return active_month
   except Exception as e:
     if active_month:
       active_month = models.Month.objects.none()
@@ -42,20 +45,17 @@ def get_active_month(request):
     
     # get current month name and current year
     today = datetime.now().date()
-    year = str(today.year)
-    # month = str(today.month) # Returns the month as a number
-    month = today.strftime("%B")
+    year = str(today.year)  # Returns year as a 4 digit integer
+    # month = str(today.month)  # Returns the month as a number
+    month = today.strftime("%B")  # Returns the month full name ie. March
+    
     try:
-      month, created = models.Month.objects.get_or_create(month=month, year=year, company=get_user_company(request))
-      month.is_active = True
-      month.save()
-      active_month = month
+      active_month, created = models.Month.objects.get_or_create(month=month, year=year, company=company, is_active=True)
     except:
-      active_month = models.Month.objects.none()
+      # active_month = models.Month.objects.none()
       raise Exception(e)
     
   return active_month
-  
 
 
 def send_simple_email(request, template_path: str, reciepients: list, subject: str = "Email", context: dict = {}) -> bool:

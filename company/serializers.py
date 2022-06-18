@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from company import models
 from user.utils import UserSerializer
+from util import setup
 
 
 class PhoneSerializer(serializers.HyperlinkedModelSerializer):
@@ -627,41 +628,49 @@ class CompanySerializer(CompanyBaseSerializer):
     depth = 0
 
   def create(self, validated_data):
-    try:
-      phone_numbers = validated_data.pop('phone_numbers')
-      company =  super().create(validated_data)
-      for data in phone_numbers:
-        data['company'] = company
-        models.Phone.objects.create(**data)
-    except Exception:
-      company =  super().create(validated_data)
-      
+    # try:
+    #   phone_numbers = validated_data.pop('phone_numbers')
+    #   company =  super().create(validated_data)
+    #   for data in phone_numbers:
+    #     data['company'] = company
+    #     models.Phone.objects.create(**data)
+    # except Exception:
+    #   company =  super().create(validated_data)
+    
+    company =  super().create(validated_data)
+    
+    request = self.context['request']
+    setup.company_first_time_setup(request, company)
+    
     return company
 
   def update(self, instance, validated_data):
-    try:
-      phone_numbers = validated_data.pop('phone_numbers')
-      company = super().update(instance, validated_data)
+    # try:
+    #   phone_numbers = validated_data.pop('phone_numbers')
+    #   company = super().update(instance, validated_data)
       
-      for nested_data in phone_numbers:            
-        try:
-          nested_data['company'] = company
-          phone_number
-          # print(f'continued, n is {n}')
-          nested_instance = instance.phone_numbers.all()[n]
-          # print("nested phone_number exists")
-          phone_number = nested_serializer.update(nested_instance, nested_data) # Where nested serializer = PhoneSerializer
-          # print("phone_number created")
-        except Exception as e:
-          # print(f"There was an exception: {e}")
-          nested_data.update(company=company)
-          phone_number = models.Phone.objects.create(**nested_data)
-          # print("new phone_number created instead")
+    #   for nested_data in phone_numbers:            
+    #     try:
+    #       nested_data['company'] = company
+    #       phone_number
+    #       # print(f'continued, n is {n}')
+    #       nested_instance = instance.phone_numbers.all()[n]
+    #       # print("nested phone_number exists")
+    #       phone_number = nested_serializer.update(nested_instance, nested_data) # Where nested serializer = PhoneSerializer
+    #       # print("phone_number created")
+    #     except Exception as e:
+    #       # print(f"There was an exception: {e}")
+    #       nested_data.update(company=company)
+    #       phone_number = models.Phone.objects.create(**nested_data)
+    #       # print("new phone_number created instead")
           
-        n += 1
-    except  Exception as e:
-        company = super().update(instance, validated_data)
+    #     n += 1
+    # except  Exception as e:
+    #     company = super().update(instance, validated_data)
+    company = super().update(instance, validated_data)   
 
+    request = self.context['request']
+    setup.company_first_time_setup(request, company)
     return company
 
 
