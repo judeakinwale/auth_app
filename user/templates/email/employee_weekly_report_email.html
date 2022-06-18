@@ -57,8 +57,8 @@
         <th>Saturday</th>
         <th>Hours</th>
       </tr>
-      {% for week in payload %}
       <tr>
+      {% for week in payload %}
         <td>{{forloop.counter}}</td>
 
         {% for event in week|get_item:"events" %}
@@ -109,7 +109,9 @@
 
         <td>{{week|get_item:"time"}}</td> 
       </tr>
+      <tr>
       {% endfor %}
+      </tr>
     </table>
     <br/>
     <p>Total Hours: {{total_time}}</p>
