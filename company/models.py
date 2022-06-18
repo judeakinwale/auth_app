@@ -251,16 +251,16 @@ class Event(models.Model):
     def formatted_date(self):
         try:
             date = datetime.fromtimestamp(int(self.date) / 1000.0)
-            return f"{date}"
+            return f"{date.date()}"
         except Exception:
             return f"{self.date}"
         
     def formatted_end_date(self):
         try:
             date = datetime.fromtimestamp(int(self.end_date) / 1000.0)
-            return date.date()
+            return f"{date.date()}"
         except Exception:
-            return self.end_date
+            return f"{self.date}"
 
 
 class Month(models.Model):
