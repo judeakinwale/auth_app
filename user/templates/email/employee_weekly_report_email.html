@@ -83,7 +83,6 @@
         <td>{{forloop.counter}}</td>
 
         {% for event in week|get_item:"events" %}
-          {{event}}
           {{event.formatted_weekday}}
 
           {% if event.formatted_weekday == 6%}
