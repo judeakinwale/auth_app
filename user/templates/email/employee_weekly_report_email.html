@@ -116,7 +116,7 @@
 
         {% endfor%} {% endcomment %}
 
-        <td>{{week}}</td>
+        <td>{{week|get_item:"0"}}</td>
       </tr>
       {% endfor %}
     </table>
