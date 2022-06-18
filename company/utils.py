@@ -28,14 +28,24 @@ def get_user_company(request):
 
 
 def get_active_month(request, company=None):
-  
+
   if not company:
     company = auth_user_company(request)
+    
+  # get current month name and current year
+  today = datetime.now().date()
+  year = str(today.year)  # Returns year as a 4 digit integer
+  # month = str(today.month)  # Returns the month as a number
+  month = today.strftime("%B")  # Returns the month full name ie. March
+  defaults = {
+    "month":month,
+    "year": year,
+  }
   
   active_month = models.Month.objects.none()
   try:
     active_month = models.Month.objects.filter(company=company, is_active=True) 
-    active_month = models.Month.objects.get(company=company, is_active=True)
+    active_month, created = models.Month.objects.get_or_create(company=company, is_active=True, defaults=defaults)
     return active_month
   except Exception as e:
     if active_month:
@@ -43,17 +53,17 @@ def get_active_month(request, company=None):
       raise Exception("There are more than one active months")
     raise Exception(e)
     
-    # get current month name and current year
-    today = datetime.now().date()
-    year = str(today.year)  # Returns year as a 4 digit integer
-    # month = str(today.month)  # Returns the month as a number
-    month = today.strftime("%B")  # Returns the month full name ie. March
+    # # get current month name and current year
+    # today = datetime.now().date()
+    # year = str(today.year)  # Returns year as a 4 digit integer
+    # # month = str(today.month)  # Returns the month as a number
+    # month = today.strftime("%B")  # Returns the month full name ie. March
     
-    try:
-      active_month, created = models.Month.objects.get_or_create(month=month, year=year, company=company, is_active=True)
-    except:
-      # active_month = models.Month.objects.none()
-      raise Exception(e)
+    # # try:
+    # #   active_month, created = models.Month.objects.get_or_create(month=month, year=year, company=company, is_active=True)
+    # # except:
+    # #   # active_month = models.Month.objects.none()
+    # #   raise Exception(e)
     
   return active_month
 
