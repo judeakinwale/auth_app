@@ -80,19 +80,47 @@ def sort_events_by_weekday(events):
   for event in events:
     event_times = f"{event.start_time} - {event.end_time}"
     if event.date_weekday() == 6:
-      result["sun"] = f"{result['sun']}{event_times}\n<br/>"
+      result["sun"] = f"""
+        {result['sun']}
+        {event_times}\n
+        <br/>
+      """
     if event.date_weekday() == 0:
-      result["mon"] = f"{result['mon']}{event_times}\n<br/>"
+      result["mon"] = f"""
+        {result['mon']}
+        {event_times}\n
+        <br/>
+      """
     if event.date_weekday() == 1:
-      result["tue"] = f"{result['tue']}{event_times}\n<br/>"
+      result["tue"] = f"""
+        {result['tue']}
+        {event_times}\n
+        <br/>
+      """
     if event.date_weekday() == 2:
-      result["wed"] = f"{result['wed']}{event_times}\n<br/>"
+      result["wed"] = f"""
+        {result['wed']}
+        {event_times}\n
+        <br/>
+      """
     if event.date_weekday() == 3:
-      result["thu"] = f"{result['thu']}{event_times}\n<br/>"
+      result["thu"] = f"""
+        {result['thu']}
+        {event_times}\n
+        <br/>
+      """
     if event.date_weekday() == 4:
-      result["fri"] = f"{result['fri']}{event_times}\n<br/>"
+      result["fri"] = f"""
+        {result['fri']}
+        {event_times}\n
+        <br/>
+      """
     if event.date_weekday() == 5:
-      result["sat"] = f"{result['sat']}{event_times}\n<br/>"
+      result["sat"] = f"""
+        {result['sat']}
+        {event_times}\n
+        <br/>
+      """
       
   return result
 
