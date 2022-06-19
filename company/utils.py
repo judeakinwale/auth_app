@@ -366,7 +366,7 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
     }
     
     try:
-      email = send_simple_email(request, 'email/employee_weekly_report_email.html', [email], "Shift Details", context)
+      email = send_simple_email(request, 'email/employee_weekly_report_email.html', [email], "Weekly Report", context)
       print(f'Employee weekly report nofitication mail sent {email}')
     except Exception as e:
       print(f'An exception occurred while sending employee weekly report mail: {e}')
@@ -449,7 +449,7 @@ def send_client_weekly_report_email(request, client, week_list: list, event_ids:
     }
 
     try:
-      email = send_simple_email(request, 'email/client_weekly_report_email.html', [email], "Company Link", context)
+      email = send_simple_email(request, 'email/client_weekly_report_email.html', [email], "Weekly Report", context)
       print(f'Client weekly report notification email sent {email}')
       return True
     except Exception as e:
