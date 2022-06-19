@@ -328,7 +328,7 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
       week_end_timestamp = int(round(week_end_date.timestamp()))
       # print("week_end_date:", week_end_date, "\n", "week_end_timestamp:", week_end_timestamp)
       
-      events = models.Event.objects.filter(date__gte=week_start_timestamp, date__lte=week_end_timestamp)
+      events = models.Event.objects.filter(employee=employee, date__gte=week_start_timestamp, date__lte=week_end_timestamp)
       events_by_weekday = sort_events_by_weekday(events)
       print("Events sorted by weekday;", events_by_weekday)
       
@@ -410,7 +410,7 @@ def send_client_weekly_report_email(request, client, week_list: list, event_ids:
       week_end_timestamp = int(round(week_end_date.timestamp()))
       # print("week_end_date:", week_end_date, "\n", "week_end_timestamp:", week_end_timestamp)
       
-      events = models.Event.objects.filter(date__gte=week_start_timestamp, date__lte=week_end_timestamp)
+      events = models.Event.objects.filter(client=client, date__gte=week_start_timestamp, date__lte=week_end_timestamp)
       events_by_weekday = sort_events_by_weekday(events)
       print("Events sorted by weekday;", events_by_weekday)
       
