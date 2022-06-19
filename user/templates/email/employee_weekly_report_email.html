@@ -10,7 +10,7 @@
       table {
         font-family: arial, sans-serif;
         border-collapse: collapse;
-        width: 100%;
+        width: 95%;
       }
 
       td,
@@ -155,6 +155,8 @@
       </tr>
     </table>
     <br/>
-    <p>Total Hours: {{total_time}}</p>
+    <h4 style="float: right;">Total Hours: {{total_time}}</h4>
+    <br/>
+    <h4 style="float: right;">To be submitted by: {{employee.user.last_name}} {{employee.user.first_name}}</h4>
   </body>
 </html>
