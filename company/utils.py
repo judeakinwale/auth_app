@@ -379,10 +379,10 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
 
 def send_client_weekly_report_email(request, client, week_list: list, event_ids: list) -> str:
   try:
-    user = client.name
+    name = client.name
     email = client.email
     company = client.company
-    url = "https:// " # link to frontend schedule page for client
+    url = "http://www.hrtechleft.com/app/schedule" # link to frontend schedule page for client
     
     # events = models.Event.objects.filter(
     #   Q(id__in=event_ids) 
@@ -390,39 +390,59 @@ def send_client_weekly_report_email(request, client, week_list: list, event_ids:
     #   & Q(client=client) 
     #   # & ~Q(status="Completed") | ~Q(status="Dropped")
     # )
-    
-    events = models.Event.objects.none()
-    payload = {}
-    total_time = 0
-    
-    for week_id in week_list:
-      week = models.Week.objects.get(id=week_id)
-      events = models.Event.objects.filter(date__gte=week.start_date, date__lte=week.end_date)
-      
-      hours_list = [utility.hourly_time_difference(utility.usable_time(event.start_time), utility.usable_time(event.end_time)) for event in events]
-      week_time = sum(hours_list)
-      
-      total_time += week_time
-      
-      payload[f'{week.name}'] = {
-        'week': week,
-        'events': events,
-        'time': week_time
-      }
 
     if not client.email:
       # print("no client email")
       raise Exception("Client Has no Email")
       return False
-
-    if len(events) < 1:
-      return False
     
+    events = models.Event.objects.none()
+    payload = []
+    total_time = 0
+    
+    for count, week_id in enumerate(week_list):
+      week = models.Week.objects.get(id=week_id)
+      week_start_date = datetime.strptime(week.start_date, "%Y-%m-%d")
+      week_start_timestamp = int(round(week_start_date.timestamp()))
+      # print("week_start_date:", week_start_date, "\n", "week_start_timestamp:", week_start_timestamp)
+      
+      week_end_date = datetime.strptime(week.end_date, "%Y-%m-%d")
+      week_end_timestamp = int(round(week_end_date.timestamp()))
+      # print("week_end_date:", week_end_date, "\n", "week_end_timestamp:", week_end_timestamp)
+      
+      events = models.Event.objects.filter(date__gte=week_start_timestamp, date__lte=week_end_timestamp)
+      events_by_weekday = sort_events_by_weekday(events)
+      print("Events sorted by weekday;", events_by_weekday)
+      
+      hours_list = [utility.hourly_time_difference(utility.usable_time(event.start_time), utility.usable_time(event.end_time)) for event in events]
+      week_time = sum(hours_list)
+      # print("hours_list:", hours_list, "\n", "week_time:", week_time)
+      
+      total_time += week_time
+      
+      # data = {}
+      # # data[f'{count}'] = {
+      # #   'week': week,
+      # #   'events': events,
+      # #   'time': week_time
+      # # }
+      # data['week'] = week
+      # data['events'] = events
+      # data['time'] = week_time
+      
+      data = {
+        'week': week,
+        'events': events_by_weekday,
+        'time': week_time
+      }
+      payload.append(data)
+    # print(payload)
+      
     context = {
       'company': company,
       'events': events,
       'client': client,
-      'name': user,
+      'name': name,
       'payload': payload,
       'total_time': total_time,
       'url': url,

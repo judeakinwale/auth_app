@@ -1,3 +1,4 @@
+{% load dict_utils%}
 <!DOCTYPE html>
 <html>
   <head>
@@ -9,15 +10,14 @@
       table {
         font-family: arial, sans-serif;
         border-collapse: collapse;
-        width: 80%;
+        width: 100%;
       }
-      td,th {
+
+      td,
+      th {
         border: 1px solid #dddddd;
         text-align: left;
         padding: 8px;
-      }
-      .link {
-        font-weight: 800;
       }
 
       /**tr:nth-child(even) {
@@ -41,32 +41,9 @@
   <body>
     <h4>Hello {{name}},</h4>
     <br />
-    {% comment %} <p>Kindly find <a class="link" href={{url}}>your schedule<a/> for the month <a class="link" href={{url}}>here<a/></p> {% endcomment %}
-    {% comment %} <p>You have been assigned to a shift. Kindly find the details below</p> {% endcomment %}
     <p>Kindly find your weekly report below</p>
     <br />
     <h3>Weekly Report</h3>
-
-    {% comment %} <table>
-      <tr>
-        <th>Date</th>
-        <th>Company</th>
-        <th>Client</th>
-        <th>Employee</th>
-        <th>Shift Start</th>
-        <th>Shift End</th>
-      </tr>
-      {% for event in events %}
-      <tr>
-        <td>{{event.formatted_date}}</td>
-        <td class="progTitle">{{event.company.name}}</td>
-        <td class="progTitle">{{event.client.name}}</td>
-        <td class="progTitle">{{event.employee.user.last_name}} {{event.employee.user.first_name}}</td>
-        <td>{{event.start_time}}</td>
-        <td>{{event.end_time}}</td>
-      </tr>
-      {% endfor %}
-    </table> {% endcomment %}
 
     <table>
       <tr>
@@ -80,45 +57,102 @@
         <th>Saturday</th>
         <th>Hours</th>
       </tr>
-      {% for week in payload %}
       <tr>
+      {% for week in payload %}
         <td>{{forloop.counter}}</td>
 
-        {% for event in week['events'] %}
+        {% comment %} {{week|get_item:"events"}} {% endcomment %}
+        {% with days=week|get_item:"events"%}
+        {% comment %} <td>{{days|get_item:"sun"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"mon"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"tue"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"wed"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"thu"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"fri"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"sat"}}</td> {% endcomment %}
 
-        {% if event.formatted_date.weekday() == 6%}
-        <td>{{event.start_time}} - {{event.end_time}}</td>
-        {% endif %}
+        <td>
+          {% for shift in days|get_item:"sun" %}
+          <a>{{shift}}</a>
+          <br/>
+          {% endfor %}
+        </td>
+        <td>
+          {% for shift in days|get_item:"mon" %}
+          <a>{{shift}}</a>
+          <br/>
+          {% endfor %}
+        </td>
+        <td>
+          {% for shift in days|get_item:"tue" %}
+          <a>{{shift}}</a>
+          <br/>
+          {% endfor %}
+        </td>
+        <td>
+          {% for shift in days|get_item:"wed" %}
+          <a>{{shift}}</a>
+          <br/>
+          {% endfor %}
+        </td>
+        <td>
+          {% for shift in days|get_item:"thu" %}
+          <a>{{shift}}</a>
+          <br/>
+          {% endfor %}
+        </td>
+        <td>
+          {% for shift in days|get_item:"fri" %}
+          <a>{{shift}}</a>
+          <br/>
+          {% endfor %}
+        </td>
+        <td>
+          {% for shift in days|get_item:"sat" %}
+          <a>{{shift}}</a>
+          <br/>
+          {% endfor %}
+        </td>
 
-        {% if event.formatted_date.weekday() == 0%}
-        <td>{{event.start_time}} - {{event.end_time}}</td>
-        {% endif %}
+        {% endwith %}
+        
+        {% comment %} {% for event in week|get_item:"events" %}
 
-        {% if event.formatted_date.weekday() == 1%}
-        <td>{{event.start_time}} - {{event.end_time}}</td>
-        {% endif %}
+          {% if event.date_weekday == 6%}
+          <td>{{event.date_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% endif %}
 
-        {% if event.formatted_date.weekday() == 2%}
-        <td>{{event.start_time}} - {{event.end_time}}</td>
-        {% endif %}
+          {% if event.date_weekday == 0%}
+          <td>{{event.date_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% endif %}
 
-        {% if event.formatted_date.weekday() == 3%}
-        <td>{{event.start_time}} - {{event.end_time}}</td>
-        {% endif %}
+          {% if event.date_weekday == 1%}
+          <td>{{event.date_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% endif %}
 
-        {% if event.formatted_date.weekday() == 4%}
-        <td>{{event.start_time}} - {{event.end_time}}</td>
-        {% endif %}
+          {% if event.date_weekday == 2%}
+          <td>{{event.date_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% endif %}
 
-        {% if event.formatted_date.weekday() == 5%}
-        <td>{{event.start_time}} - {{event.end_time}}</td>
-        {% endif %}
+          {% if event.date_weekday == 3%}
+          <td>{{event.date_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% endif %}
 
-        {% endfor%}
+          {% if event.date_weekday == 4%}
+          <td>{{event.date_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% endif %}
 
-        <td>{{week.time}}</td>
+          {% if event.date_weekday == 5%}
+          <td>{{event.date_weekday}} {{event.start_time}} - {{event.end_time}}</td>
+          {% endif %}
+
+        {% endfor%} {% endcomment %}
+
+        <td>{{week|get_item:"time"}}</td> 
       </tr>
+      <tr>
       {% endfor %}
+      </tr>
     </table>
     <br/>
     <p>Total Hours: {{total_time}}</p>
