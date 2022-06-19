@@ -62,7 +62,7 @@
         <td>{{forloop.counter}}</td>
 
         {% comment %} {{week|get_item:"events"}} {% endcomment %}
-        {% with days = week|get_item:"events"%}
+        {% with days=week|get_item:"events"%}
         <td>{{days|get_item:"sun"}}</td>
         <td>{{days|get_item:"mon"}}</td>
         <td>{{days|get_item:"tue"}}</td>
