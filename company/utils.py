@@ -70,29 +70,29 @@ def get_active_month(request, company=None):
 
 def sort_events_by_weekday(events):
   result = {}
-  result["sun"] = []
-  result["mon"] = []
-  result["tue"] = []
-  result["wed"] = []
-  result["thu"] = []
-  result["fri"] = []
-  result["sat"] = []
+  result["sun"] = ""
+  result["mon"] = ""
+  result["tue"] = ""
+  result["wed"] = ""
+  result["thu"] = ""
+  result["fri"] = ""
+  result["sat"] = ""
   for event in events:
     event_times = f"{event.start_time} - {event.end_time}"
     if event.date_weekday() == 6:
-      result["sun"].append(event_times)
+      result["sun"] = f"{result['sun']}{event_times}\n"
     if event.date_weekday() == 0:
-      result["mon"].append(event_times)
+      result["mon"] = f"{result['mon']}{event_times}\n"
     if event.date_weekday() == 1:
-      result["tue"].append(event_times)
+      result["tue"] = f"{result['tue']}{event_times}\n"
     if event.date_weekday() == 2:
-      result["wed"].append(event_times)
+      result["wed"] = f"{result['wed']}{event_times}\n"
     if event.date_weekday() == 3:
-      result["thu"].append(event_times)
+      result["thu"] = f"{result['thu']}{event_times}\n"
     if event.date_weekday() == 4:
-      result["fri"].append(event_times)
+      result["fri"] = f"{result['fri']}{event_times}\n"
     if event.date_weekday() == 5:
-      result["sat"].append(event_times)
+      result["sat"] = f"{result['sat']}{event_times}\n"
       
   return result
 
