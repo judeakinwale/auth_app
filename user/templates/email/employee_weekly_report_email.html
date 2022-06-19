@@ -61,7 +61,17 @@
       {% for week in payload %}
         <td>{{forloop.counter}}</td>
 
-        {{week|get_item:"events"}}
+        {% comment %} {{week|get_item:"events"}} {% endcomment %}
+        {% with days = week|get_item:"events"%}
+        <td>{{days|get_item:"sun"}}</td>
+        <td>{{days|get_item:"mon"}}</td>
+        <td>{{days|get_item:"tue"}}</td>
+        <td>{{days|get_item:"wed"}}</td>
+        <td>{{days|get_item:"thu"}}</td>
+        <td>{{days|get_item:"fri"}}</td>
+        <td>{{days|get_item:"sat"}}</td>
+        {% endwith %}
+        
         {% comment %} {% for event in week|get_item:"events" %}
 
           {% if event.date_weekday == 6%}

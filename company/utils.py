@@ -78,7 +78,7 @@ def sort_events_by_weekday(events):
   result["fri"] = []
   result["sat"] = []
   for event in events:
-    event_times = f"{event.formatted_date()} - {event.formatted_end_date()}"
+    event_times = f"{event.start_time} - {event.end_time}"
     if event.date_weekday() == 6:
       result["sun"].append(event_times)
     if event.date_weekday() == 0:
