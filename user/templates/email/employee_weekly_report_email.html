@@ -61,7 +61,8 @@
       {% for week in payload %}
         <td>{{forloop.counter}}</td>
 
-        {% for event in week|get_item:"events" %}
+        {{week|get_item:"events"}}
+        {% comment %} {% for event in week|get_item:"events" %}
 
           {% if event.date_weekday == 6%}
           <td>{{event.date_weekday}} {{event.start_time}} - {{event.end_time}}</td>
@@ -91,7 +92,7 @@
           <td>{{event.date_weekday}} {{event.start_time}} - {{event.end_time}}</td>
           {% endif %}
 
-        {% endfor%}
+        {% endfor%} {% endcomment %}
 
         <td>{{week|get_item:"time"}}</td> 
       </tr>
