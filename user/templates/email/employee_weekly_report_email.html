@@ -72,38 +72,45 @@
         {% comment %} <td>{{days|get_item:"sat"}}</td> {% endcomment %}
 
         <td>
-          {% for day in days|get_item:"sun" %}
-          <p>{{day}}</p>
+          {% for shift in days|get_item:"sun" %}
+          <a>{{shift}}</a>
+          <br/>
           {% endfor %}
         </td>
         <td>
-          {% for day in days|get_item:"mon" %}
-          <p>{{day}}</p>
+          {% for shift in days|get_item:"mon" %}
+          <a>{{shift}}</a>
+          <br/>
           {% endfor %}
         </td>
         <td>
-          {% for day in days|get_item:"tue" %}
-          <p>{{day}}</p>
+          {% for shift in days|get_item:"tue" %}
+          <a>{{shift}}</a>
+          <br/>
           {% endfor %}
         </td>
         <td>
-          {% for day in days|get_item:"wed" %}
-          <p>{{day}}</p>
+          {% for shift in days|get_item:"wed" %}
+          <a>{{shift}}</a>
+          <br/>
           {% endfor %}
         </td>
         <td>
-          {% for day in days|get_item:"thu" %}
-          <p>{{day}}</p>
+          {% for shift in days|get_item:"thu" %}
+          <a>{{shift}}</a>
+          <br/>
           {% endfor %}
         </td>
         <td>
-          {% for day in days|get_item:"fri" %}
-          <p>{{day}}</p>
+          {% for shift in days|get_item:"fri" %}
+          <a>{{shift}}</a>
+          <br/>
           {% endfor %}
         </td>
         <td>
-          {% for day in days|get_item:"sat" %}
-          <p>{{day}}</p>
+          {% for shift in days|get_item:"sat" %}
+          <a>{{shift}}</a>
+          <br/>
           {% endfor %}
         </td>
 
