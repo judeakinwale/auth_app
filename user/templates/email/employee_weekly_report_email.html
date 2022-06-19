@@ -63,13 +63,50 @@
 
         {% comment %} {{week|get_item:"events"}} {% endcomment %}
         {% with days=week|get_item:"events"%}
-        <td>{{days|get_item:"sun"}}</td>
-        <td>{{days|get_item:"mon"}}</td>
-        <td>{{days|get_item:"tue"}}</td>
-        <td>{{days|get_item:"wed"}}</td>
-        <td>{{days|get_item:"thu"}}</td>
-        <td>{{days|get_item:"fri"}}</td>
-        <td>{{days|get_item:"sat"}}</td>
+        {% comment %} <td>{{days|get_item:"sun"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"mon"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"tue"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"wed"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"thu"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"fri"}}</td> {% endcomment %}
+        {% comment %} <td>{{days|get_item:"sat"}}</td> {% endcomment %}
+
+        <td>
+          {% for day in days|get_item:"sun" %}
+          <p>{{day}}</p>
+          {% endfor %}
+        </td>
+        <td>
+          {% for day in days|get_item:"mon" %}
+          <p>{{day}}</p>
+          {% endfor %}
+        </td>
+        <td>
+          {% for day in days|get_item:"tue" %}
+          <p>{{day}}</p>
+          {% endfor %}
+        </td>
+        <td>
+          {% for day in days|get_item:"wed" %}
+          <p>{{day}}</p>
+          {% endfor %}
+        </td>
+        <td>
+          {% for day in days|get_item:"thu" %}
+          <p>{{day}}</p>
+          {% endfor %}
+        </td>
+        <td>
+          {% for day in days|get_item:"fri" %}
+          <p>{{day}}</p>
+          {% endfor %}
+        </td>
+        <td>
+          {% for day in days|get_item:"sat" %}
+          <p>{{day}}</p>
+          {% endfor %}
+        </td>
+
         {% endwith %}
         
         {% comment %} {% for event in week|get_item:"events" %}
