@@ -68,6 +68,35 @@ def get_active_month(request, company=None):
   return active_month
 
 
+def sort_events_by_weekday(events):
+  result = {}
+  result["sun"] = []
+  result["mon"] = []
+  result["tue"] = []
+  result["wed"] = []
+  result["thu"] = []
+  result["fri"] = []
+  result["sat"] = []
+  for event in events:
+    event_times = f"{event.formatted_date()} - {event.formatted_end_date()}"
+    if event.date_weekday() == 6:
+      result["sun"].append(event_times)
+    if event.date_weekday() == 0:
+      result["mon"].append(event_times)
+    if event.date_weekday() == 1:
+      result["tue"].append(event_times)
+    if event.date_weekday() == 2:
+      result["wed"].append(event_times)
+    if event.date_weekday() == 3:
+      result["thu"].append(event_times)
+    if event.date_weekday() == 4:
+      result["fri"].append(event_times)
+    if event.date_weekday() == 5:
+      result["sat"].append(event_times)
+      
+  return result
+
+
 def send_simple_email(request, template_path: str, reciepients: list, subject: str = "Email", context: dict = {}) -> bool:
   try:
     sender_email = f"{settings.DEFAULT_FROM_NAME} <{settings.DEFAULT_FROM_EMAIL}>"
@@ -285,7 +314,9 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
       week_end_timestamp = int(round(week_end_date.timestamp()))
       # print("week_end_date:", week_end_date, "\n", "week_end_timestamp:", week_end_timestamp)
       
-      events = models.Event.objects.filter(company=company, employee=employee, date__gte=week_start_timestamp, date__lte=week_end_timestamp)
+      events = models.Event.objects.filter(date__gte=week_start_timestamp, date__lte=week_end_timestamp)
+      events_by_weekday = sort_events_by_weekday(events)
+      print("Events sorted by weekday;", events_by_weekday)
       
       hours_list = [utility.hourly_time_difference(utility.usable_time(event.start_time), utility.usable_time(event.end_time)) for event in events]
       week_time = sum(hours_list)
@@ -305,7 +336,7 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
       
       data = {
         'week': week,
-        'events': events,
+        'events': events_by_weekday,
         'time': week_time
       }
       payload.append(data)
