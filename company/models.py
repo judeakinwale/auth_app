@@ -250,10 +250,16 @@ class Event(models.Model):
     
     def date_datetime(self):
         date = datetime.fromtimestamp(int(self.date) / 1000.0)
+        # if self.date is a python timestamp:
+        if len(self.date) == 10:
+            date = datetime.fromtimestamp(int(self.date))
         return date
 
     def end_date_datetime(self):
         date = datetime.fromtimestamp(int(self.end_date) / 1000.0)
+        # if self.date is a python timestamp:
+        if len(self.end_date) == 10:
+            date = datetime.fromtimestamp(int(self.end_date))
         return date
     
     def formatted_date(self):
