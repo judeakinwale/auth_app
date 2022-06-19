@@ -286,9 +286,9 @@ def get_month_dates(request, month = None):
     month_end = datetime.strptime(month_end_repr, '%d %B, %Y')
     
     month_start_date = month_start.strftime('%Y-%m-%d')
-    month_start_date_timestamp = datetime.timestamp(month_start)
+    month_start_date_timestamp = str(int(round(datetime.timestamp(month_start))) * 1000)
     month_end_date = month_end.strftime('%Y-%m-%d')
-    month_end_date_timestamp = datetime.timestamp(month_end)
+    month_end_date_timestamp = str(int(round(datetime.timestamp(month_end))) * 1000)
     
     responses = {
       "start_timestamp": month_start_date_timestamp,
