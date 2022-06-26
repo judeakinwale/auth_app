@@ -47,7 +47,7 @@ def generate_employee_id(company, prefix:str="EMP", length:int=5, seperator:str=
     id = get_larget_employee_id(company)
     id += 1
     str_id = str(id).zfill(length)
-    new_id = f"{prefix}{seperator}{id}"
+    new_id = f"{prefix}{seperator}{str_id}"
     exising_employee_with_new_id = models.Employee.objects.filter(employee_id=new_id)
     if not existing_employee_with_new_id:
       return new_id

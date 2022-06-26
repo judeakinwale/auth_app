@@ -20,6 +20,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save 
 
 import calendar # For get weekly report weeks
+# testing email to pdf
+from django.template.loader import get_template
 
 # Create your views here.
 
@@ -44,6 +46,12 @@ class CompanyViewSet(utility.swagger_documentation_factory("company", "a", "comp
         return super().perform_create(serializer)
     
     def get_queryset(self):
+        context = {
+            'user': "anonymous user",
+            'items': ['list', 'of', 'items']
+        }
+        message = get_template("email/test_html_pdf.html").render(context)
+        print(type(message))
         if self.request.user.is_superuser:
             return super().get_queryset()
         return utility.company_filtered_queryset(self.request, models.Company, "id")

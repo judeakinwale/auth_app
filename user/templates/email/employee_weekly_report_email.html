@@ -43,7 +43,11 @@
     <br />
     <p>Kindly find your weekly report below</p>
     <br />
-    <h3>Weekly Report</h3>
+    <h3>Weekly Report For {{client.name}}</h3>
+    <br>
+    {% for week in week_dates %}
+    <h5>Week {{forloop.counter}}: {{week}}</h5>
+    {% endfor %}
 
     <table>
       <tr>
@@ -59,7 +63,7 @@
       </tr>
       <tr>
       {% for week in payload %}
-        <td>{{forloop.counter}}</td>
+        <td>Week {{forloop.counter}}</td>
 
         {% comment %} {{week|get_item:"events"}} {% endcomment %}
         {% with days=week|get_item:"events"%}
@@ -159,7 +163,10 @@
     <div>
       <h4 style="float: right;">Total Hours: {{total_time}}</h4>
       <br/>
-      <h4 class="progTitle" style="float: right;">To be submitted by: {{employee.user.last_name}} {{employee.user.first_name}}</h4>
+      <h4 class="progTitle" style="float: left;">To be submitted by: {{employee.user.last_name}} {{employee.user.first_name}}</h4>
+      <h4 class="progTitle" style="float: left;">Submission Deadline: {{submission_deadline}}</h4>
+      <br>
+      <h4 style="float: right;">Signature: _______________</h4>
     </div>
   </body>
 </html>
