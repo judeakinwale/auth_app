@@ -300,47 +300,11 @@ def get_month_dates(request, month = None):
   except Exception as e:
     raise Exception(e)
     return None
-  
 
-def send_employee_weekly_report_email(request, employee, week_list: list, event_ids: list) -> str:
-  try:
-    company = employee.company
-    name = f"{employee.user.first_name}"
-    email = employee.user.email
-    # events = models.Event.objects.filter(
-    #   Q(id__in=event_ids) 
-    #   # & Q(company=company) 
-    #   & Q(employee=employee) 
-    #   # & ~Q(status="Completed") | ~Q(status="Dropped")
-    # )
-
-    clients = []
-    events = models.Event.objects.none()
-    
-    for count, week_id in enumerate(week_list):
-      week = models.Week.objects.get(id=week_id)
-      week_start_date = datetime.strptime(week.start_date, "%Y-%m-%d")
-      week_start_timestamp = int(round(week_start_date.timestamp()))
-      # print("week_start_date:", week_start_date, "\n", "week_start_timestamp:", week_start_timestamp)
-      
-      week_end_date = datetime.strptime(week.end_date, "%Y-%m-%d")
-      week_end_timestamp = int(round(week_end_date.timestamp()))
-      # print("week_end_date:", week_end_date, "\n", "week_end_timestamp:", week_end_timestamp)
-      
-      events = models.Event.objects.filter(employee=employee, date__gte=week_start_timestamp, date__lte=week_end_timestamp)
-      clients = [event.client for event in events]
-      
-    for client in clients:
-      employee_weekly_email_by_client(request, employee, client, company, name, email, week_list)
-    
-    # return url
-    
-  except Exception as e:
-    print(f'An exception occurred: {e}')
-    
     
 def employee_weekly_email_by_client(request, employee, client, company, name, email, week_list: list,):
       
+  try:
     events = models.Event.objects.none()
     payload = []
     total_time = 0
@@ -369,6 +333,7 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       week_dates.append(week_date)
       
       submission_deadline = week_start_date + timedelta(days=week.report_deadline)
+      print(week_time, total_time, week_date, submission_deadline)
       
       # data = {}
       # # data[f'{count}'] = {
@@ -406,7 +371,48 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       print(f'Employee weekly report nofitication mail for client {client} sent {email}')
     except Exception as e:
       print(f'An exception occurred while sending employee weekly report mail for client {client}: {e}')
+      
+  except Exception as e:
+    print(e)
 
+
+def send_employee_weekly_report_email(request, employee, week_list: list, event_ids: list) -> str:
+  try:
+    company = employee.company
+    name = f"{employee.user.first_name}"
+    email = employee.user.email
+    # events = models.Event.objects.filter(
+    #   Q(id__in=event_ids) 
+    #   # & Q(company=company) 
+    #   & Q(employee=employee) 
+    #   # & ~Q(status="Completed") | ~Q(status="Dropped")
+    # )
+
+    clients = []
+    events = models.Event.objects.none()
+    
+    for count, week_id in enumerate(week_list):
+      week = models.Week.objects.get(id=week_id)
+      week_start_date = datetime.strptime(week.start_date, "%Y-%m-%d")
+      week_start_timestamp = int(round(week_start_date.timestamp()))
+      # print("week_start_date:", week_start_date, "\n", "week_start_timestamp:", week_start_timestamp)
+      
+      week_end_date = datetime.strptime(week.end_date, "%Y-%m-%d")
+      week_end_timestamp = int(round(week_end_date.timestamp()))
+      # print("week_end_date:", week_end_date, "\n", "week_end_timestamp:", week_end_timestamp)
+      
+      events = models.Event.objects.filter(employee=employee, date__gte=week_start_timestamp, date__lte=week_end_timestamp)
+      clients = [event.client for event in events]
+      
+    print("Employee Clients:", clients)
+    for client in clients:
+      employee_weekly_email_by_client(request, employee, client, company, name, email, week_list)
+    
+    # return url
+    
+  except Exception as e:
+    print(f'An exception occurred: {e}')
+    
 
 def send_client_weekly_report_email(request, client, week_list: list, event_ids: list) -> str:
   try:
