@@ -309,6 +309,7 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
     payload = []
     total_time = 0
     week_dates = []
+    submission_deadline = datetime.now()
     
     for count, week_id in enumerate(week_list):
       week = models.Week.objects.get(id=week_id)
@@ -332,7 +333,10 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       week_date = f"{week_start_date.date()} - {week_end_date.date()}"
       week_dates.append(week_date)
       
-      submission_deadline = week_start_date + timedelta(days=week.report_deadline)
+      formatted_week_date = f"{week_start_date.strftime('%-d, %B %Y')} - {week_end_date.strftime('%-d, %B %Y')}"
+      
+      deadline = week_end_date + timedelta(days=week.report_deadline)
+      submission_deadline = submission_deadline.strftime('%-d, %B %Y'),
       print(week_time, total_time, week_date, submission_deadline)
       
       # data = {}
@@ -347,8 +351,8 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       
       data = {
         'week': week,
-        'week_date': f"{week_start_date.date()} - {week_end_date.date()}",
-        'submission_deadline': submission_deadline.date(),
+        'week_date': formatted_week_date,
+        'submission_deadline': submission_deadline,
         'events': events_by_weekday,
         'time': week_time
       }
@@ -363,7 +367,8 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       'name': name,
       'payload': payload,
       'total_time': total_time,
-      'week_dates': week_dates
+      'week_dates': week_dates,
+      'submission_deadline': submission_deadline,
     }
     
     try:
