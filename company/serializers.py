@@ -189,11 +189,13 @@ class WeekSerializer(serializers.HyperlinkedModelSerializer):
       'name',
       'start_date',
       'end_date',
+      'report_deadline',
       'is_active',
       'created_at',
       'updated_at',
     ]
     optional_fields = [
+      'report_deadline',
       'is_active',
     ]
     read_only_fields = [
