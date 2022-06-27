@@ -670,7 +670,7 @@ class CompanySerializer(CompanyBaseSerializer):
     company = super().update(instance, validated_data)   
 
     request = self.context['request']
-    setup.company_first_time_setup(request, company)
+    # setup.company_first_time_setup(request, company)
     return company
 
 

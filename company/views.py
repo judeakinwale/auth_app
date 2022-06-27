@@ -238,12 +238,14 @@ class EventViewSet(utility.swagger_documentation_factory("event", "an"), viewset
         try:
             client = event.client
             employee = event.employee
-            event_ids = [event.id,]
-            active_month = utils.get_month_dates(self.request)
-            # if active_month is not None and event.date <= active_month.end_timestamp and event.date >= active_month.start_timestamp:
-            if active_month is not None and active_month.start_timestamp <= event.date <= active_month.end_timestamp:
-                utils.send_employee_event_email(self.request, employee, event_ids)
-                utils.send_client_event_email(self.request, client, event_ids)
+            event_ids = [event.id]
+            # active_month = utils.get_month_dates(self.request)
+            # # if active_month is not None and event.date <= active_month.end_timestamp and event.date >= active_month.start_timestamp:
+            # if active_month is not None and active_month.start_timestamp <= event.date <= active_month.end_timestamp:
+            #     utils.send_employee_event_email(self.request, employee, event_ids)
+            #     utils.send_client_event_email(self.request, client, event_ids)
+            utils.send_employee_event_email(self.request, employee, event_ids)
+            utils.send_client_event_email(self.request, client, event_ids)
         except Exception as e:
             print(e)
             print('An exception occurred while sending mails to client and employee')
@@ -580,7 +582,10 @@ class WeeklyReportView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         
         try:
-            month = utils.get_month_dates(request)
+            active_month = models.Month.objects.get(is_active=True)
+            if not active_month:
+                raise Exception("You need a published schedule to generate weekly reports.")
+            month = utils.get_month_dates(request, active_month)
             month_start_date = month["start_timestamp"]
             month_end_date = month["end_timestamp"]
             
@@ -682,9 +687,10 @@ class MonthEventView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         
         try:
-            month = utils.get_month_dates(request)
-            month_start_date = month["start_timestamp"]
-            month_end_date = month["end_timestamp"]
+            month = models.Month.objects.get(id=int(kwargs['id']))
+            month_dates = utils.get_month_dates(request, month)
+            month_start_date = month_dates["start_timestamp"]
+            month_end_date = month_dates["end_timestamp"]
         except Exception as e:
             error_resp = {"detail": f"{e}"}
             return response.Response(error_resp, status=status.HTTP_400_BAD_REQUEST)
