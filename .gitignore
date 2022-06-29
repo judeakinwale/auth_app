@@ -20,6 +20,9 @@ store.py
 # <django-project-name>/staticfiles/
 
 test.py
+*.pdf
+20k_c*.txt
+logo.png
 
 ### Django.Python Stack ###
 # Byte-compiled / optimized / DLL files
