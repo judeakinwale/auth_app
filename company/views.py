@@ -539,17 +539,17 @@ class WeeklyReportView(generics.GenericAPIView):
             random_date = datetime.strptime(random_date, "%Y-%m-%d").date()
             data = [] 
             for week in weeks:
-                print(
-                    "week found",
-                    week.start_date,
-                    week.end_date,
-                )
-                week_start_date = datetime.strptime(week.start_date, "%Y-%m-%d").date()
-                week_end_date = datetime.strptime(week.end_date, "%Y-%m-%d").date()
-                print("dates found")
-                print(f"{week_start_date}, {week_end_date} - {week_end_date >= week_start_date} - {random_date >=  week_end_date}")
+
+                week_start = datetime.strptime(week.start_date, "%Y-%m-%d")
+                week_start_date = week_start.date()
+                week_start_date_timestamp = str(int(round(week_start.timestamp() * 1000)))
+                week_end = datetime.strptime(week.end_date, "%Y-%m-%d")
+                week_end_date = week_end.date()
+                week_end_date_timestamp = str(int(round(week_end.timestamp() * 1000)))
+                # print("dates found")
+                # print(f"{week_start_date}, {week_end_date} - {week_end_date >= week_start_date} - {random_date >=  week_end_date}")
                 events = models.Event.objects.none()
-                events |= models.Event.objects.filter(date__gte=week_start_date, date__lte=week_end_date)
+                events |= models.Event.objects.filter(date__gte=week_start_date_timestamp, date__lte=week_end_date_timestamp)
                 serialized_events = serializers.EventResponseSerializer(events, many=True, context={'request': request})
                 report_data = {}
                 report_data[f"{week.name}"] = serialized_events.data
