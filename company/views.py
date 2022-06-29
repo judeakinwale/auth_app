@@ -539,8 +539,14 @@ class WeeklyReportView(generics.GenericAPIView):
             random_date = datetime.strptime(random_date, "%Y-%m-%d").date()
             data = [] 
             for week in weeks:
+                print(
+                    "week found",
+                    week.start_date,
+                    week.end_date,
+                )
                 week_start_date = datetime.strptime(week.start_date, "%Y-%m-%d").date()
                 week_end_date = datetime.strptime(week.end_date, "%Y-%m-%d").date()
+                print("dates found")
                 print(f"{week_start_date}, {week_end_date} - {week_end_date >= week_start_date} - {random_date >=  week_end_date}")
                 events = models.Event.objects.none()
                 events |= models.Event.objects.filter(date__gte=week_start_date, date__lte=week_end_date)
@@ -586,8 +592,9 @@ class WeeklyReportView(generics.GenericAPIView):
             if not active_month:
                 raise Exception("You need a published schedule to generate weekly reports.")
             month = utils.get_month_dates(request, active_month)
-            month_start_date = month["start_timestamp"]
-            month_end_date = month["end_timestamp"]
+            # changed from timestamp to date
+            month_start_date = month["start"]  # month["start_timestamp"]
+            month_end_date = month["end"]  # month["end_timestamp"]
             
         except Exception as e:
             error_resp = {"detail": f"{e}"}
@@ -599,9 +606,13 @@ class WeeklyReportView(generics.GenericAPIView):
                 # weeks = models.Week.objects.filter(start_date__gte=month_start_date, end_date__lte=month_end_date)
                 weeks = models.Week.objects.filter()
             elif request.user.is_staff:
-                weeks = models.Week.objects.filter(start_date__gte=month_start_date, end_date__lte=month_end_date, client__company=request.user.company)
+                weeks = models.Week.objects.filter(start_date__gte=month_start_date, 
+                    # end_date__lte=month_end_date, 
+                    client__company=request.user.company)
             else:    
-                weeks = models.Week.objects.filter(start_date__gte=month_start_date, end_date__lte=month_end_date, client__company=request.user.employee.company)
+                weeks = models.Week.objects.filter(start_date__gte=month_start_date, 
+                    # end_date__lte=month_end_date, 
+                    client__company=request.user.employee.company)
         except Exception:
             weeks = models.Week.objects.none()
         

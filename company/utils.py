@@ -12,6 +12,9 @@ from util import utils as utility
 from datetime import datetime, timedelta
 import calendar
 
+from reportlab.pdfgen import canvas
+from fpdf import FPDF
+
 
 def get_user_company(request):
   company = None
@@ -111,7 +114,225 @@ def sort_events_by_weekday(events):
   return result
 
 
-def send_simple_email(request, template_path: str, reciepients: list, subject: str = "Email", context: dict = {}) -> bool:
+def createWeeklyReportPdf(data):
+  """context = {
+      'company': company,
+      'client': client,
+      'events': events,
+      'employee': employee,
+      'name': name,
+      'payload': payload,
+      'total_time': total_time,
+      'week_dates': week_dates,
+      'submission_deadline': submission_deadline,
+    }
+  """
+  
+  company = data["company"]
+  client = data["client"]
+  report_label = f"Weekly Report for {client.name}"
+  headers = [
+    'Attribute',
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Hours',
+  ]
+  employee = data["employee"]
+  employee_name = f"{employee.user.last_name} {employee.user.first_name}".title()
+  submitter = f"To be submitted by:  {employee_name} ".title()
+  client_signature = f"Client Signature:  ________________"
+  employee_signature = f"Employee Signature:  ________________"
+  payload = data["payload"]
+  print("payload for pdf:",payload)
+  body = []
+  # for item in payload: print("Single Item", item)
+  
+  for index, items in enumerate(payload):
+    print("index, items: ", index, items)
+    body.append([])
+    body[index] = []
+    attr = [f"Week {index + 1}", ""]
+    body[index].append(attr)
+    Sunday = items["events"]["sun"] or ["", ""]
+    body[index].append(Sunday)
+    Monday = items["events"]["mon"] or ["", ""]
+    body[index].append(Monday)
+    Tuesday = items["events"]["tue"] or ["", ""]
+    body[index].append(Tuesday)
+    Wednesday = items["events"]["wed"] or ["", ""]
+    body[index].append(Wednesday)
+    Thursday = items["events"]["thu"] or ["", ""]
+    body[index].append(Thursday)
+    Friday = items["events"]["fri"] or ["", ""]
+    body[index].append(Friday)
+    Saturday = items["events"]["sat"] or ["", ""]
+    body[index].append(Saturday)
+    time = [str(items['time']), ""] or ["", ""]
+    body[index].append(time)
+    
+  print(body)
+  # body = payload["events"]
+  
+  
+  total_time = data["total_time"]
+  total_hours = f"Total Hours:  {total_time}"
+  week_dates = data["week_dates"]
+  submission_deadline = data["submission_deadline"]
+  submission_date = f"Submission Deadline:  {submission_deadline}"
+  
+  class WeeklyReport(FPDF):
+    def header(self):
+        # Arial bold 15
+        self.set_font('Arial', 'B', 18)
+        # Calculate width of title and position
+        w = self.get_string_width(company.name) + 6
+        self.set_x((210 - w) / 2)
+        # Colors of frame, background and text
+        self.set_draw_color(255, 255, 255)
+        self.set_fill_color(255, 255, 255)
+        self.set_text_color(0, 0, 0)
+        # # Thickness of frame (1 mm)
+        # self.set_line_width(1)
+        # Title
+        self.cell(w, 9, company.name, 1, 1, 'C', 1)
+        # Line break
+        self.ln(10)
+
+    def footer(self):
+        # Position at 1.5 cm from bottom
+        self.set_y(-15)
+        # Arial italic 8
+        self.set_font('Arial', 'I', 8)
+        # Text color in gray
+        self.set_text_color(128)
+        # Page number
+        self.cell(0, 10, 'Page ' + str(self.page_no()), 0, 0, 'C')
+
+    def report_title(self, num, title):
+        # Arial 12
+        self.set_font('Arial', '', 12)
+        # Calculate width of title and position
+        w = self.get_string_width(title) + 6
+        self.set_x((210 - w) / 2)
+        # Background color
+        self.set_fill_color(255, 255, 255)
+        # Title
+        self.cell(w, 6, title, 0, 1, 'C', 1)
+        # Line break
+        self.ln(14)
+        # Arial 9
+        self.set_font('Arial', '', 9)
+        # set starting position
+        self.set_x(14)
+        # Week Dates
+        for index, week_date in enumerate(week_dates):
+          date = f"Week {index + 1}:  {week_date}"
+          self.cell(0, 6, date, 0, 1, 'L', 1)
+
+    def report_body(self, headers, body):
+        # Line break
+        self.ln(10)
+        # Arial 10
+        self.set_font('Arial', '', 10)
+        # Calculate the width for table and columns
+        lens = [self.get_string_width(txt) + 7 for txt in headers]
+        self.set_x((210 - sum(lens)) / 2)
+        # Table Headers
+        for index, item in enumerate(headers):
+          self.cell(w=lens[index], h=10, txt=item, border=1, ln=0, align='C', fill=0, link='')
+        # Line break
+        self.ln()
+        # Calculate the width for table and columns
+        self.set_x((210 - sum(lens)) / 2)
+        # Change font and font size
+        self.set_font('Helvetica', '', 7)
+        # Table Data Row 1
+        for index, item in enumerate(body[0]):
+          print(item, index)
+          self.cell(w=lens[index], h=10, txt=item[0], border=1, ln=0, align='C', fill=0, link='')
+          # self.cell(w=lens[index], h=10, txt=item[0], border=1, ln=0, align='C', fill=0, link='')
+        # Line break
+        self.ln()
+        try:
+          # Calculate the width for table and columns
+          self.set_x((210 - sum(lens)) / 2)
+          # Table Data Row 2
+          for index, item in enumerate(body[1]):
+            self.cell(w=lens[index], h=10, txt=item[1], border=1, ln=0, align='C', fill=0, link='')
+          # Line break
+          self.ln()
+        except Exception as e:
+          pass
+        try:
+          # Calculate the width for table and columns
+          self.set_x((210 - sum(lens)) / 2)
+          # Table Data Row 3
+          for index, item in enumerate(body):
+            self.cell(w=lens[index], h=10, txt=item[2], border=1, ln=0, align='C', fill=0, link='')
+          # Line break
+          self.ln()
+        except Exception as e:
+          pass
+        # Line break
+        self.ln(30)
+        # # Line break
+        # self.ln()
+        # # Line break
+        # self.ln()
+        # Change font and font size
+        self.set_font('Arial', '', 9)
+        # position submission date
+        self.set_x(((210 - sum(lens)) / 2) - 2)
+        w = self.get_string_width(submission_date) + 6
+        self.cell(w, 6, submission_date, 0, 0, 'C', 1)
+        # postion total_hours
+        w = self.get_string_width(total_hours) + 6
+        self.set_x(210 - (w + 12))
+        self.cell(w, 6, total_hours, 0, 0, 'C', 1)
+        # Line break
+        self.ln(10)
+        # position submission date
+        self.set_x(((210 - sum(lens)) / 2) - 2)
+        w = self.get_string_width(submitter) + 6
+        self.cell(w, 6, submitter, 0, 1, 'C', 1)
+        # Line break
+        self.ln(10)
+        # position employee signature date
+        self.set_x(((210 - sum(lens)) / 2) - 2)
+        w = self.get_string_width(employee_signature) + 6
+        self.cell(w, 6, employee_signature, 0, 0, 'C', 1)
+        # postion client_signature
+        w = self.get_string_width(client_signature) + 6
+        self.set_x(210 - (w + 12))
+        self.cell(w, 6, client_signature, 0, 0, 'C', 1)
+        # Line break
+        self.ln()
+        # # Mention in italics
+        # self.set_font('', 'I')
+        # self.cell(0, 5, '(end of excerpt)')
+
+    def print_report(self, num, title, headers, body):
+        self.add_page()
+        self.report_title(num, title)
+        self.report_body(headers, body)
+        
+  pdf = WeeklyReport()
+  pdf.set_title("Weekly Report")
+  # pdf.set_author('Jules Verne')
+  pdf.print_report(1, report_label, headers, body)
+  # pdf.print_report(2, 'THE PROS AND CONS', '20k_c2.txt', context)
+  file_name = f"weekly report for {employee_name} for {week_dates[0]}.pdf"
+  pdf.output(f'./templates/pdf/{file_name}', 'F')
+  # pdf.output(f'{file_name}', 'F')
+  return file_name
+
+
+def send_simple_email(request, template_path: str, reciepients: list, subject: str = "Email", context: dict = {}, attachment = None) -> bool:
   try:
     sender_email = f"{settings.DEFAULT_FROM_NAME} <{settings.DEFAULT_FROM_EMAIL}>"
     message = get_template(template_path).render(context) # path to the email template - 'email/results.html'
@@ -123,6 +344,8 @@ def send_simple_email(request, template_path: str, reciepients: list, subject: s
       reciepients,
     )
     msg.content_subtype = "html"  # Main content is now text/html
+    if attachment:
+      msg.attach_file(attachment)
     msg.send()
 
     print(f"\nMail successfully sent: {msg}")
@@ -160,7 +383,7 @@ def send_company_link(request, email: str) -> str:
 def send_employee_event_email(request, employee, event_ids: list) -> str:
   try:
     company = employee.company
-    name = f"{employee.user.first_name}"
+    name = f"{employee.user.first_name}"  
     email = employee.user.email
     events = models.Event.objects.filter(
       Q(id__in=event_ids) 
@@ -323,7 +546,8 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       
       events = models.Event.objects.filter(employee=employee, client=client, date__gte=week_start_timestamp, date__lte=week_end_timestamp)
       events_by_weekday = sort_events_by_weekday(events)
-      print("Events sorted by weekday;", events_by_weekday)
+      if events:
+        print("Events sorted by weekday;", events_by_weekday)
       
       hours_list = [utility.hourly_time_difference(utility.usable_time(event.start_time), utility.usable_time(event.end_time)) for event in events]
       week_time = sum(hours_list)
@@ -336,7 +560,7 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       
       deadline = week_end_date + timedelta(days=week.report_deadline)
       submission_deadline = submission_deadline.strftime('%-d, %B %Y')
-      print(week_time, total_time, week_date, submission_deadline)
+      print("week_time:", week_time, "total_time:", total_time, "week_date:", week_date, "submission_deadline:", submission_deadline)
       
       # data = {}
       # # data[f'{count}'] = {
@@ -358,6 +582,9 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       payload.append(data)
     # print(payload)
       
+    if not events:
+      raise Exception(f"There are no events for the client with id {client.id}")
+    
     context = {
       'company': company,
       'client': client,
@@ -370,14 +597,22 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       'submission_deadline': submission_deadline,
     }
     
+    attachment_path = None
     try:
-      email = send_simple_email(request, 'email/employee_weekly_report_email.html', [email], "Weekly Report", context)
+      file_name = createWeeklyReportPdf(context)
+      attachment_path = f"./templates/pdf/{file_name}"
+    except Exception as e:
+      print(f"exception creating pdf: {e}")
+    
+    try:
+      email = send_simple_email(request, 'email/employee_weekly_report_email.html', [email], "Weekly Report", context, attachment_path)
       print(f'Employee weekly report nofitication mail for client {client} sent {email}')
     except Exception as e:
       print(f'An exception occurred while sending employee weekly report mail for client {client}: {e}')
       
   except Exception as e:
-    print(e)
+    if events:
+      print(f"exception sending employee weekly report per client: {e}")
 
 
 def send_employee_weekly_report_email(request, employee, week_list: list, event_ids: list) -> str:
@@ -453,7 +688,8 @@ def send_client_weekly_report_email(request, client, week_list: list, event_ids:
       
       events = models.Event.objects.filter(client=client, date__gte=week_start_timestamp, date__lte=week_end_timestamp)
       events_by_weekday = sort_events_by_weekday(events)
-      print("Events sorted by weekday;", events_by_weekday)
+      if events:
+        print("Events sorted by weekday;", events_by_weekday)
       
       hours_list = [utility.hourly_time_difference(utility.usable_time(event.start_time), utility.usable_time(event.end_time)) for event in events]
       week_time = sum(hours_list)
@@ -478,7 +714,10 @@ def send_client_weekly_report_email(request, client, week_list: list, event_ids:
       }
       payload.append(data)
     # print(payload)
-      
+    
+    if not events:
+      raise Exception(f"There are no events for the client with id {client.id}")
+    
     context = {
       'company': company,
       'events': events,
@@ -498,4 +737,5 @@ def send_client_weekly_report_email(request, client, week_list: list, event_ids:
       return False
         
   except Exception as e:
-    print(f'An exception occurred while getting client details: {e}')
+    if events:
+      print(f'An exception occurred while getting client details: {e}\n')

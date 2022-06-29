@@ -15,6 +15,10 @@ class EventAdmin(admin.ModelAdmin):
   ]
 
 
+class MonthAdmin(admin.ModelAdmin):
+    list_display = ["__str__", "company", "is_active"]
+
+
 admin.site.register(models.Company)
 admin.site.register(models.Phone)
 admin.site.register(models.Branch)
@@ -23,6 +27,6 @@ admin.site.register(models.Employee)
 admin.site.register(models.Location)
 admin.site.register(models.Client)
 admin.site.register(models.Event, EventAdmin)
-admin.site.register(models.Month)
+admin.site.register(models.Month, MonthAdmin)
 admin.site.register(models.Schedule)
 admin.site.register(models.Week)
