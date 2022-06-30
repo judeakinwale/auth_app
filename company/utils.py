@@ -130,7 +130,7 @@ def createWeeklyReportPdf(data):
   
   company = data["company"]
   client = data["client"]
-  report_label = f"Weekly Report for {client.name}"
+  report_label = f"Weekly Time Sheet for {client.name}"
   headers = [
     'Attribute',
     'Sunday',
@@ -148,12 +148,12 @@ def createWeeklyReportPdf(data):
   client_signature = f"Client Signature:  ________________"
   employee_signature = f"Employee Signature:  ________________"
   payload = data["payload"]
-  print("payload for pdf:",payload)
+  # print("payload for pdf:",payload)
   body = []
   # for item in payload: print("Single Item", item)
   
   for index, items in enumerate(payload):
-    print("index, items: ", index, items)
+    # print("index, items: ", index, items)
     body.append([])
     body[index] = []
     attr = [f"Week {index + 1}", ""]
@@ -172,18 +172,22 @@ def createWeeklyReportPdf(data):
     body[index].append(Friday)
     Saturday = items["events"]["sat"] or ["", ""]
     body[index].append(Saturday)
-    time = [str(items['time']), ""] or ["", ""]
+    # time = [str(items['time']), ""] or ["", ""]
+    time = ["", ""] or ["", ""]  # Request from client
     body[index].append(time)
     
-  print(body)
+  # print(body)
   # body = payload["events"]
   
   
   total_time = data["total_time"]
-  total_hours = f"Total Hours:  {total_time}"
+  # total_hours = f"Total Hours:  {total_time}"
+  total_hours = f"Total Hours: ___________________"  # Request from client
   week_dates = data["week_dates"]
   submission_deadline = data["submission_deadline"]
   submission_date = f"Submission Deadline:  {submission_deadline}"
+  
+  page_width = 297
   
   class WeeklyReport(FPDF):
     def header(self):
@@ -191,7 +195,7 @@ def createWeeklyReportPdf(data):
         self.set_font('Arial', 'B', 18)
         # Calculate width of title and position
         w = self.get_string_width(company.name) + 6
-        self.set_x((210 - w) / 2)
+        self.set_x((page_width - w) / 2)
         # Colors of frame, background and text
         self.set_draw_color(255, 255, 255)
         self.set_fill_color(255, 255, 255)
@@ -200,6 +204,12 @@ def createWeeklyReportPdf(data):
         # self.set_line_width(1)
         # Title
         self.cell(w, 9, company.name, 1, 1, 'C', 1)
+        # Position Address
+        w = self.get_string_width(company.name) + 6
+        self.set_x((page_width - w) / 2)
+        # Arial italic 8
+        self.set_font('Arial', 'I', 8)
+        self.cell(w, 9, company.address, 1, 1, 'C', 1)
         # Line break
         self.ln(10)
 
@@ -218,7 +228,7 @@ def createWeeklyReportPdf(data):
         self.set_font('Arial', '', 12)
         # Calculate width of title and position
         w = self.get_string_width(title) + 6
-        self.set_x((210 - w) / 2)
+        self.set_x((page_width - w) / 2)
         # Background color
         self.set_fill_color(255, 255, 255)
         # Title
@@ -228,7 +238,7 @@ def createWeeklyReportPdf(data):
         # Arial 9
         self.set_font('Arial', '', 9)
         # set starting position
-        self.set_x(14)
+        self.set_x(16)
         # Week Dates
         for index, week_date in enumerate(week_dates):
           date = f"Week {index + 1}:  {week_date}"
@@ -240,27 +250,27 @@ def createWeeklyReportPdf(data):
         # Arial 10
         self.set_font('Arial', '', 10)
         # Calculate the width for table and columns
-        lens = [self.get_string_width(txt) + 7 for txt in headers]
-        self.set_x((210 - sum(lens)) / 2)
+        lens = [self.get_string_width(txt) + 16 for txt in headers]
+        self.set_x((page_width - sum(lens)) / 2)
         # Table Headers
         for index, item in enumerate(headers):
           self.cell(w=lens[index], h=10, txt=item, border=1, ln=0, align='C', fill=0, link='')
         # Line break
         self.ln()
         # Calculate the width for table and columns
-        self.set_x((210 - sum(lens)) / 2)
+        self.set_x((page_width - sum(lens)) / 2)
         # Change font and font size
         self.set_font('Helvetica', '', 7)
         # Table Data Row 1
         for index, item in enumerate(body[0]):
-          print(item, index)
+          # print(item, index)
           self.cell(w=lens[index], h=10, txt=item[0], border=1, ln=0, align='C', fill=0, link='')
           # self.cell(w=lens[index], h=10, txt=item[0], border=1, ln=0, align='C', fill=0, link='')
         # Line break
         self.ln()
         try:
           # Calculate the width for table and columns
-          self.set_x((210 - sum(lens)) / 2)
+          self.set_x((page_width - sum(lens)) / 2)
           # Table Data Row 2
           for index, item in enumerate(body[1]):
             self.cell(w=lens[index], h=10, txt=item[1], border=1, ln=0, align='C', fill=0, link='')
@@ -270,7 +280,7 @@ def createWeeklyReportPdf(data):
           pass
         try:
           # Calculate the width for table and columns
-          self.set_x((210 - sum(lens)) / 2)
+          self.set_x((page_width - sum(lens)) / 2)
           # Table Data Row 3
           for index, item in enumerate(body):
             self.cell(w=lens[index], h=10, txt=item[2], border=1, ln=0, align='C', fill=0, link='')
@@ -287,28 +297,28 @@ def createWeeklyReportPdf(data):
         # Change font and font size
         self.set_font('Arial', '', 9)
         # position submission date
-        self.set_x(((210 - sum(lens)) / 2) - 2)
+        self.set_x(((page_width - sum(lens)) / 2) - 2)
         w = self.get_string_width(submission_date) + 6
         self.cell(w, 6, submission_date, 0, 0, 'C', 1)
         # postion total_hours
         w = self.get_string_width(total_hours) + 6
-        self.set_x(210 - (w + 12))
+        self.set_x(page_width - (w + 12))
         self.cell(w, 6, total_hours, 0, 0, 'C', 1)
         # Line break
         self.ln(10)
         # position submission date
-        self.set_x(((210 - sum(lens)) / 2) - 2)
+        self.set_x(((page_width - sum(lens)) / 2) - 2)
         w = self.get_string_width(submitter) + 6
         self.cell(w, 6, submitter, 0, 1, 'C', 1)
         # Line break
         self.ln(10)
         # position employee signature date
-        self.set_x(((210 - sum(lens)) / 2) - 2)
+        self.set_x(((page_width - sum(lens)) / 2) - 2)
         w = self.get_string_width(employee_signature) + 6
         self.cell(w, 6, employee_signature, 0, 0, 'C', 1)
         # postion client_signature
         w = self.get_string_width(client_signature) + 6
-        self.set_x(210 - (w + 12))
+        self.set_x(page_width - (w + 12))
         self.cell(w, 6, client_signature, 0, 0, 'C', 1)
         # Line break
         self.ln()
@@ -317,7 +327,7 @@ def createWeeklyReportPdf(data):
         # self.cell(0, 5, '(end of excerpt)')
 
     def print_report(self, num, title, headers, body):
-        self.add_page()
+        self.add_page(orientation="L")
         self.report_title(num, title)
         self.report_body(headers, body)
         
@@ -560,7 +570,7 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       
       deadline = week_end_date + timedelta(days=week.report_deadline)
       submission_deadline = submission_deadline.strftime('%-d, %B %Y')
-      print("week_time:", week_time, "total_time:", total_time, "week_date:", week_date, "submission_deadline:", submission_deadline)
+      # print("week_time:", week_time, "total_time:", total_time, "week_date:", week_date, "submission_deadline:", submission_deadline)
       
       # data = {}
       # # data[f'{count}'] = {
@@ -606,7 +616,7 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
     
     try:
       email = send_simple_email(request, 'email/employee_weekly_report_email.html', [email], "Weekly Report", context, attachment_path)
-      print(f'Employee weekly report nofitication mail for client {client} sent {email}')
+      print(f'Employee weekly report nofitication mail for client {client} sent {email}\n')
     except Exception as e:
       print(f'An exception occurred while sending employee weekly report mail for client {client}: {e}')
       
@@ -642,9 +652,13 @@ def send_employee_weekly_report_email(request, employee, week_list: list, event_
       
       events = models.Event.objects.filter(employee=employee, date__gte=week_start_timestamp, date__lte=week_end_timestamp)
       clients = [event.client for event in events]
-      
+    
+    # Remove duplicate clients
+    clients = set(clients)
+    
     print("Employee Clients:", clients)
     for client in clients:
+      print(f"mail for employee with id: {employee.id}, for client with id: {client.id}")
       employee_weekly_email_by_client(request, employee, client, company, name, email, week_list)
     
     # return url
@@ -730,7 +744,7 @@ def send_client_weekly_report_email(request, client, week_list: list, event_ids:
 
     try:
       email = send_simple_email(request, 'email/client_weekly_report_email.html', [email], "Weekly Report", context)
-      print(f'Client weekly report notification email sent {email}')
+      print(f'Client weekly report notification email sent {email}\n')
       return True
     except Exception as e:
       print(f'An exception occurred while sending client weekly report mail: {e}')
