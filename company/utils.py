@@ -569,7 +569,8 @@ def employee_weekly_email_by_client(request, employee, client, company, name, em
       week_dates.append(formatted_week_date)
       
       deadline = week_end_date + timedelta(days=week.report_deadline)
-      submission_deadline = submission_deadline.strftime('%-d, %B %Y')
+      print("days, report_deadline:", week.report_deadline, deadline)
+      submission_deadline = deadline.strftime('%-d, %B %Y')
       # print("week_time:", week_time, "total_time:", total_time, "week_date:", week_date, "submission_deadline:", submission_deadline)
       
       # data = {}
