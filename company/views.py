@@ -244,8 +244,9 @@ class EventViewSet(utility.swagger_documentation_factory("event", "an"), viewset
             # if active_month is not None and active_month.start_timestamp <= event.date <= active_month.end_timestamp:
             #     utils.send_employee_event_email(self.request, employee, event_ids)
             #     utils.send_client_event_email(self.request, client, event_ids)
-            utils.send_employee_event_email(self.request, employee, event_ids)
-            utils.send_client_event_email(self.request, client, event_ids)
+            
+            # utils.send_employee_event_email(self.request, employee, event_ids)
+            # utils.send_client_event_email(self.request, client, event_ids)
         except Exception as e:
             print(e)
             print('An exception occurred while sending mails to client and employee')
