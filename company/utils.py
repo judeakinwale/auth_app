@@ -311,7 +311,7 @@ def createWeeklyReportPdf(data):
         except Exception as e:
           pass
         # Line break
-        self.ln(30)
+        self.ln(20)
         try:
           # Calculate the width for table and columns
           self.set_x((page_width - sum(lens)) / 2)
@@ -320,6 +320,12 @@ def createWeeklyReportPdf(data):
             self.cell(w=lens[index], h=10, txt=item, border=0, ln=0, align='C', fill=0, link='')
           # Line break
           self.ln()
+        except Exception as e:
+          pass
+        try:
+          # Calculate the width for table and columns
+          self.set_x((page_width - sum(lens)) / 2)
+          # Table bottom headers for custom time for employee
           for index, item in enumerate(bottom_headers):
             self.cell(w=lens[index], h=10, txt=item, border=0, ln=0, align='C', fill=0, link='')
           # Line break
@@ -327,7 +333,7 @@ def createWeeklyReportPdf(data):
         except Exception as e:
           pass
          # Line break
-        self.ln(30)
+        self.ln(20)
         # # Line break
         # self.ln()
         # # Line break
