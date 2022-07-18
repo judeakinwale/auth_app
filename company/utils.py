@@ -142,6 +142,28 @@ def createWeeklyReportPdf(data):
     'Saturday',
     'Hours',
   ]
+  bottom_headers = [
+    '',
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    '',
+  ]
+  bottom_data = [
+    '',
+    '______________',
+    '______________',
+    '______________',
+    '______________',
+    '______________',
+    '______________',
+    '______________',
+    '',
+  ]
   employee = data["employee"]
   employee_name = f"{employee.user.last_name} {employee.user.first_name}".title()
   submitter = f"To be submitted by:  {employee_name} ".title()
@@ -289,6 +311,22 @@ def createWeeklyReportPdf(data):
         except Exception as e:
           pass
         # Line break
+        self.ln(30)
+        try:
+          # Calculate the width for table and columns
+          self.set_x((page_width - sum(lens)) / 2)
+          # Table bottom for custom time for employee
+          for index, item in enumerate(bottom_data):
+            self.cell(w=lens[index], h=10, txt=item, border=0, ln=0, align='C', fill=0, link='')
+          # Line break
+          self.ln()
+          for index, item in enumerate(bottom_headers):
+            self.cell(w=lens[index], h=10, txt=item, border=0, ln=0, align='C', fill=0, link='')
+          # Line break
+          self.ln()
+        except Exception as e:
+          pass
+         # Line break
         self.ln(30)
         # # Line break
         # self.ln()
