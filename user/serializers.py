@@ -75,6 +75,13 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
       user.save()
             
     return user
+  
+  
+class TrialUserSerializer(UserSerializer):
+  
+  class Meta(UserSerializer.Meta):
+    additional_fields = ['is_trial']
+    fields = UserSerializer.Meta.fields + additional_fields
 
 
 # Simple JWT integration with drf-yasg (serializers)

@@ -102,6 +102,71 @@ class ManageUserApiView(generics.RetrieveUpdateAPIView):
         """patch method docstring"""
         return super().patch(request, *args, **kwargs)
     
+    
+class TrialUserApiView(generics.CreateAPIView):
+    """manage the authenticated user"""
+    queryset = get_user_model().objects.all()
+    serializer_class = serializers.TrialUserSerializer
+    # serializer_action_classes = {
+    #     'get': EmployeeResponseSerializer,
+    #     'put': EmployeeResponseSerializer,
+    #     'patch': EmployeeResponseSerializer,
+    # }
+    # permission_classes = [permissions.IsAuthenticated]
+    # filterset_class = filters.UserFilter
+
+    def get_object(self):
+        """retrieve and return the authenticated user's account"""
+        # try:
+        #     return self.request.user.employee
+        # except:
+        #     return self.request.user
+        return self.request.user
+    
+    def get_serializer_class(self):
+        # try:
+        #     print(request.method)
+        #     if request.method == "GET":
+        #         print("----GET----")
+        #     # return EmployeeResponseSerializer
+        #     return self.serializer_action_classes[self.action]
+        # except:
+        #     return super().get_serializer_class()
+        return super().get_serializer_class()
+    
+    # @swagger_auto_schema(
+    #     operation_description="retrieve authenticated user details",
+    #     operation_summary='retrieve authenticated user details (account)'
+    # )
+    # def get(self, request, *args, **kwargs):
+    #     """get method docstring"""
+    #     # self.serializer_class = EmployeeResponseSerializer
+    #     return super().get(request, *args, **kwargs)
+    
+    @swagger_auto_schema(
+        operation_description="create trial user",
+        operation_summary='create trial user'
+    )
+    def post(self, request, *args, **kwargs):
+        """post method docstring"""
+        return super().post(request, *args, **kwargs)
+
+    # @swagger_auto_schema(
+    #     operation_description="update authenticated user details",
+    #     operation_summary='update authenticated user details (account)'
+    # )
+    # def put(self, request, *args, **kwargs):
+    #     """put method docstring"""
+    #     return super().put(request, *args, **kwargs)
+
+    # @swagger_auto_schema(
+    #     operation_description="partial update authenticated user details",
+    #     operation_summary='partial update authenticated user details (account)'
+    # )
+    # def patch(self, request, *args, **kwargs):
+    #     """patch method docstring"""
+    #     return super().patch(request, *args, **kwargs)
+    
 
 # Simple JWT integration with drf-yasg (views)
 # Decorated drf-simplejwt views

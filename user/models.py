@@ -20,6 +20,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_employee = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    is_trial = models.BooleanField(default=False)  # specify if account is a trial account
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     objects = managers.UserManager()

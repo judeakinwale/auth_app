@@ -22,6 +22,11 @@ router.register(
     views.DecoratedResetPasswordValidateTokenViewSet, 
     basename='reset-password-validate',
 )
+# router.register(
+#     'user/trial', 
+#     views.TrialUserApiView(), 
+#     basename='trial-user',
+# )
 
 urlpatterns = [
     path("", include(router.urls)),
@@ -30,4 +35,5 @@ urlpatterns = [
     # path('logout/', views.LogoutApiView.as_view(), name="logout"),
     path("token/verify", views.DecoratedTokenVerifyView.as_view(), name="token_verify"),
     path("token/refresh", views.DecoratedTokenRefreshView.as_view(), name="token_refresh"),
+    path("user/trial", views.TrialUserApiView.as_view(), name="trial_user"),
 ]

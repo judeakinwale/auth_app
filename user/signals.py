@@ -13,6 +13,7 @@ from django.urls import reverse
 
 from django_rest_passwordreset.signals import reset_password_token_created
 from user import urls
+from datetime import datetime, timezone
 
 
 # Add different users to relevant groups
@@ -78,3 +79,16 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         msg.send()
     except Exception as e:
         print(f"There was an error sending the mail: {e}")
+
+
+def disable_trial_users():
+    trial_users = User.objects.filter(is_trial=True)
+    print("trial_users: ", trial_users)
+    for user in trial_users:
+        # check if time difference is greater than or equal to seven days
+        time_difference  = datetime.now(timezone.utc) - user.timestamp
+        if time_difference.days >= 7:
+            user.is_active = False
+            user.save()
+            
+disable_trial_users()
