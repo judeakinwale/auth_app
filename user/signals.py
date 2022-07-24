@@ -99,4 +99,4 @@ def disable_trial_users():
                 pass
 
             
-disable_trial_users()  # being run as a job
+# disable_trial_users()  # being run as a job
