@@ -7,6 +7,7 @@ app_name = 'user'
 
 router = DefaultRouter()
 router.register('user', views.UserViewSet)
+router.register('trial', views.TrialViewSet)
 router.register(
     'passwordreset', 
     views.DecoratedResetPasswordRequestTokenViewSet, 
@@ -35,5 +36,5 @@ urlpatterns = [
     # path('logout/', views.LogoutApiView.as_view(), name="logout"),
     path("token/verify", views.DecoratedTokenVerifyView.as_view(), name="token_verify"),
     path("token/refresh", views.DecoratedTokenRefreshView.as_view(), name="token_refresh"),
-    path("user/trial", views.TrialUserApiView.as_view(), name="trial_user"),
+    path("user/trial", views.TrialUserApiView.as_view(), name="trial-user-detail"),
 ]

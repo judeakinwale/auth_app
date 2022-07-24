@@ -1,6 +1,8 @@
 from rest_framework import status, views, response
 from drf_yasg.utils import no_body, swagger_auto_schema
 from datetime import datetime
+import string
+import random
 
 
 def usable_time(time: str) -> datetime.time:
@@ -12,6 +14,16 @@ def hourly_time_difference(start: datetime, end: datetime):
     difference = (end - start).total_seconds()
     hours = divmod(difference, 3600)[0]
     return hours
+
+
+def random_with_N_digits(n):
+    range_start = 10**(n-1)
+    range_end = (10**n)-1
+    return randint(range_start, range_end)
+
+
+def code_generator(N):
+    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(N))
 
 
 def auth_user_company(request):

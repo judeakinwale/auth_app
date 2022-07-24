@@ -50,3 +50,22 @@ class User(AbstractBaseUser, PermissionsMixin):
             return f"{self.last_name} {self.first_name}"
         else:
             return f"{self.email}"
+
+
+class Trial(models.Model):
+    """Model definition for User."""
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    number = models.CharField(max_length=250, null=True, blank=True)
+    location = models.CharField(max_length=250)
+    industry = models.CharField(max_length=250)
+    is_active = models.BooleanField(default=True)
+    is_completed = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    
+    def __str__(self):
+        """String representation of Trial."""
+        try: 
+            return self.user.full_name()
+        except Exception:
+            return str(self.id)

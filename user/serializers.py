@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from user import models
+from user import models, setup
+from util import utils as utility
 
 # For JWT and drf-yasg integration
 from drf_yasg.utils import swagger_auto_schema
@@ -30,9 +31,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
       'is_active',
       'is_staff',
       'is_employee',
+      'is_trial',
       'is_superuser',
     ]
     optional_fields = [
+      'is_trial',
       'is_active',
     ]
     read_only_fields = [
@@ -77,11 +80,111 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     return user
   
   
-class TrialUserSerializer(UserSerializer):
+class TrialSerializer(serializers.HyperlinkedModelSerializer):
+  """serializer for the Trial model"""
   
-  class Meta(UserSerializer.Meta):
-    additional_fields = ['is_trial']
-    fields = UserSerializer.Meta.fields + additional_fields
+  class Meta:
+    model = models.Trial
+    fields = [
+      'id',
+      'url',
+      'user',
+      'number',
+      'location',
+      'industry',
+      'is_active',
+      'is_completed',
+      'timestamp',
+    ]
+    optional_fields = [
+      'number',
+      'is_active',
+    ]
+    extra_kwargs = {
+      'url': {'view_name': 'user:trial-detail'},
+    }
+  
+
+class TrialResponseSerializer(TrialSerializer):
+  """response serializer for the Trial model"""
+  user = UserSerializer(read_only=True)
+  
+
+class TrialUserSerializer(serializers.HyperlinkedModelSerializer):
+  """serializer for creating the Trial User"""
+  
+  first_name = serializers.CharField()
+  middle_name = serializers.CharField(allow_null=True, required=False)
+  last_name = serializers.CharField()
+  email = serializers.CharField()
+  
+  class Meta:
+    model = models.Trial
+    fields = [
+      'id',
+      'url',
+      'first_name',
+      'middle_name',
+      'last_name',
+      'lastrial',
+      'email',
+      'user',
+      'number',
+      'lastrial',
+      'numtrial',
+      'location',
+      'industry',
+      'is_active',
+      'numtrial',
+      'is_completed',
+      'timestamp',
+    ]
+    optional_fields = [
+      'first_name',
+      'middle_name',
+      'last_name',
+      'email',
+      'user',
+      'number',
+      'is_active',
+    ]
+    extra_kwargs = {
+      'url': {'view_name': 'user:trial-user-detail'},
+      'user': {'required': False, 'allow_null': True},
+    }
+
+  def create(self, validated_data):
+    payload = {
+      'first_name': validated_data.get('first_name', None),
+      'middle_name': validated_data.get('middle_name', None),
+      'last_name': validated_data.get('last_name', None),
+      'email': validated_data.get('email', None),
+    }
+    removed_data = []
+    for key, value in payload.items():
+      item = validated_data.pop(key) if key in validated_data else None
+      removed_data.append(item)
+    
+    if 'user' not in validated_data:
+      payload['password'] = utility.code_generator(6)
+      payload['is_staff'] = True
+      payload['is_trial'] = True
+      
+      user = get_user_model().objects.create_user(**payload)
+      validated_data['user'] = user
+      try:
+        url = "https://www.hrtechleft.com/login"
+        company = {"name": "TechLeft"}
+        context = {
+          "user": user,
+          "company": company,
+          "url": url
+        }
+        setup.send_account_creation_email(self.request, reciepients, context, True)
+      except Exception as e:
+        print(f"trial user creation email error: {e} \n")
+    
+    return super().create(validated_data)
 
 
 # Simple JWT integration with drf-yasg (serializers)

@@ -91,4 +91,4 @@ def disable_trial_users():
             user.is_active = False
             user.save()
             
-disable_trial_users()
+# disable_trial_users()  # being run as a job
