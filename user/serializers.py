@@ -110,32 +110,29 @@ class TrialResponseSerializer(TrialSerializer):
   user = UserSerializer(read_only=True)
   
 
-class TrialUserSerializer(serializers.HyperlinkedModelSerializer):
+# class TrialUserSerializer(serializers.HyperlinkedModelSerializer):
+class TrialUserSerializer(serializers.ModelSerializer):
   """serializer for creating the Trial User"""
   
-  first_name = serializers.CharField()
-  middle_name = serializers.CharField(allow_null=True, required=False)
-  last_name = serializers.CharField()
-  email = serializers.CharField()
+  first_name = serializers.CharField(write_only=True)
+  middle_name = serializers.CharField(write_only=True, allow_null=True, required=False)
+  last_name = serializers.CharField(write_only=True)
+  email = serializers.CharField(write_only=True)
   
   class Meta:
     model = models.Trial
     fields = [
       'id',
-      'url',
+      # 'url',
       'first_name',
       'middle_name',
       'last_name',
-      'lastrial',
       'email',
       'user',
       'number',
-      'lastrial',
-      'numtrial',
       'location',
       'industry',
       'is_active',
-      'numtrial',
       'is_completed',
       'timestamp',
     ]
@@ -149,7 +146,7 @@ class TrialUserSerializer(serializers.HyperlinkedModelSerializer):
       'is_active',
     ]
     extra_kwargs = {
-      'url': {'view_name': 'user:trial-user-detail'},
+      # 'url': {'view_name': 'user:trial-detail'},
       'user': {'required': False, 'allow_null': True},
     }
 
@@ -173,14 +170,18 @@ class TrialUserSerializer(serializers.HyperlinkedModelSerializer):
       user = get_user_model().objects.create_user(**payload)
       validated_data['user'] = user
       try:
+        request = self.context['request']
+        reciepients = [user.email]
         url = "https://www.hrtechleft.com/login"
         company = {"name": "TechLeft"}
+        password = payload['password']
         context = {
           "user": user,
           "company": company,
-          "url": url
+          "url": url,
+          "password": password,
         }
-        setup.send_account_creation_email(self.request, reciepients, context, True)
+        setup.send_account_creation_email(request, reciepients, context, True)
       except Exception as e:
         print(f"trial user creation email error: {e} \n")
     

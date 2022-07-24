@@ -83,12 +83,20 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 def disable_trial_users():
     trial_users = User.objects.filter(is_trial=True)
-    print("trial_users: ", trial_users)
+    print("count of trial users: ", len(trial_users))
     for user in trial_users:
         # check if time difference is greater than or equal to seven days
         time_difference  = datetime.now(timezone.utc) - user.timestamp
         if time_difference.days >= 7:
             user.is_active = False
             user.save()
+            try:
+                trial = user.trial
+                # print("user, trial: ", user, trial)
+                trial.is_completed = True
+                trial.save()
+            except:
+                pass
+
             
-# disable_trial_users()  # being run as a job
+disable_trial_users()  # being run as a job

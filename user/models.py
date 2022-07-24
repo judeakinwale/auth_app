@@ -55,7 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Trial(models.Model):
     """Model definition for User."""
     
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name="trial", on_delete=models.CASCADE)
     number = models.CharField(max_length=250, null=True, blank=True)
     location = models.CharField(max_length=250)
     industry = models.CharField(max_length=250)

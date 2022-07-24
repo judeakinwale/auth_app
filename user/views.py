@@ -42,7 +42,8 @@ class UserViewSet(utility.swagger_documentation_factory("user"), viewsets.ModelV
             context = {
                 "user": user,
                 "company": company,
-                "url": url
+                "url": url,
+                "password": 111111
             }
             if user.is_trial:
                 setup.send_account_creation_email(self.request, reciepients, context, True)

@@ -1,6 +1,6 @@
 <body>
   <h3>Hello, {{user.first_name}}</h3>
   <p>Your {{company.name}} account has been created.</p>
-  <p>Note: Your password is {% if user.is_trial %} {{}} {% else %} 111111 {% endif %}</p>
+  <p>Note: Your password is {% if user.is_trial %} {{password}} {% else %} 111111 {% endif %}</p>
   <p>Kindly <a href="{{login}}">login to your account</a>. Thank you</p>
 </body>
